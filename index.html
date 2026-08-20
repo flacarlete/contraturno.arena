@@ -2,42 +2,20 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Arena Contraturno - Sistema de Gestão</title>
+  <title>Arena Contraturno</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     .aba-conteudo { display: none; }
     .aba-btn.active { border-bottom: 3px solid #1b4332; color: #1b4332; font-weight: 700; }
-    @media print {
-      .no-print { display: none !important; }
-      #printableProfArea { display: block !important; }
-    }
   </style>
 </head>
 <body class="bg-gray-100 min-h-screen">
 
-  <!-- ==================== TELA DE LOGIN ==================== -->
-  <div id="tela-login" class="fixed inset-0 bg-[#1b4332] z-50 flex items-center justify-center p-4">
-    <div class="bg-white p-8 rounded-xl shadow-2xl w-full max-w-sm">
-      <h2 class="text-xl font-bold mb-6 text-center text-gray-800">Login Arena</h2>
-      <select id="loginPerfil" class="w-full border p-2 mb-4 rounded text-sm">
-        <option value="coordenacao">Coordenação</option>
-        <option value="assistente">Assistente</option>
-        <option value="inspetor">Inspetor</option>
-      </select>
-      <input type="password" id="senhaInput" placeholder="Senha" class="w-full border p-2 mb-4 rounded text-sm" />
-      <button onclick="fazerLogin()" class="w-full bg-[#1b4332] text-white py-2 rounded font-bold hover:bg-emerald-900">Entrar</button>
-    </div>
-  </div>
-
-  <!-- ==================== SISTEMA ==================== -->
-  <div id="sistema-principal" class="hidden">
-    <header class="bg-[#1b4332] text-white p-4 flex justify-between items-center no-print">
-      <h1 class="font-bold">Arena Contraturno</h1>
-      <button onclick="fazerLogout()" class="text-xs bg-red-700 px-3 py-1 rounded">Sair</button>
-    </header>
+  <div id="sistema-principal">
+    <header class="bg-[#1b4332] text-white p-4"><h1>Arena Contraturno</h1></header>
     
-    <nav class="bg-white border-b p-2 flex gap-4 overflow-x-auto no-print">
+    <!-- Navegação -->
+    <nav class="bg-white border-b p-2 flex gap-4 overflow-x-auto">
       <button onclick="mudarAba('atrasos')" class="aba-btn active" id="btn-atrasos">Atrasos</button>
       <button onclick="mudarAba('sala-estudos')" class="aba-btn" id="btn-sala-estudos">Sala de Estudos</button>
       <button onclick="mudarAba('professores')" class="aba-btn" id="btn-professores">Professores</button>
@@ -48,42 +26,30 @@
     </nav>
 
     <div class="p-6">
+      <!-- ABA ATRASOS -->
       <section id="aba-atrasos" class="aba-conteudo" style="display:block;">
-        <h2 class="text-lg font-bold mb-4">Registro de Atrasos</h2>
-        <!-- Conteúdo Atrasos aqui -->
+        <h2 class="text-xl font-bold mb-4">Registro de Atrasos</h2>
+        <div class="bg-white p-6 rounded shadow">
+            <!-- Coloque aqui os seus inputs de atraso -->
+            <input list="listaAlunos" placeholder="Buscar aluno..." class="border p-2 w-full mb-4">
+        </div>
       </section>
-      <section id="aba-sala-estudos" class="aba-conteudo">
-        <h2 class="text-lg font-bold mb-4">Sala de Estudos</h2>
-      </section>
-      <section id="aba-professores" class="aba-conteudo">
-        <h2 class="text-lg font-bold mb-4">Professores</h2>
-        <button onclick="window.print()" class="no-print bg-emerald-800 text-white px-4 py-2 rounded text-xs">Imprimir Relatório</button>
-      </section>
-      <section id="aba-inspetores" class="aba-conteudo">
-        <h2 class="text-lg font-bold mb-4">Inspetores</h2>
-      </section>
-      <section id="aba-atendimentos" class="aba-conteudo">
-        <h2 class="text-lg font-bold mb-4">Atendimentos</h2>
-      </section>
-      <section id="aba-contatos" class="aba-conteudo">
-        <h2 class="text-lg font-bold mb-4">Contatos</h2>
-      </section>
+
+      <!-- ABA GERENCIADOR -->
       <section id="aba-gerenciador" class="aba-conteudo">
-        <h2 class="text-lg font-bold mb-4">Gerenciador de Acessos</h2>
+        <h2 class="text-xl font-bold mb-4">Gerenciador de Acessos</h2>
+        <div class="bg-white p-6 rounded shadow">
+            <p>Configurações de usuários aqui.</p>
+        </div>
       </section>
+      
+      <!-- Adicione as outras seções (sala-estudos, professores, etc) aqui seguindo o mesmo padrão -->
     </div>
   </div>
 
+  <datalist id="listaAlunos"></datalist>
+
   <script>
-    function fazerLogin() {
-      document.getElementById('tela-login').classList.add('hidden');
-      document.getElementById('sistema-principal').classList.remove('hidden');
-    }
-    
-    function fazerLogout() {
-      location.reload();
-    }
-    
     function mudarAba(abaId) {
       document.querySelectorAll('.aba-conteudo').forEach(el => el.style.display = 'none');
       document.querySelectorAll('.aba-btn').forEach(btn => btn.classList.remove('active'));
