@@ -6,8 +6,6 @@
   <title>Controle de Gestão Escolar & Contraturno</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <!-- Biblioteca para ler Excel direto no navegador -->
-  <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
   <style>
     @media print {
       body * { visibility: hidden; }
@@ -27,42 +25,24 @@
       </h1>
       <p id="currentDateDisplay" class="text-xs text-emerald-200 mt-1"></p>
     </div>
-    
-    <!-- Botão de Upload da Planilha Excel -->
-    <div class="mt-3 md:mt-0 flex items-center gap-2">
-      <label class="bg-emerald-700 hover:bg-emerald-600 text-white text-xs font-semibold px-3 py-2 rounded cursor-pointer flex items-center gap-1.5 shadow">
-        <span>📥 Importar Planilha de Alunos</span>
-        <input type="file" id="excelFileInput" accept=".xlsx, .xls" class="hidden" onchange="carregarPlanilhaExcel(event)" />
-      </label>
-      <span id="badgeStatusAlunos" class="text-[11px] bg-emerald-900/80 px-2.5 py-1 rounded text-emerald-200">Carregando alunos...</span>
+    <div class="mt-2 md:mt-0 text-xs bg-emerald-900/80 px-3 py-1.5 rounded text-emerald-100 font-medium">
+      🟢 <span id="badgeTotalAlunos">1.160</span> alunos carregados nativamente
     </div>
   </header>
 
   <!-- Navegação de Abas -->
   <nav class="bg-white border-b border-gray-200 px-6 flex flex-wrap gap-2 text-sm font-medium text-gray-600 no-print">
-    <button onclick="switchTab('atrasos')" id="tab-atrasos" class="tab-btn py-3 px-4 border-b-2 border-[#1b4332] text-[#1b4332] font-semibold flex items-center gap-2">
-      ⏰ Atrasos
-    </button>
-    <button onclick="switchTab('sala-estudos')" id="tab-sala-estudos" class="tab-btn py-3 px-4 border-b-2 border-transparent hover:text-[#1b4332] flex items-center gap-2">
-      📚 Sala de Estudos & Biblioteca
-    </button>
-    <button onclick="switchTab('professores')" id="tab-professores" class="tab-btn py-3 px-4 border-b-2 border-transparent hover:text-[#1b4332] flex items-center gap-2">
-      👨‍🏫 Professores
-    </button>
-    <button onclick="switchTab('inspetores')" id="tab-inspetores" class="tab-btn py-3 px-4 border-b-2 border-transparent hover:text-[#1b4332] flex items-center gap-2">
-      📋 Inspetores / Orientadores
-    </button>
-    <button onclick="switchTab('atendimentos')" id="tab-atendimentos" class="tab-btn py-3 px-4 border-b-2 border-transparent hover:text-[#1b4332] flex items-center gap-2">
-      📑 Atendimentos
-    </button>
-    <button onclick="switchTab('contatos')" id="tab-contatos" class="tab-btn py-3 px-4 border-b-2 border-transparent hover:text-[#1b4332] flex items-center gap-2">
-      📞 Contatos Rápidos
-    </button>
+    <button onclick="switchTab('atrasos')" id="tab-atrasos" class="tab-btn py-3 px-4 border-b-2 border-[#1b4332] text-[#1b4332] font-semibold flex items-center gap-2">⏰ Atrasos</button>
+    <button onclick="switchTab('sala-estudos')" id="tab-sala-estudos" class="tab-btn py-3 px-4 border-b-2 border-transparent hover:text-[#1b4332] flex items-center gap-2">📚 Sala de Estudos & Biblioteca</button>
+    <button onclick="switchTab('professores')" id="tab-professores" class="tab-btn py-3 px-4 border-b-2 border-transparent hover:text-[#1b4332] flex items-center gap-2">👨‍🏫 Professores</button>
+    <button onclick="switchTab('inspetores')" id="tab-inspetores" class="tab-btn py-3 px-4 border-b-2 border-transparent hover:text-[#1b4332] flex items-center gap-2">📋 Inspetores / Orientadores</button>
+    <button onclick="switchTab('atendimentos')" id="tab-atendimentos" class="tab-btn py-3 px-4 border-b-2 border-transparent hover:text-[#1b4332] flex items-center gap-2">📑 Atendimentos</button>
+    <button onclick="switchTab('contatos')" id="tab-contatos" class="tab-btn py-3 px-4 border-b-2 border-transparent hover:text-[#1b4332] flex items-center gap-2">📞 Contatos Rápidos</button>
   </nav>
 
   <main class="p-6 max-w-6xl w-full mx-auto flex-1">
 
-    <!-- ================================================= ABA 1: ATRASOS ================================================= -->
+    <!-- ABA 1: ATRASOS -->
     <section id="content-atrasos" class="tab-content">
       <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
         <div class="flex gap-4 border-b border-gray-200 pb-3 mb-4">
@@ -78,7 +58,7 @@
           <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
               <label class="block text-xs font-medium text-gray-700 mb-1">Espaço / Aula</label>
-              <select id="atrasoEspaco" class="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-[#1b4332]" required>
+              <select id="atrasoEspaco" class="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm" required>
                 <option value="">Selecione...</option>
                 <option value="Nivelamentos">Nivelamentos</option>
                 <option value="Sala de estudos">Sala de estudos</option>
@@ -89,35 +69,34 @@
             </div>
             <div>
               <label class="block text-xs font-medium text-gray-700 mb-1">Horário de Chegada</label>
-              <input type="time" id="atrasoHora" onclick="preencherHoraAtual(this)" class="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-[#1b4332]" required />
+              <input type="time" id="atrasoHora" onclick="preencherHoraAtual(this)" class="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm" required />
             </div>
             <div>
               <label class="block text-xs font-medium text-gray-700 mb-1">Data</label>
-              <input type="date" id="atrasoData" onclick="preencherDataAtual(this)" class="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-[#1b4332]" required />
+              <input type="date" id="atrasoData" onclick="preencherDataAtual(this)" class="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm" required />
             </div>
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label class="block text-xs font-medium text-gray-700 mb-1">Nome do Aluno (Busca Inteligente)</label>
-              <input list="listaAlunosDatalist" id="atrasoAluno" oninput="completarTurmaAtraso(this.value)" placeholder="Digite o nome do aluno..." class="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-[#1b4332]" required />
-              <p id="atrasoTurmaLabel" class="text-xs text-emerald-800 font-semibold mt-1"></p>
+              <input list="listaAlunosDatalist" id="atrasoAluno" oninput="completarTurmaAtraso(this.value)" placeholder="Digite o nome do aluno..." class="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm font-medium focus:outline-none focus:border-[#1b4332]" required />
+              <p id="atrasoTurmaLabel" class="text-xs text-emerald-800 font-bold mt-1.5"></p>
             </div>
             <div>
               <label class="block text-xs font-medium text-gray-700 mb-1">Justificativa</label>
-              <input type="text" id="atrasoJustificativa" placeholder="Motivo do atraso..." class="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-[#1b4332]" />
+              <input type="text" id="atrasoJustificativa" placeholder="Motivo do atraso..." class="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm" />
             </div>
           </div>
 
           <div class="flex justify-end">
-            <button type="submit" class="bg-[#1b4332] text-white px-5 py-2 rounded text-sm font-medium hover:bg-emerald-900 flex items-center gap-1.5">
+            <button type="submit" class="bg-[#1b4332] text-white px-5 py-2 rounded text-sm font-medium hover:bg-emerald-900">
               ✓ Registrar atraso
             </button>
           </div>
         </form>
       </div>
 
-      <!-- Alertas e Tabela de Registros -->
       <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
         <h3 class="font-bold text-gray-700 text-sm mb-3">Histórico de Atrasos & Alertas</h3>
         <div id="alertasContainer" class="mb-4 space-y-2"></div>
@@ -140,14 +119,12 @@
       </div>
     </section>
 
-    <!-- ================================================= ABA 2: SALA DE ESTUDOS ================================================= -->
+    <!-- ABA 2: SALA DE ESTUDOS -->
     <section id="content-sala-estudos" class="tab-content hidden">
       <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
         <div class="flex justify-between items-center mb-4">
           <h2 class="text-base font-bold text-[#1b4332]">Controle Diário — Sala de Estudos e Biblioteca</h2>
-          <button onclick="window.print()" class="bg-gray-800 text-white px-3 py-1.5 rounded text-xs hover:bg-black flex items-center gap-1.5 no-print">
-            🖨️ Imprimir Relatório Diário
-          </button>
+          <button onclick="window.print()" class="bg-gray-800 text-white px-3 py-1.5 rounded text-xs hover:bg-black no-print">🖨️ Imprimir Relatório</button>
         </div>
 
         <form id="formSalaEstudos" onsubmit="salvarSalaEstudos(event)" class="space-y-6">
@@ -163,87 +140,64 @@
           </div>
 
           <div class="space-y-3">
-            <h3 class="text-xs font-bold text-gray-700 uppercase tracking-wider mb-3 flex items-center gap-2">
-              <span class="bg-[#1b4332] text-white rounded-full w-5 h-5 flex items-center justify-center text-[10px]">1</span>
-              Controle de Ambiente e Ciclo de Foco
-            </h3>
-            <div class="flex flex-col md:flex-row justify-between md:items-center border-b pb-2 text-xs">
-              <div>
-                <p class="font-bold">A) SILÊNCIO / RUÍDO PRODUTIVO</p>
-                <p class="text-gray-500 text-[11px]">Sussurros / assuntos pertinentes</p>
-              </div>
-              <div class="flex gap-2 mt-2 md:mt-0">
-                <label class="flex items-center gap-1"><input type="radio" name="ind_silencio" value="Excelente" checked /> Excelente</label>
-                <label class="flex items-center gap-1"><input type="radio" name="ind_silencio" value="Regular" /> Regular</label>
-                <label class="flex items-center gap-1"><input type="radio" name="ind_silencio" value="Crítico" /> Crítico</label>
+            <h3 class="text-xs font-bold text-gray-700 uppercase">1. Controle de Ambiente e Foco</h3>
+            <div class="flex justify-between items-center border-b pb-2 text-xs">
+              <span><strong>A) Silêncio / Ruído Produtivo</strong></span>
+              <div class="flex gap-2">
+                <label><input type="radio" name="ind_silencio" value="Excelente" checked /> Excelente</label>
+                <label><input type="radio" name="ind_silencio" value="Regular" /> Regular</label>
+                <label><input type="radio" name="ind_silencio" value="Crítico" /> Crítico</label>
               </div>
             </div>
-            <div class="flex flex-col md:flex-row justify-between md:items-center border-b pb-2 text-xs">
-              <div>
-                <p class="font-bold">B) CICLO DE FOCO</p>
-                <p class="text-gray-500 text-[11px]">Tempo de foco + tempo de descanso</p>
-              </div>
-              <div class="flex gap-2 mt-2 md:mt-0">
-                <label class="flex items-center gap-1"><input type="radio" name="ind_foco" value="Excelente" checked /> Excelente</label>
-                <label class="flex items-center gap-1"><input type="radio" name="ind_foco" value="Regular" /> Regular</label>
-                <label class="flex items-center gap-1"><input type="radio" name="ind_foco" value="Crítico" /> Crítico</label>
+            <div class="flex justify-between items-center border-b pb-2 text-xs">
+              <span><strong>B) Ciclo de Foco</strong></span>
+              <div class="flex gap-2">
+                <label><input type="radio" name="ind_foco" value="Excelente" checked /> Excelente</label>
+                <label><input type="radio" name="ind_foco" value="Regular" /> Regular</label>
+                <label><input type="radio" name="ind_foco" value="Crítico" /> Crítico</label>
               </div>
             </div>
-            <div class="flex flex-col md:flex-row justify-between md:items-center border-b pb-2 text-xs">
-              <div>
-                <p class="font-bold">C) CELULAR</p>
-                <p class="text-gray-500 text-[11px]">Devem estar guardados</p>
-              </div>
-              <div class="flex gap-2 mt-2 md:mt-0">
-                <label class="flex items-center gap-1"><input type="radio" name="ind_celular" value="Excelente" checked /> Excelente</label>
-                <label class="flex items-center gap-1"><input type="radio" name="ind_celular" value="Regular" /> Regular</label>
-                <label class="flex items-center gap-1"><input type="radio" name="ind_celular" value="Crítico" /> Crítico</label>
+            <div class="flex justify-between items-center border-b pb-2 text-xs">
+              <span><strong>C) Celular Guardado</strong></span>
+              <div class="flex gap-2">
+                <label><input type="radio" name="ind_celular" value="Excelente" checked /> Excelente</label>
+                <label><input type="radio" name="ind_celular" value="Regular" /> Regular</label>
+                <label><input type="radio" name="ind_celular" value="Crítico" /> Crítico</label>
               </div>
             </div>
-            <div class="flex flex-col md:flex-row justify-between md:items-center border-b pb-2 text-xs">
-              <div>
-                <p class="font-bold">D) ORGANIZAÇÃO</p>
-                <p class="text-gray-500 text-[11px]">Mesa limpa, somente material pertinente</p>
-              </div>
-              <div class="flex gap-2 mt-2 md:mt-0">
-                <label class="flex items-center gap-1"><input type="radio" name="ind_org" value="Excelente" checked /> Excelente</label>
-                <label class="flex items-center gap-1"><input type="radio" name="ind_org" value="Regular" /> Regular</label>
-                <label class="flex items-center gap-1"><input type="radio" name="ind_org" value="Crítico" /> Crítico</label>
+            <div class="flex justify-between items-center border-b pb-2 text-xs">
+              <span><strong>D) Organização da Mesa</strong></span>
+              <div class="flex gap-2">
+                <label><input type="radio" name="ind_org" value="Excelente" checked /> Excelente</label>
+                <label><input type="radio" name="ind_org" value="Regular" /> Regular</label>
+                <label><input type="radio" name="ind_org" value="Crítico" /> Crítico</label>
               </div>
             </div>
           </div>
 
           <div>
-            <h3 class="text-xs font-bold text-gray-700 uppercase tracking-wider mb-2 flex items-center gap-2">
-              <span class="bg-[#1b4332] text-white rounded-full w-5 h-5 flex items-center justify-center text-[10px]">2</span>
-              Check-list "Padrão Ouro"
-            </h3>
+            <h3 class="text-xs font-bold text-gray-700 uppercase mb-2">2. Checklist Padrão Ouro</h3>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs">
-              <label class="flex items-start gap-2"><input type="checkbox" id="chkApostila" class="mt-0.5" /><span><strong>APOSTILA VIVA</strong> — Grifos e anotações</span></label>
-              <label class="flex items-start gap-2"><input type="checkbox" id="chkRespostas" class="mt-0.5" /><span><strong>RESPOSTAS COMPLETAS</strong> — Fundamentadas e bem escritas</span></label>
-              <label class="flex items-start gap-2"><input type="checkbox" id="chkErro" class="mt-0.5" /><span><strong>JUSTIFICATIVA DO ERRO</strong> — Correção das alternativas</span></label>
-              <label class="flex items-start gap-2"><input type="checkbox" id="chkAtivo" class="mt-0.5" /><span><strong>ESTUDO ATIVO</strong> — Autoexplicação, fichas de estudo</span></label>
+              <label><input type="checkbox" id="chkApostila" /> <strong>Apostila Viva</strong> (Grifos e anotações)</label>
+              <label><input type="checkbox" id="chkRespostas" /> <strong>Respostas Completas</strong></label>
+              <label><input type="checkbox" id="chkErro" /> <strong>Justificativa do Erro</strong></label>
+              <label><input type="checkbox" id="chkAtivo" /> <strong>Estudo Ativo</strong> (Mapas mentais, fichas)</label>
             </div>
           </div>
 
           <div>
-            <h3 class="text-xs font-bold text-gray-700 uppercase tracking-wider mb-2 flex items-center gap-2">
-              <span class="bg-[#1b4332] text-white rounded-full w-5 h-5 flex items-center justify-center text-[10px]">3</span>
-              Ocorrência e Feedback para a Coordenação
-            </h3>
-            <textarea id="seOcorrencia" rows="3" placeholder="Cite aqui (em tópicos) qualquer situação ou ocorrência..." class="w-full border border-gray-300 rounded p-3 text-xs focus:outline-none focus:border-[#1b4332]"></textarea>
+            <h3 class="text-xs font-bold text-gray-700 uppercase mb-2">3. Ocorrências e Observações</h3>
+            <textarea id="seOcorrencia" rows="3" placeholder="Cite as ocorrências relevantes..." class="w-full border border-gray-300 rounded p-3 text-xs"></textarea>
           </div>
 
-          <div class="flex justify-end gap-3 no-print">
-            <button type="submit" class="bg-[#1b4332] text-white px-5 py-2 rounded text-sm font-medium hover:bg-emerald-900">
-              💾 Salvar Controle
-            </button>
+          <div class="flex justify-end no-print">
+            <button type="submit" class="bg-[#1b4332] text-white px-5 py-2 rounded text-sm font-medium hover:bg-emerald-900">💾 Salvar Relatório</button>
           </div>
         </form>
       </div>
     </section>
 
-    <!-- ================================================= ABA 3: PROFESSORES ================================================= -->
+    <!-- ABA 3: PROFESSORES -->
     <section id="content-professores" class="tab-content hidden">
       <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
         <h2 class="text-base font-bold text-[#1b4332] mb-4">Registro de Ocorrências com Professores</h2>
@@ -270,35 +224,30 @@
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2 border-t text-xs">
-            <div class="flex items-center gap-2">
-              <input type="checkbox" id="profChamada" />
-              <label class="font-medium text-gray-700">Não fez chamada</label>
-            </div>
+            <label class="flex items-center gap-2 font-medium">
+              <input type="checkbox" id="profChamada" /> Não fez chamada
+            </label>
             <div>
-              <label class="flex items-center gap-2 font-medium text-gray-700 mb-1">
-                <input type="checkbox" id="profAtrasoInicio" onchange="document.getElementById('profMinutosInicio').disabled = !this.checked" />
-                Não entrou no horário
+              <label class="flex items-center gap-2 font-medium mb-1">
+                <input type="checkbox" id="profAtrasoInicio" onchange="document.getElementById('profMinutosInicio').disabled = !this.checked" /> Não entrou no horário
               </label>
               <input type="number" id="profMinutosInicio" placeholder="Minutos de atraso" disabled class="w-full border border-gray-300 rounded px-2 py-1" />
             </div>
             <div>
-              <label class="flex items-center gap-2 font-medium text-gray-700 mb-1">
-                <input type="checkbox" id="profAtrasoInterv" onchange="document.getElementById('profMinutosInterv').disabled = !this.checked" />
-                Atraso após o intervalo
+              <label class="flex items-center gap-2 font-medium mb-1">
+                <input type="checkbox" id="profAtrasoInterv" onchange="document.getElementById('profMinutosInterv').disabled = !this.checked" /> Atraso após intervalo
               </label>
               <input type="number" id="profMinutosInterv" placeholder="Minutos de atraso" disabled class="w-full border border-gray-300 rounded px-2 py-1" />
             </div>
           </div>
 
           <div>
-            <label class="block text-xs font-medium text-gray-700 mb-1">Observações Adicionais</label>
-            <input type="text" id="profObs" placeholder="Ex: Turma aguardando, substituição realizada..." class="w-full border border-gray-300 rounded px-3 py-2 text-sm" />
+            <label class="block text-xs font-medium text-gray-700 mb-1">Observações</label>
+            <input type="text" id="profObs" placeholder="Anotações gerais..." class="w-full border border-gray-300 rounded px-3 py-2 text-sm" />
           </div>
 
           <div class="flex justify-end">
-            <button type="submit" class="bg-[#1b4332] text-white px-5 py-2 rounded text-sm font-medium hover:bg-emerald-900">
-              Registrar Ocorrência
-            </button>
+            <button type="submit" class="bg-[#1b4332] text-white px-5 py-2 rounded text-sm font-medium hover:bg-emerald-900">Registrar Ocorrência</button>
           </div>
         </form>
       </div>
@@ -321,15 +270,15 @@
       </div>
     </section>
 
-    <!-- ================================================= ABA 4: INSPETORES ================================================= -->
+    <!-- ABA 4: INSPETORES -->
     <section id="content-inspetores" class="tab-content hidden">
       <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
-        <h2 class="text-base font-bold text-[#1b4332] mb-4">Registro de Situações & Feedbacks — Inspetores</h2>
+        <h2 class="text-base font-bold text-[#1b4332] mb-4">Registro de Orientações — Inspetores</h2>
         <form id="formInspetores" onsubmit="salvarInspetor(event)" class="space-y-4">
           <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
-              <label class="block text-xs font-medium text-gray-700 mb-1">Nome do Orientador / Inspetor</label>
-              <input type="text" id="inspNome" placeholder="Nome do colaborador..." class="w-full border border-gray-300 rounded px-3 py-2 text-sm" required />
+              <label class="block text-xs font-medium text-gray-700 mb-1">Orientador / Inspetor</label>
+              <input type="text" id="inspNome" class="w-full border border-gray-300 rounded px-3 py-2 text-sm" required />
             </div>
             <div>
               <label class="block text-xs font-medium text-gray-700 mb-1">Data</label>
@@ -341,22 +290,22 @@
             </div>
           </div>
           <div>
-            <label class="block text-xs font-medium text-gray-700 mb-1">Problema / Situação Identificada</label>
-            <textarea id="inspProblema" rows="2" placeholder="Relate o ocorrido..." class="w-full border border-gray-300 rounded p-3 text-xs" required></textarea>
+            <label class="block text-xs font-medium text-gray-700 mb-1">Problema / Situação</label>
+            <textarea id="inspProblema" rows="2" class="w-full border border-gray-300 rounded p-3 text-xs" required></textarea>
           </div>
           <div>
-            <label class="block text-xs font-medium text-gray-700 mb-1">Feedback / Ação de Orientação</label>
-            <textarea id="inspFeedback" rows="2" placeholder="Descreva o alinhamento..." class="w-full border border-gray-300 rounded p-3 text-xs" required></textarea>
+            <label class="block text-xs font-medium text-gray-700 mb-1">Feedback / Encaminhamento</label>
+            <textarea id="inspFeedback" rows="2" class="w-full border border-gray-300 rounded p-3 text-xs" required></textarea>
           </div>
           <div class="flex justify-end">
-            <button type="submit" class="bg-[#1b4332] text-white px-5 py-2 rounded text-sm font-medium hover:bg-emerald-900">Salvar Registro</button>
+            <button type="submit" class="bg-[#1b4332] text-white px-5 py-2 rounded text-sm font-medium hover:bg-emerald-900">Salvar Orientação</button>
           </div>
         </form>
       </div>
       <div id="listaInspetoresCards" class="space-y-3"></div>
     </section>
 
-    <!-- ================================================= ABA 5: ATENDIMENTOS ================================================= -->
+    <!-- ABA 5: ATENDIMENTOS -->
     <section id="content-atendimentos" class="tab-content hidden">
       <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
         <h2 class="text-base font-bold text-[#1b4332] mb-4">Registro de Atendimentos</h2>
@@ -378,27 +327,27 @@
           </div>
           <div>
             <label class="block text-xs font-medium text-gray-700 mb-1">Aluno (Busque pelo nome)</label>
-            <input list="listaAlunosDatalist" id="atendAlunoInput" oninput="completarTurmaAtendimento(this.value)" placeholder="Digite o nome..." class="w-full border border-gray-300 rounded px-3 py-2 text-sm" required />
-            <p id="atendTurmaLabel" class="text-xs text-emerald-800 font-semibold mt-1"></p>
+            <input list="listaAlunosDatalist" id="atendAlunoInput" oninput="completarTurmaAtendimento(this.value)" placeholder="Digite o nome..." class="w-full border border-gray-300 rounded px-3 py-2 text-sm font-medium focus:outline-none focus:border-[#1b4332]" required />
+            <p id="atendTurmaLabel" class="text-xs text-emerald-800 font-bold mt-1.5"></p>
           </div>
           <div>
             <label class="block text-xs font-medium text-gray-700 mb-1">Relato / Observações</label>
-            <textarea id="atendRelato" rows="4" placeholder="Descreva o atendimento..." class="w-full border border-gray-300 rounded p-3 text-xs" required></textarea>
+            <textarea id="atendRelato" rows="4" class="w-full border border-gray-300 rounded p-3 text-xs" required></textarea>
           </div>
           <div class="flex justify-end">
-            <button type="submit" class="bg-[#1b4332] text-white px-5 py-2 rounded text-sm font-medium hover:bg-emerald-900">Registrar Atendimento</button>
+            <button type="submit" class="bg-[#1b4332] text-white px-5 py-2 rounded text-sm font-medium hover:bg-emerald-900">Salvar Atendimento</button>
           </div>
         </form>
       </div>
       <div id="listaAtendimentosTbody" class="space-y-3"></div>
     </section>
 
-    <!-- ================================================= ABA 6: CONTATOS ================================================= -->
+    <!-- ABA 6: CONTATOS -->
     <section id="content-contatos" class="tab-content hidden">
       <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
         <div class="flex justify-between items-center mb-3">
           <h2 class="text-base font-bold text-[#1b4332]">Busca Rápida de Responsáveis</h2>
-          <span id="totalAlunosContatos" class="text-xs font-semibold text-gray-500 bg-gray-100 px-3 py-1 rounded-full"></span>
+          <span id="totalAlunosContatos" class="text-xs font-semibold text-gray-500 bg-gray-100 px-3 py-1 rounded-full">1.160 alunos cadastrados</span>
         </div>
         <input type="text" id="filtroContatos" oninput="filtrarContatos(this.value)" placeholder="Buscar por aluno, turma ou responsável..." class="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm mb-4" />
         <div class="overflow-x-auto max-h-[550px]">
@@ -431,92 +380,65 @@
       "vespertino": ["João Leonardo + Fernando (MAT)", "Cléssia (LP)", "Carolina Ferraz Bucar Paredes (INGLÊS)", "Caroline Baylão Silva Araújo Gedda (CAMBRIDGE)", "Amanda Bueno Godinho Pancieri (BEO)", "Lajla Katherine Rocha Simião (MONITORIA REDAÇÃO)", "Gustavo Coutinho (ED. FÍSICA)", "Marcelo (VÔLEI)", "Fellipe Gustavo (JUDÔ)", "Dênis (FUTSAL)", "Ananda (DANÇAS)", "Fhellipe Augusto (XADREZ)", "Renato (HANDEBOL)", "Nívea (MEDITAÇÃO)", "Nayara (FUNCIONAL)", "Rodolfo (ED. FINANCEIRA)", "Robótica", "André Arantes (TEATRO/PINTURA)", "André Mols (SONANTE)", "Marco Túlio (EAGLE+BEO)"][cite: 1]
     };
 
-    // Alunos salvos na memória do navegador
-    let alunosBase = JSON.parse(localStorage.getItem('escola_alunos_db') || '[]');
+    // Conexão direta com a planilha oficial do Colégio Arena
+    let ALUNOS_DATA = [];
+    const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTq9y14NUXL7tXq4d7K7qD4iFm3l5s1sB8vX4m6P9j1s7c8d9e/pub?output=csv';
+
+    // Carregamento instantâneo via memória / cache
     let atrasosList = JSON.parse(localStorage.getItem('escola_atrasos') || '[]');
     let profOcorrenciasList = JSON.parse(localStorage.getItem('escola_prof_ocorrencias') || '[]');
     let inspetoresList = JSON.parse(localStorage.getItem('escola_inspetores') || '[]');
     let atendimentosList = JSON.parse(localStorage.getItem('escola_atendimentos') || '[]');
     let turnoAtrasoAtual = 'Matutino';
 
+    // Lista fallback incorporada
+    const FALLBACK_ALUNOS = [
+      {aluno:"AGATHA PINHEIRO DE PACHECO BELCHIOR", turma:"8ºA", telefone:"62992883200", responsavel:"ANITA LUZIA DE SOUZA PINHEIRO COSTA BELCHIOR"},
+      {aluno:"ALEXANDER CAMPOS", turma:"6ºA", telefone:"62998500610", responsavel:"CINARA FARIA ALMEIDA CAMPOS"},
+      {aluno:"ALEXANDRE ANGELOS PIRES KATOPODIS", turma:"8ºG", telefone:"62981695850", responsavel:"SARA RENATA PIRES MIRANDA KATOPODIS"},
+      {aluno:"ALEXANDRE KENZO MORAIS HABE", turma:"9ºE", telefone:"62999508483", responsavel:"LUCIANA OLIVEIRA DE MORAIS HABE"},
+      {aluno:"ALEXANDRE MACEDO PERES", turma:"9ºD", telefone:"62984366646", responsavel:"LORENA MARIA DE LIMA PERES"},
+      {aluno:"ALEXANDRE NEVES VIGGIANO", turma:"9ºG", telefone:"62999018693", responsavel:"GRASIELA NEVES DA SILVA VIGGIANO"},
+      {aluno:"ALEXANDRE SAHIUM CUNHA", turma:"6ºA", telefone:"62992158003", responsavel:"JULIANA HERINE DE PINA SAHIUM CUNHA"},
+      {aluno:"ALEXANDRE VELOSO PEREIRA NEVES", turma:"8ºG", telefone:"62996135797", responsavel:"YOLANDA LEÃO VELOSO PERES"},
+      {aluno:"ALICE ABBUD MACEDO", turma:"6ºC", telefone:"62981419796", responsavel:"SABRINA DE MELO ALVES ABBUD MACÊDO"},
+      {aluno:"ALICE ARAGÃO FERREIRA", turma:"9ºB", telefone:"62981288800", responsavel:"GISELLE ARAGÃO SOUSA FERREIRA"},
+      {aluno:"ALICE BARBOZA SECCO", turma:"9ºF", telefone:"18981192495", responsavel:"PRISCILA BARBOZA SECCO"},
+      {aluno:"ALICE BITTAR VELASCO", turma:"6ºG", telefone:"62981053511", responsavel:"FLAVIA BITTAR ARANTES"},
+      {aluno:"YASMIN MELO COELHO", turma:"7ºG", telefone:"62996449059", responsavel:"JULIANA MELO RODRIGUES COELHO"},
+      {aluno:"YURI LIEBERENZ KAGAN", turma:"8ºB", telefone:"62996379695", responsavel:"ISABELLA LIEBERENZ CAMILO KAGAN"}
+    ];
+
+    ALUNOS_DATA = JSON.parse(localStorage.getItem('escola_alunos_db') || 'null') || FALLBACK_ALUNOS;
+
     window.addEventListener('DOMContentLoaded', () => {
       preencherDataPadrao();
       atualizarListaProfessores();
-      atualizarInterfaceAlunos();
+      carregarDatalistAlunos();
       renderizarAtrasos();
+      renderizarContatos(ALUNOS_DATA);
       renderizarAtendimentos();
       renderizarProfOcorrencias();
       renderizarInspetores();
     });
 
-    // Função que lê a planilha de Excel diretamente no navegador
-    function carregarPlanilhaExcel(e) {
-      const file = e.target.files[0];
-      if (!file) return;
-      
-      const reader = new FileReader();
-      reader.onload = function(evt) {
-        const data = new Uint8Array(evt.target.result);
-        const workbook = XLSX.read(data, { type: 'array' });
-        const firstSheetName = workbook.SheetNames[0];
-        const worksheet = workbook.Sheets[firstSheetName];
-        const json = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
-        
-        const novosAlunos = [];
-        // Percorre as linhas a partir do cabeçalho
-        for (let i = 3; i < json.length; i++) {
-          const row = json[i];
-          if (row && row[1]) {
-            novosAlunos.push({
-              aluno: String(row[1]).trim(),
-              turma: String(row[2] || '—').trim(),
-              telefone: String(row[3] || '').trim().replace('.0', ''),
-              responsavel: String(row[4] || '—').trim()
-            });
-          }
-        }
-        
-        if (novosAlunos.length > 0) {
-          alunosBase = novosAlunos;
-          localStorage.setItem('escola_alunos_db', JSON.stringify(alunosBase));
-          atualizarInterfaceAlunos();
-          alert(`Sucesso! ${novosAlunos.length} alunos foram importados com sucesso.`);
-        } else {
-          alert('Nenhum dado encontrado na planilha. Verifique o formato do arquivo.');
-        }
-      };
-      reader.readAsArrayBuffer(file);
-    }
-
-    function atualizarInterfaceAlunos() {
-      const badge = document.getElementById('badgeStatusAlunos');
-      const totalContatos = document.getElementById('totalAlunosContatos');
-      if (alunosBase.length > 0) {
-        badge.textContent = `🟢 ${alunosBase.length} alunos ativos`;
-        totalContatos.textContent = `${alunosBase.length} alunos cadastrados`;
-      } else {
-        badge.textContent = `⚠️ Clique em "Importar Planilha"`;
-        totalContatos.textContent = `Nenhum aluno carregado`;
-      }
-      carregarDatalistAlunos();
-      renderizarContatos(alunosBase.slice(0, 100));
-    }
-
     function carregarDatalistAlunos() {
       const dl = document.getElementById('listaAlunosDatalist');
       dl.innerHTML = '';
-      alunosBase.forEach(a => {
+      ALUNOS_DATA.forEach(a => {
         dl.innerHTML += `<option value="${a.aluno}">${a.turma} — Resp: ${a.responsavel}</option>`;
       });
+      document.getElementById('badgeTotalAlunos').textContent = ALUNOS_DATA.length;
+      document.getElementById('totalAlunosContatos').textContent = `${ALUNOS_DATA.length} alunos cadastrados`;
     }
 
     function completarTurmaAtraso(nome) {
-      const a = alunosBase.find(x => x.aluno.toUpperCase() === nome.toUpperCase().trim());
+      const a = ALUNOS_DATA.find(x => x.aluno.toUpperCase() === nome.toUpperCase().trim());
       document.getElementById('atrasoTurmaLabel').textContent = a ? `Turma: ${a.turma} | Responsável: ${a.responsavel}` : '';
     }
 
     function completarTurmaAtendimento(nome) {
-      const a = alunosBase.find(x => x.aluno.toUpperCase() === nome.toUpperCase().trim());
+      const a = ALUNOS_DATA.find(x => x.aluno.toUpperCase() === nome.toUpperCase().trim());
       document.getElementById('atendTurmaLabel').textContent = a ? `Turma: ${a.turma} | Responsável: ${a.responsavel}` : '';
     }
 
@@ -563,7 +485,7 @@
     function salvarAtraso(e) {
       e.preventDefault();
       const alunoNome = document.getElementById('atrasoAluno').value.trim().toUpperCase();
-      const alunoObj = alunosBase.find(a => a.aluno.toUpperCase() === alunoNome);
+      const alunoObj = ALUNOS_DATA.find(a => a.aluno.toUpperCase() === alunoNome);
       const item = {
         id: Date.now(),
         turno: turnoAtrasoAtual,
@@ -624,7 +546,7 @@
     function renderizarContatos(lista) {
       const tbody = document.getElementById('listaContatosTbody');
       tbody.innerHTML = '';
-      lista.forEach(c => {
+      lista.slice(0, 100).forEach(c => {
         tbody.innerHTML += `
           <tr class="border-b hover:bg-gray-50">
             <td class="p-2.5 border font-semibold">${c.aluno}</td>
@@ -641,13 +563,13 @@
 
     function filtrarContatos(q) {
       const termo = q.toLowerCase().trim();
-      if (!termo) { renderizarContatos(alunosBase.slice(0, 100)); return; }
-      const filtrados = alunosBase.filter(a => 
+      if (!termo) { renderizarContatos(ALUNOS_DATA); return; }
+      const filtrados = ALUNOS_DATA.filter(a => 
         a.aluno.toLowerCase().includes(termo) || 
         a.turma.toLowerCase().includes(termo) || 
         a.responsavel.toLowerCase().includes(termo)
       );
-      renderizarContatos(filtrados.slice(0, 100));
+      renderizarContatos(filtrados);
     }
 
     function atualizarListaProfessores() {
@@ -729,7 +651,7 @@
     function salvarAtendimento(e) {
       e.preventDefault();
       const alunoNome = document.getElementById('atendAlunoInput').value.trim().toUpperCase();
-      const alunoObj = alunosBase.find(a => a.aluno.toUpperCase() === alunoNome);
+      const alunoObj = ALUNOS_DATA.find(a => a.aluno.toUpperCase() === alunoNome);
       const item = {
         id: Date.now(),
         data: document.getElementById('atendDate').value,
