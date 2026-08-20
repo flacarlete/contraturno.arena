@@ -16,7 +16,7 @@
   <div id="sistema-principal" class="flex flex-col flex-1 min-h-screen">
     <header class="bg-[#1b4332] text-white px-6 py-3.5 shadow flex justify-between items-center">
       <h1 class="text-lg font-bold">📋 Controle de Gestão e Contraturno</h1>
-      <span id="usuarioLogadoNome" class="text-xs bg-emerald-900 px-3 py-1 rounded">Coordenação</span>
+      <span class="text-xs bg-emerald-900 px-3 py-1 rounded">Coordenação</span>
     </header>
 
     <nav class="bg-white border-b border-gray-200 px-6 flex flex-wrap gap-2 text-sm font-medium text-gray-600">
@@ -34,7 +34,13 @@
       <section id="aba-atrasos" class="aba-conteudo" style="display: block;">
         <div class="bg-white rounded-lg shadow border p-6">
           <h2 class="text-base font-bold text-[#1b4332] mb-4">⏰ Registro de Atrasos</h2>
-          <p class="text-xs text-gray-600">Painel de controle de horários e reincidências.</p>
+          <div class="space-y-4">
+            <div>
+              <label class="block text-xs font-medium text-gray-700 mb-1">Nome do Aluno</label>
+              <input type="text" placeholder="Digite o nome do aluno..." class="w-full border rounded px-3 py-2 text-sm" />
+            </div>
+            <button class="bg-[#1b4332] text-white px-4 py-2 rounded text-xs font-semibold">Registrar Atraso</button>
+          </div>
         </div>
       </section>
 
@@ -42,7 +48,7 @@
       <section id="aba-sala-estudos" class="aba-conteudo">
         <div class="bg-white rounded-lg shadow border p-6">
           <h2 class="text-base font-bold text-[#1b4332] mb-4">📚 Sala de Estudos e Biblioteca</h2>
-          <p class="text-xs text-gray-600">Acompanhamento do ambiente e Padrão Ouro.</p>
+          <p class="text-xs text-gray-600">Controle de ambiente, silêncio e Padrão Ouro.</p>
         </div>
       </section>
 
@@ -50,7 +56,7 @@
       <section id="aba-professores" class="aba-conteudo">
         <div class="bg-white rounded-lg shadow border p-6">
           <h2 class="text-base font-bold text-[#1b4332] mb-4">👨‍🏫 Ocorrências com Professores</h2>
-          <p class="text-xs text-gray-600">Controle de chamadas e pontualidade docente.</p>
+          <button onclick="window.print()" class="bg-[#1b4332] text-white px-4 py-2 rounded text-xs font-semibold mb-4">🖨️ Imprimir Relatório</button>
         </div>
       </section>
 
@@ -93,8 +99,8 @@
       document.querySelectorAll('.aba-conteudo').forEach(el => el.style.display = 'none');
       document.querySelectorAll('.aba-btn').forEach(btn => btn.classList.remove('active'));
       
-      const abaAlvo = document.getElementById('aba- ' + abaId) || document.getElementById('aba-' + abaId);
-      const btnAlvo = document.getElementById('btn-aba-' + abaId) || document.getElementById('btn-' + abaId);
+      const abaAlvo = document.getElementById('aba-' + abaId);
+      const btnAlvo = document.getElementById('btn-aba-' + abaId);
       
       if (abaAlvo) abaAlvo.style.display = 'block';
       if (btnAlvo) btnAlvo.classList.add('active');
