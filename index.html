@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <title>Arena Contraturno</title>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Arena Contraturno - Sistema</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     .aba-conteudo { display: none; }
@@ -11,11 +11,24 @@
 </head>
 <body class="bg-gray-100 min-h-screen">
 
-  <div id="sistema-principal">
-    <header class="bg-[#1b4332] text-white p-4"><h1>Arena Contraturno</h1></header>
+  <!-- TELA DE LOGIN -->
+  <div id="tela-login" class="fixed inset-0 bg-[#1b4332] z-50 flex items-center justify-center p-4">
+    <div class="bg-white p-8 rounded-lg shadow-xl w-full max-w-sm">
+      <h2 class="text-xl font-bold mb-6 text-center text-gray-800">Login Arena</h2>
+      <select id="loginPerfil" class="w-full border p-2 mb-4 rounded text-sm"><option value="coordenacao">Coordenação</option><option value="assistente">Assistente</option><option value="inspetor">Inspetor</option></select>
+      <input type="password" id="senhaInput" placeholder="Senha" class="w-full border p-2 mb-4 rounded text-sm" />
+      <button onclick="fazerLogin()" class="w-full bg-[#1b4332] text-white py-2 rounded font-bold hover:bg-emerald-900">Entrar</button>
+    </div>
+  </div>
+
+  <!-- SISTEMA -->
+  <div id="sistema-principal" class="hidden">
+    <header class="bg-[#1b4332] text-white p-4 flex justify-between items-center">
+      <h1 class="font-bold">Arena Contraturno</h1>
+      <button onclick="fazerLogout()" class="text-xs bg-red-700 px-3 py-1 rounded">Sair</button>
+    </header>
     
-    <!-- Navegação -->
-    <nav class="bg-white border-b p-2 flex gap-4 overflow-x-auto">
+    <nav class="bg-white border-b p-2 flex gap-2 overflow-x-auto">
       <button onclick="mudarAba('atrasos')" class="aba-btn active" id="btn-atrasos">Atrasos</button>
       <button onclick="mudarAba('sala-estudos')" class="aba-btn" id="btn-sala-estudos">Sala de Estudos</button>
       <button onclick="mudarAba('professores')" class="aba-btn" id="btn-professores">Professores</button>
@@ -26,30 +39,28 @@
     </nav>
 
     <div class="p-6">
-      <!-- ABA ATRASOS -->
       <section id="aba-atrasos" class="aba-conteudo" style="display:block;">
-        <h2 class="text-xl font-bold mb-4">Registro de Atrasos</h2>
+        <h2 class="text-lg font-bold mb-4">Registro de Atrasos</h2>
         <div class="bg-white p-6 rounded shadow">
-            <!-- Coloque aqui os seus inputs de atraso -->
-            <input list="listaAlunos" placeholder="Buscar aluno..." class="border p-2 w-full mb-4">
+            <input id="buscaAluno" placeholder="Digite o nome do aluno..." class="border p-2 w-full mb-4 rounded">
+            <div id="resultadoBusca" class="text-sm"></div>
         </div>
       </section>
-
-      <!-- ABA GERENCIADOR -->
-      <section id="aba-gerenciador" class="aba-conteudo">
-        <h2 class="text-xl font-bold mb-4">Gerenciador de Acessos</h2>
-        <div class="bg-white p-6 rounded shadow">
-            <p>Configurações de usuários aqui.</p>
-        </div>
-      </section>
-      
-      <!-- Adicione as outras seções (sala-estudos, professores, etc) aqui seguindo o mesmo padrão -->
+      <section id="aba-sala-estudos" class="aba-conteudo"><h2 class="text-lg font-bold">Sala de Estudos</h2></section>
+      <section id="aba-professores" class="aba-conteudo"><h2 class="text-lg font-bold">Professores</h2></section>
+      <section id="aba-inspetores" class="aba-conteudo"><h2 class="text-lg font-bold">Inspetores</h2></section>
+      <section id="aba-atendimentos" class="aba-conteudo"><h2 class="text-lg font-bold">Atendimentos</h2></section>
+      <section id="aba-contatos" class="aba-conteudo"><h2 class="text-lg font-bold">Contatos</h2></section>
+      <section id="aba-gerenciador" class="aba-conteudo"><h2 class="text-lg font-bold">Gerenciador</h2></section>
     </div>
   </div>
 
-  <datalist id="listaAlunos"></datalist>
-
   <script>
+    function fazerLogin() {
+      document.getElementById('tela-login').classList.add('hidden');
+      document.getElementById('sistema-principal').classList.remove('hidden');
+    }
+    function fazerLogout() { location.reload(); }
     function mudarAba(abaId) {
       document.querySelectorAll('.aba-conteudo').forEach(el => el.style.display = 'none');
       document.querySelectorAll('.aba-btn').forEach(btn => btn.classList.remove('active'));
