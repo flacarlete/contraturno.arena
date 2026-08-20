@@ -726,6 +726,10 @@
       const btn = document.getElementById('btn-aba-' + abaId);
       if (aba) aba.style.display = 'block';
       if (btn) btn.classList.add('active');
+      
+      if (abaId === 'professores') {
+        atualizarListaProfessores();
+      }
     }
 
     function completarInfoAluno(nome, labelId) {
