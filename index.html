@@ -16,403 +16,476 @@
 </head>
 <body class="bg-gray-100 text-gray-800 font-sans min-h-screen flex flex-col">
 
-  <!-- Cabeçalho Principal -->
-  <header class="bg-[#1b4332] text-white px-6 py-4 shadow flex flex-col md:flex-row justify-between items-start md:items-center no-print">
-    <div>
-      <h1 class="text-xl font-bold flex items-center gap-2">
-        <span>📋</span> Controle de Gestão e Contraturno
-      </h1>
-      <p id="currentDateDisplay" class="text-xs text-emerald-200 mt-1"></p>
-    </div>
-    <div class="mt-2 md:mt-0 text-xs bg-emerald-900/80 px-3 py-1.5 rounded text-emerald-100 font-medium">
-      🟢 <span id="badgeTotalAlunos">1.160</span> alunos ativos
-    </div>
-  </header>
-
-  <!-- Navegação de Todas as Abas -->
-  <nav class="bg-white border-b border-gray-200 px-6 flex flex-wrap gap-2 text-sm font-medium text-gray-600 no-print">
-    <button onclick="mudarAba('atrasos')" id="btn-aba-atrasos" class="aba-btn py-3 px-4 border-b-2 border-[#1b4332] text-[#1b4332] font-bold flex items-center gap-2">⏰ Atrasos</button>
-    <button onclick="mudarAba('sala-estudos')" id="btn-aba-sala-estudos" class="aba-btn py-3 px-4 border-b-2 border-transparent text-gray-600 hover:text-[#1b4332] flex items-center gap-2">📚 Sala de Estudos & Biblioteca</button>
-    <button onclick="mudarAba('professores')" id="btn-aba-professores" class="aba-btn py-3 px-4 border-b-2 border-transparent text-gray-600 hover:text-[#1b4332] flex items-center gap-2">👨‍🏫 Professores</button>
-    <button onclick="mudarAba('inspetores')" id="btn-aba-inspetores" class="aba-btn py-3 px-4 border-b-2 border-transparent text-gray-600 hover:text-[#1b4332] flex items-center gap-2">📋 Inspetores / Orientadores</button>
-    <button onclick="mudarAba('atendimentos')" id="btn-aba-atendimentos" class="aba-btn py-3 px-4 border-b-2 border-transparent text-gray-600 hover:text-[#1b4332] flex items-center gap-2">📑 Atendimentos</button>
-    <button onclick="mudarAba('contatos')" id="btn-aba-contatos" class="aba-btn py-3 px-4 border-b-2 border-transparent text-gray-600 hover:text-[#1b4332] flex items-center gap-2">📞 Contatos Rápidos</button>
-  </nav>
-
-  <main class="p-6 max-w-6xl w-full mx-auto flex-1">
-
-    <!-- ABA 1: ATRASOS -->
-    <section id="aba-atrasos" class="aba-conteudo" style="display: block;">
-      <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
-        <div class="flex gap-4 border-b border-gray-200 pb-3 mb-4">
-          <button onclick="setAtrasoTurno('Matutino')" id="btn-turno-mat" class="px-4 py-1.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800">Período Matutino</button>
-          <button onclick="setAtrasoTurno('Vespertino')" id="btn-turno-vesp" class="px-4 py-1.5 rounded-full text-xs font-semibold bg-gray-100 text-gray-600">Período Vespertino</button>
-        </div>
-
-        <div class="bg-[#1b4332] text-white p-3 rounded-t-md font-semibold text-sm flex items-center gap-2">
-          ⏰ Registrar Atrasos — <span id="labelTurno">Matutino</span>
-        </div>
-
-        <form id="formAtraso" onsubmit="salvarAtraso(event)" class="border border-gray-200 border-t-0 p-4 rounded-b-md bg-gray-50/50 space-y-4">
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div>
-              <label class="block text-xs font-medium text-gray-700 mb-1">Espaço / Aula</label>
-              <select id="atrasoEspaco" class="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-[#1b4332]" required>
-                <option value="">Selecione...</option>
-                <option value="Nivelamentos">Nivelamentos</option>
-                <option value="Sala de estudos">Sala de estudos</option>
-                <option value="Biblioteca">Biblioteca</option>
-                <option value="Modalidades diversas">Modalidades diversas</option>
-                <option value="AEE">AEE</option>
-              </select>
-            </div>
-            <div>
-              <label class="block text-xs font-medium text-gray-700 mb-1">Horário de Chegada</label>
-              <input type="time" id="atrasoHora" class="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-[#1b4332]" required />
-            </div>
-            <div>
-              <label class="block text-xs font-medium text-gray-700 mb-1">Data</label>
-              <input type="date" id="atrasoData" class="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-[#1b4332]" required />
-            </div>
-          </div>
-
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label class="block text-xs font-medium text-gray-700 mb-1">Nome do Aluno (Sugestões automáticas)</label>
-              <input list="listaAlunosDatalist" id="atrasoAluno" oninput="completarInfoAluno(this.value, 'atrasoTurmaLabel')" autocomplete="off" placeholder="Digite o nome do aluno..." class="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm font-medium focus:outline-none focus:border-[#1b4332]" required />
-              <p id="atrasoTurmaLabel" class="text-xs text-emerald-800 font-bold mt-1.5"></p>
-            </div>
-            <div>
-              <label class="block text-xs font-medium text-gray-700 mb-1">Justificativa</label>
-              <input type="text" id="atrasoJustificativa" placeholder="Motivo do atraso..." class="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-[#1b4332]" />
-            </div>
-          </div>
-
-          <div class="flex justify-end">
-            <button type="submit" class="bg-[#1b4332] text-white px-5 py-2 rounded text-sm font-medium hover:bg-emerald-900 flex items-center gap-1.5">
-              ✓ Registrar atraso
-            </button>
-          </div>
-        </form>
+  <!-- ==================== TELA DE LOGIN ==================== -->
+  <div id="tela-login" class="fixed inset-0 bg-[#1b4332] z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl shadow-2xl p-8 max-w-md w-full border border-emerald-900/20">
+      <div class="text-center mb-6">
+        <div class="inline-flex p-3 bg-emerald-100 text-[#1b4332] rounded-full mb-3 text-2xl">📋</div>
+        <h1 class="text-xl font-bold text-gray-800">Arena Contraturno</h1>
+        <p class="text-xs text-gray-500 mt-1">Ensino Fundamental - Sistema Integrado</p>
       </div>
 
-      <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <h3 class="font-bold text-gray-700 text-sm mb-3">Histórico de Atrasos & Alertas</h3>
-        <div id="alertasContainer" class="mb-4 space-y-2"></div>
-        <div class="overflow-x-auto">
+      <form id="formLogin" onsubmit="fazerLogin(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs font-semibold text-gray-700 mb-1">Perfil de Acesso</label>
+          <select id="loginPerfil" class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-[#1b4332]" required>
+            <option value="coordenacao">Coordenação</option>
+            <option value="assistente">Assistente de Coordenação</option>
+            <option value="inspetor">Inspetor / Orientador</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-gray-700 mb-1">Usuário</label>
+          <input type="text" id="loginUsuario" placeholder="Digite seu usuário..." class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-[#1b4332]" required />
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-gray-700 mb-1">Senha</label>
+          <input type="password" id="loginSenha" placeholder="Digite sua senha..." class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-[#1b4332]" required />
+        </div>
+
+        <button type="submit" class="w-full bg-[#1b4332] text-white py-2.5 rounded text-sm font-semibold hover:bg-emerald-900 transition flex items-center justify-center gap-2">
+          <span>Entrar no Sistema</span> →
+        </button>
+      </form>
+
+      <!-- Acesso Rápido -->
+      <div class="mt-6 pt-4 border-t text-center text-[11px] text-gray-500">
+        <p class="font-semibold mb-2 text-gray-600">Acesso Rápido (clique para preencher):</p>
+        <div class="flex flex-wrap justify-center gap-1.5">
+          <button type="button" onclick="preencherLogin('coordenacao', 'coordenacao', 'arena123')" class="px-2.5 py-1 bg-gray-100 hover:bg-emerald-50 rounded text-gray-700 border font-medium">Coordenação</button>
+          <button type="button" onclick="preencherLogin('assistente', 'assistente', 'arena123')" class="px-2.5 py-1 bg-gray-100 hover:bg-emerald-50 rounded text-gray-700 border font-medium">Assistente</button>
+          <button type="button" onclick="preencherLogin('inspetor', 'inspetor', 'arena123')" class="px-2.5 py-1 bg-gray-100 hover:bg-emerald-50 rounded text-gray-700 border font-medium">Inspetor</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== SISTEMA PRINCIPAL ==================== -->
+  <div id="sistema-principal" class="hidden flex flex-col flex-1 min-h-screen">
+    
+    <!-- Cabeçalho Principal -->
+    <header class="bg-[#1b4332] text-white px-6 py-3.5 shadow flex flex-col md:flex-row justify-between items-start md:items-center no-print gap-3">
+      <div>
+        <h1 class="text-lg font-bold flex items-center gap-2">
+          <span>📋</span> Controle de Gestão e Contraturno
+        </h1>
+        <p id="currentDateDisplay" class="text-xs text-emerald-200 mt-0.5"></p>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <div class="text-right">
+          <p id="usuarioLogadoNome" class="text-xs font-bold text-white"></p>
+          <p id="usuarioLogadoCargo" class="text-[11px] text-emerald-200"></p>
+        </div>
+        <button onclick="fazerLogout()" class="bg-red-800 hover:bg-red-700 text-white px-3 py-1.5 rounded text-xs font-semibold flex items-center gap-1">
+          Sair ⎋
+        </button>
+      </div>
+    </header>
+
+    <!-- Navegação de Abas -->
+    <nav class="bg-white border-b border-gray-200 px-6 flex flex-wrap gap-2 text-sm font-medium text-gray-600 no-print">
+      <button onclick="mudarAba('atrasos')" id="btn-aba-atrasos" class="aba-btn py-3 px-4 border-b-2 border-[#1b4332] text-[#1b4332] font-bold flex items-center gap-2">⏰ Atrasos</button>
+      <button onclick="mudarAba('sala-estudos')" id="btn-aba-sala-estudos" class="aba-btn py-3 px-4 border-b-2 border-transparent text-gray-600 hover:text-[#1b4332] flex items-center gap-2">📚 Sala de Estudos & Biblioteca</button>
+      <button onclick="mudarAba('professores')" id="btn-aba-professores" class="aba-btn py-3 px-4 border-b-2 border-transparent text-gray-600 hover:text-[#1b4332] flex items-center gap-2">👨‍🏫 Professores</button>
+      <button onclick="mudarAba('inspetores')" id="btn-aba-inspetores" class="aba-btn py-3 px-4 border-b-2 border-transparent text-gray-600 hover:text-[#1b4332] flex items-center gap-2">📋 Inspetores / Orientadores</button>
+      <button onclick="mudarAba('atendimentos')" id="btn-aba-atendimentos" class="aba-btn py-3 px-4 border-b-2 border-transparent text-gray-600 hover:text-[#1b4332] flex items-center gap-2">📑 Atendimentos</button>
+      <button onclick="mudarAba('contatos')" id="btn-aba-contatos" class="aba-btn py-3 px-4 border-b-2 border-transparent text-gray-600 hover:text-[#1b4332] flex items-center gap-2">📞 Contatos Rápidos</button>
+    </nav>
+
+    <main class="p-6 max-w-6xl w-full mx-auto flex-1">
+
+      <!-- ==================== ABA 1: ATRASOS ==================== -->
+      <section id="aba-atrasos" class="aba-conteudo" style="display: block;">
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+          <div class="flex gap-4 border-b border-gray-200 pb-3 mb-4">
+            <button onclick="setAtrasoTurno('Matutino')" id="btn-turno-mat" class="px-4 py-1.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800">Período Matutino</button>
+            <button onclick="setAtrasoTurno('Vespertino')" id="btn-turno-vesp" class="px-4 py-1.5 rounded-full text-xs font-semibold bg-gray-100 text-gray-600">Período Vespertino</button>
+          </div>
+
+          <div class="bg-[#1b4332] text-white p-3 rounded-t-md font-semibold text-sm flex items-center gap-2">
+            ⏰ Registrar Atrasos — <span id="labelTurno">Matutino</span>
+          </div>
+
+          <form id="formAtraso" onsubmit="salvarAtraso(event)" class="border border-gray-200 border-t-0 p-4 rounded-b-md bg-gray-50/50 space-y-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <label class="block text-xs font-medium text-gray-700 mb-1">Espaço / Aula</label>
+                <select id="atrasoEspaco" class="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-[#1b4332]" required>
+                  <option value="">Selecione...</option>
+                  <option value="Nivelamentos">Nivelamentos</option>
+                  <option value="Sala de estudos">Sala de estudos</option>
+                  <option value="Biblioteca">Biblioteca</option>
+                  <option value="Modalidades diversas">Modalidades diversas</option>
+                  <option value="AEE">AEE</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-xs font-medium text-gray-700 mb-1">Horário de Chegada</label>
+                <input type="time" id="atrasoHora" class="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-[#1b4332]" required />
+              </div>
+              <div>
+                <label class="block text-xs font-medium text-gray-700 mb-1">Data</label>
+                <input type="date" id="atrasoData" class="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-[#1b4332]" required />
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-medium text-gray-700 mb-1">Nome do Aluno (Busca Rápida Inteligente)</label>
+                <input list="listaAlunosDatalist" id="atrasoAluno" oninput="completarInfoAluno(this.value, 'atrasoTurmaLabel')" autocomplete="off" placeholder="Digite o nome do aluno..." class="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm font-medium focus:outline-none focus:border-[#1b4332]" required />
+                <p id="atrasoTurmaLabel" class="text-xs text-emerald-800 font-bold mt-1.5"></p>
+              </div>
+              <div>
+                <label class="block text-xs font-medium text-gray-700 mb-1">Justificativa</label>
+                <input type="text" id="atrasoJustificativa" placeholder="Motivo do atraso..." class="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-[#1b4332]" />
+              </div>
+            </div>
+
+            <div class="flex justify-end">
+              <button type="submit" class="bg-[#1b4332] text-white px-5 py-2 rounded text-sm font-medium hover:bg-emerald-900 flex items-center gap-1.5">
+                ✓ Registrar atraso
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+          <h3 class="font-bold text-gray-700 text-sm mb-3">Histórico de Atrasos & Alertas</h3>
+          <div id="alertasContainer" class="mb-4 space-y-2"></div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs border border-gray-200">
+              <thead class="bg-gray-100 font-semibold text-gray-700">
+                <tr>
+                  <th class="p-2 border">Data/Hora</th>
+                  <th class="p-2 border">Turno</th>
+                  <th class="p-2 border">Aluno</th>
+                  <th class="p-2 border">Turma</th>
+                  <th class="p-2 border">Espaço</th>
+                  <th class="p-2 border">Justificativa</th>
+                  <th class="p-2 border text-center">Ocorrências</th>
+                </tr>
+              </thead>
+              <tbody id="listaAtrasosTbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================== ABA 2: SALA DE ESTUDOS ==================== -->
+      <section id="aba-sala-estudos" class="aba-conteudo" style="display: none;">
+        <div id="printableArea" class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+          <div class="flex justify-between items-center mb-4">
+            <h2 class="text-base font-bold text-[#1b4332]">Controle Diário — Sala de Estudos e Biblioteca</h2>
+            <button onclick="window.print()" class="bg-gray-800 text-white px-3 py-1.5 rounded text-xs hover:bg-black flex items-center gap-1.5 no-print">
+              🖨️ Imprimir Relatório Diário
+            </button>
+          </div>
+
+          <form id="formSalaEstudos" onsubmit="salvarSalaEstudos(event)" class="space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-medium text-gray-700 mb-1">Data</label>
+                <input type="date" id="seData" class="w-full border border-gray-300 rounded px-3 py-2 text-sm" required />
+              </div>
+              <div>
+                <label class="block text-xs font-medium text-gray-700 mb-1">Professor / Inspetor Responsável</label>
+                <input type="text" id="seProfessor" class="w-full border border-gray-300 rounded px-3 py-2 text-sm" placeholder="Nome do avaliador..." required />
+              </div>
+            </div>
+
+            <!-- Indicadores -->
+            <div class="space-y-3">
+              <h3 class="text-xs font-bold text-gray-700 uppercase tracking-wider mb-3 flex items-center gap-2">
+                <span class="bg-[#1b4332] text-white rounded-full w-5 h-5 flex items-center justify-center text-[10px]">1</span>
+                Controle de Ambiente e Ciclo de Foco
+              </h3>
+              <div class="flex flex-col md:flex-row justify-between md:items-center border-b pb-2 text-xs">
+                <div>
+                  <p class="font-bold">A) SILÊNCIO / RUÍDO PRODUTIVO</p>
+                  <p class="text-gray-500 text-[11px]">Sussurros / assuntos pertinentes</p>
+                </div>
+                <div class="flex gap-2 mt-2 md:mt-0">
+                  <label class="flex items-center gap-1"><input type="radio" name="ind_silencio" value="Excelente" checked /> Excelente</label>
+                  <label class="flex items-center gap-1"><input type="radio" name="ind_silencio" value="Regular" /> Regular</label>
+                  <label class="flex items-center gap-1"><input type="radio" name="ind_silencio" value="Crítico" /> Crítico</label>
+                </div>
+              </div>
+              <div class="flex flex-col md:flex-row justify-between md:items-center border-b pb-2 text-xs">
+                <div>
+                  <p class="font-bold">B) CICLO DE FOCO</p>
+                  <p class="text-gray-500 text-[11px]">Tempo de foco + tempo de descanso</p>
+                </div>
+                <div class="flex gap-2 mt-2 md:mt-0">
+                  <label class="flex items-center gap-1"><input type="radio" name="ind_foco" value="Excelente" checked /> Excelente</label>
+                  <label class="flex items-center gap-1"><input type="radio" name="ind_foco" value="Regular" /> Regular</label>
+                  <label class="flex items-center gap-1"><input type="radio" name="ind_foco" value="Crítico" /> Crítico</label>
+                </div>
+              </div>
+              <div class="flex flex-col md:flex-row justify-between md:items-center border-b pb-2 text-xs">
+                <div>
+                  <p class="font-bold">C) CELULAR</p>
+                  <p class="text-gray-500 text-[11px]">Devem estar guardados</p>
+                </div>
+                <div class="flex gap-2 mt-2 md:mt-0">
+                  <label class="flex items-center gap-1"><input type="radio" name="ind_celular" value="Excelente" checked /> Excelente</label>
+                  <label class="flex items-center gap-1"><input type="radio" name="ind_celular" value="Regular" /> Regular</label>
+                  <label class="flex items-center gap-1"><input type="radio" name="ind_celular" value="Crítico" /> Crítico</label>
+                </div>
+              </div>
+              <div class="flex flex-col md:flex-row justify-between md:items-center border-b pb-2 text-xs">
+                <div>
+                  <p class="font-bold">D) ORGANIZAÇÃO</p>
+                  <p class="text-gray-500 text-[11px]">Mesa limpa, somente material pertinente</p>
+                </div>
+                <div class="flex gap-2 mt-2 md:mt-0">
+                  <label class="flex items-center gap-1"><input type="radio" name="ind_org" value="Excelente" checked /> Excelente</label>
+                  <label class="flex items-center gap-1"><input type="radio" name="ind_org" value="Regular" /> Regular</label>
+                  <label class="flex items-center gap-1"><input type="radio" name="ind_org" value="Crítico" /> Crítico</label>
+                </div>
+              </div>
+            </div>
+
+            <!-- Padrão Ouro -->
+            <div>
+              <h3 class="text-xs font-bold text-gray-700 uppercase tracking-wider mb-2 flex items-center gap-2">
+                <span class="bg-[#1b4332] text-white rounded-full w-5 h-5 flex items-center justify-center text-[10px]">2</span>
+                Check-list "Padrão Ouro"
+              </h3>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs">
+                <label class="flex items-start gap-2"><input type="checkbox" id="chkApostila" class="mt-0.5" /><span><strong>APOSTILA VIVA</strong> — Grifos e anotações</span></label>
+                <label class="flex items-start gap-2"><input type="checkbox" id="chkRespostas" class="mt-0.5" /><span><strong>RESPOSTAS COMPLETAS</strong> — Fundamentadas</span></label>
+                <label class="flex items-start gap-2"><input type="checkbox" id="chkErro" class="mt-0.5" /><span><strong>JUSTIFICATIVA DO ERRO</strong> — Correção</span></label>
+                <label class="flex items-start gap-2"><input type="checkbox" id="chkAtivo" class="mt-0.5" /><span><strong>ESTUDO ATIVO</strong> — Autoexplicação</span></label>
+              </div>
+            </div>
+
+            <!-- Ocorrência com Busca Inteligente -->
+            <div>
+              <h3 class="text-xs font-bold text-gray-700 uppercase tracking-wider mb-2 flex items-center gap-2">
+                <span class="bg-[#1b4332] text-white rounded-full w-5 h-5 flex items-center justify-center text-[10px]">3</span>
+                Ocorrência de Aluno & Feedback para Coordenação
+              </h3>
+              <div class="mb-3">
+                <label class="block text-xs font-medium text-gray-700 mb-1">Aluno Específico (Opcional - Busca Rápida)</label>
+                <input list="listaAlunosDatalist" id="seAlunoInput" oninput="completarInfoAluno(this.value, 'seTurmaLabel')" placeholder="Digite o nome do aluno da ocorrência..." class="w-full border border-gray-300 rounded px-3 py-2 text-xs focus:outline-none focus:border-[#1b4332]" />
+                <p id="seTurmaLabel" class="text-xs text-emerald-800 font-bold mt-1"></p>
+              </div>
+              <textarea id="seOcorrencia" rows="3" placeholder="Descreva os tópicos ou acontecimentos observados..." class="w-full border border-gray-300 rounded p-3 text-xs focus:outline-none focus:border-[#1b4332]"></textarea>
+            </div>
+
+            <div class="flex justify-end gap-3 no-print">
+              <button type="submit" class="bg-[#1b4332] text-white px-5 py-2 rounded text-sm font-medium hover:bg-emerald-900">
+                💾 Salvar Relatório
+              </button>
+            </div>
+          </form>
+        </div>
+      </section>
+
+      <!-- ==================== ABA 3: PROFESSORES ==================== -->
+      <section id="aba-professores" class="aba-conteudo" style="display: none;">
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+          <h2 class="text-base font-bold text-[#1b4332] mb-4">Registro de Ocorrências com Professores</h2>
+          <form id="formProfessores" onsubmit="salvarOcorrenciaProfessor(event)" class="space-y-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <label class="block text-xs font-medium text-gray-700 mb-1">Segmento / Turno</label>
+                <select id="profSegmento" onchange="atualizarListaProfessores()" class="w-full border border-gray-300 rounded px-3 py-2 text-sm" required>
+                  <option value="6ano">6º Ano Matutino</option>
+                  <option value="7ano">7º Ano Matutino</option>
+                  <option value="8ano">8º Ano Matutino</option>
+                  <option value="9ano">9º Ano Matutino</option>
+                  <option value="vespertino">Vespertino / Oficinas / Esportes</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-xs font-medium text-gray-700 mb-1">Professor & Disciplina</label>
+                <select id="profNome" class="w-full border border-gray-300 rounded px-3 py-2 text-sm" required></select>
+              </div>
+              <div>
+                <label class="block text-xs font-medium text-gray-700 mb-1">Data</label>
+                <input type="date" id="profData" class="w-full border border-gray-300 rounded px-3 py-2 text-sm" required />
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2 border-t text-xs">
+              <div class="flex items-center gap-2">
+                <input type="checkbox" id="profChamada" />
+                <label class="font-medium text-gray-700">Não fez chamada</label>
+              </div>
+              <div>
+                <label class="flex items-center gap-2 font-medium mb-1">
+                  <input type="checkbox" id="profAtrasoInicio" onchange="document.getElementById('profMinutosInicio').disabled = !this.checked" />
+                  Não entrou no horário
+                </label>
+                <input type="number" id="profMinutosInicio" placeholder="Minutos de atraso" disabled class="w-full border border-gray-300 rounded px-2 py-1 text-xs" />
+              </div>
+              <div>
+                <label class="flex items-center gap-2 font-medium mb-1">
+                  <input type="checkbox" id="profAtrasoInterv" onchange="document.getElementById('profMinutosInterv').disabled = !this.checked" />
+                  Atraso após o intervalo
+                </label>
+                <input type="number" id="profMinutosInterv" placeholder="Minutos de atraso" disabled class="w-full border border-gray-300 rounded px-2 py-1 text-xs" />
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-xs font-medium text-gray-700 mb-1">Observações Adicionais</label>
+              <input type="text" id="profObs" placeholder="Ex: Substituição necessária, turma aguardando..." class="w-full border border-gray-300 rounded px-3 py-2 text-sm" />
+            </div>
+
+            <div class="flex justify-end">
+              <button type="submit" class="bg-[#1b4332] text-white px-5 py-2 rounded text-sm font-medium hover:bg-emerald-900">
+                Registrar Ocorrência
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+          <h3 class="font-bold text-gray-700 text-sm mb-3">Histórico de Ocorrências Docentes</h3>
           <table class="w-full text-left text-xs border border-gray-200">
             <thead class="bg-gray-100 font-semibold text-gray-700">
               <tr>
-                <th class="p-2 border">Data/Hora</th>
-                <th class="p-2 border">Turno</th>
-                <th class="p-2 border">Aluno</th>
-                <th class="p-2 border">Turma</th>
-                <th class="p-2 border">Espaço</th>
-                <th class="p-2 border">Justificativa</th>
-                <th class="p-2 border text-center">Ocorrências</th>
+                <th class="p-2 border">Data</th>
+                <th class="p-2 border">Professor / Matéria</th>
+                <th class="p-2 border">Chamada Pendente</th>
+                <th class="p-2 border">Atraso Entrada</th>
+                <th class="p-2 border">Atraso Intervalo</th>
+                <th class="p-2 border">Observações</th>
               </tr>
             </thead>
-            <tbody id="listaAtrasosTbody"></tbody>
+            <tbody id="listaProfessoresTbody"></tbody>
           </table>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <!-- ABA 2: SALA DE ESTUDOS -->
-    <section id="aba-sala-estudos" class="aba-conteudo" style="display: none;">
-      <div id="printableArea" class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
-        <div class="flex justify-between items-center mb-4">
-          <h2 class="text-base font-bold text-[#1b4332]">Controle Diário — Sala de Estudos e Biblioteca</h2>
-          <button onclick="window.print()" class="bg-gray-800 text-white px-3 py-1.5 rounded text-xs hover:bg-black flex items-center gap-1.5 no-print">
-            🖨️ Imprimir Relatório Diário
-          </button>
+      <!-- ==================== ABA 4: INSPETORES ==================== -->
+      <section id="aba-inspetores" class="aba-conteudo" style="display: none;">
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+          <h2 class="text-base font-bold text-[#1b4332] mb-4">Registro de Orientações — Inspetores</h2>
+          <form id="formInspetores" onsubmit="salvarInspetor(event)" class="space-y-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <label class="block text-xs font-medium text-gray-700 mb-1">Orientador / Inspetor</label>
+                <input type="text" id="inspNome" class="w-full border border-gray-300 rounded px-3 py-2 text-sm" placeholder="Nome do colaborador..." required />
+              </div>
+              <div>
+                <label class="block text-xs font-medium text-gray-700 mb-1">Data</label>
+                <input type="date" id="inspData" class="w-full border border-gray-300 rounded px-3 py-2 text-sm" required />
+              </div>
+              <div>
+                <label class="block text-xs font-medium text-gray-700 mb-1">Horário</label>
+                <input type="time" id="inspHora" class="w-full border border-gray-300 rounded px-3 py-2 text-sm" required />
+              </div>
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-gray-700 mb-1">Problema / Situação Identificada</label>
+              <textarea id="inspProblema" rows="2" class="w-full border border-gray-300 rounded p-3 text-xs" required></textarea>
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-gray-700 mb-1">Feedback / Encaminhamento</label>
+              <textarea id="inspFeedback" rows="2" class="w-full border border-gray-300 rounded p-3 text-xs" required></textarea>
+            </div>
+            <div class="flex justify-end">
+              <button type="submit" class="bg-[#1b4332] text-white px-5 py-2 rounded text-sm font-medium hover:bg-emerald-900">Salvar Orientação</button>
+            </div>
+          </form>
         </div>
+        <div id="listaInspetoresCards" class="space-y-3"></div>
+      </section>
 
-        <form id="formSalaEstudos" onsubmit="salvarSalaEstudos(event)" class="space-y-6">
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label class="block text-xs font-medium text-gray-700 mb-1">Data</label>
-              <input type="date" id="seData" class="w-full border border-gray-300 rounded px-3 py-2 text-sm" required />
-            </div>
-            <div>
-              <label class="block text-xs font-medium text-gray-700 mb-1">Professor / Inspetor Responsável</label>
-              <input type="text" id="seProfessor" class="w-full border border-gray-300 rounded px-3 py-2 text-sm" placeholder="Nome do avaliador..." required />
-            </div>
-          </div>
-
-          <div class="space-y-3">
-            <h3 class="text-xs font-bold text-gray-700 uppercase tracking-wider mb-3 flex items-center gap-2">
-              <span class="bg-[#1b4332] text-white rounded-full w-5 h-5 flex items-center justify-center text-[10px]">1</span>
-              Controle de Ambiente e Ciclo de Foco
-            </h3>
-            <div class="flex flex-col md:flex-row justify-between md:items-center border-b pb-2 text-xs">
+      <!-- ==================== ABA 5: ATENDIMENTOS ==================== -->
+      <section id="aba-atendimentos" class="aba-conteudo" style="display: none;">
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+          <h2 class="text-base font-bold text-[#1b4332] mb-4">Registro de Atendimentos</h2>
+          <form id="formAtendimento" onsubmit="salvarAtendimento(event)" class="space-y-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <p class="font-bold">A) SILÊNCIO / RUÍDO PRODUTIVO</p>
-                <p class="text-gray-500 text-[11px]">Sussurros / assuntos pertinentes</p>
+                <label class="block text-xs font-medium text-gray-700 mb-1">Data</label>
+                <input type="date" id="atendDate" class="w-full border border-gray-300 rounded px-3 py-2 text-sm" required />
               </div>
-              <div class="flex gap-2 mt-2 md:mt-0">
-                <label class="flex items-center gap-1"><input type="radio" name="ind_silencio" value="Excelente" checked /> Excelente</label>
-                <label class="flex items-center gap-1"><input type="radio" name="ind_silencio" value="Regular" /> Regular</label>
-                <label class="flex items-center gap-1"><input type="radio" name="ind_silencio" value="Crítico" /> Crítico</label>
-              </div>
-            </div>
-            <div class="flex flex-col md:flex-row justify-between md:items-center border-b pb-2 text-xs">
               <div>
-                <p class="font-bold">B) CICLO DE FOCO</p>
-                <p class="text-gray-500 text-[11px]">Tempo de foco + tempo de descanso</p>
-              </div>
-              <div class="flex gap-2 mt-2 md:mt-0">
-                <label class="flex items-center gap-1"><input type="radio" name="ind_foco" value="Excelente" checked /> Excelente</label>
-                <label class="flex items-center gap-1"><input type="radio" name="ind_foco" value="Regular" /> Regular</label>
-                <label class="flex items-center gap-1"><input type="radio" name="ind_foco" value="Crítico" /> Crítico</label>
-              </div>
-            </div>
-            <div class="flex flex-col md:flex-row justify-between md:items-center border-b pb-2 text-xs">
-              <div>
-                <p class="font-bold">C) CELULAR</p>
-                <p class="text-gray-500 text-[11px]">Devem estar guardados</p>
-              </div>
-              <div class="flex gap-2 mt-2 md:mt-0">
-                <label class="flex items-center gap-1"><input type="radio" name="ind_celular" value="Excelente" checked /> Excelente</label>
-                <label class="flex items-center gap-1"><input type="radio" name="ind_celular" value="Regular" /> Regular</label>
-                <label class="flex items-center gap-1"><input type="radio" name="ind_celular" value="Crítico" /> Crítico</label>
+                <label class="block text-xs font-medium text-gray-700 mb-1">Tema</label>
+                <select id="atendTema" class="w-full border border-gray-300 rounded px-3 py-2 text-sm">
+                  <option value="Acadêmico">Acadêmico</option>
+                  <option value="Disciplinar">Disciplinar</option>
+                  <option value="Pedagógico / Família">Pedagógico / Família</option>
+                  <option value="Acolhimento">Acolhimento</option>
+                </select>
               </div>
             </div>
-            <div class="flex flex-col md:flex-row justify-between md:items-center border-b pb-2 text-xs">
-              <div>
-                <p class="font-bold">D) ORGANIZAÇÃO</p>
-                <p class="text-gray-500 text-[11px]">Mesa limpa, somente material pertinente</p>
-              </div>
-              <div class="flex gap-2 mt-2 md:mt-0">
-                <label class="flex items-center gap-1"><input type="radio" name="ind_org" value="Excelente" checked /> Excelente</label>
-                <label class="flex items-center gap-1"><input type="radio" name="ind_org" value="Regular" /> Regular</label>
-                <label class="flex items-center gap-1"><input type="radio" name="ind_org" value="Crítico" /> Crítico</label>
-              </div>
-            </div>
-          </div>
-
-          <div>
-            <h3 class="text-xs font-bold text-gray-700 uppercase tracking-wider mb-2 flex items-center gap-2">
-              <span class="bg-[#1b4332] text-white rounded-full w-5 h-5 flex items-center justify-center text-[10px]">2</span>
-              Check-list "Padrão Ouro"
-            </h3>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs">
-              <label class="flex items-start gap-2"><input type="checkbox" id="chkApostila" class="mt-0.5" /><span><strong>APOSTILA VIVA</strong> — Grifos e anotações</span></label>
-              <label class="flex items-start gap-2"><input type="checkbox" id="chkRespostas" class="mt-0.5" /><span><strong>RESPOSTAS COMPLETAS</strong> — Fundamentadas</span></label>
-              <label class="flex items-start gap-2"><input type="checkbox" id="chkErro" class="mt-0.5" /><span><strong>JUSTIFICATIVA DO ERRO</strong> — Correção</span></label>
-              <label class="flex items-start gap-2"><input type="checkbox" id="chkAtivo" class="mt-0.5" /><span><strong>ESTUDO ATIVO</strong> — Autoexplicação</span></label>
-            </div>
-          </div>
-
-          <div>
-            <h3 class="text-xs font-bold text-gray-700 uppercase tracking-wider mb-2 flex items-center gap-2">
-              <span class="bg-[#1b4332] text-white rounded-full w-5 h-5 flex items-center justify-center text-[10px]">3</span>
-              Ocorrência e Feedback para a Coordenação
-            </h3>
-            <textarea id="seOcorrencia" rows="3" placeholder="Cite aqui qualquer situação ou ocorrência com os alunos..." class="w-full border border-gray-300 rounded p-3 text-xs focus:outline-none focus:border-[#1b4332]"></textarea>
-          </div>
-
-          <div class="flex justify-end gap-3 no-print">
-            <button type="submit" class="bg-[#1b4332] text-white px-5 py-2 rounded text-sm font-medium hover:bg-emerald-900">
-              💾 Salvar Relatório
-            </button>
-          </div>
-        </form>
-      </div>
-    </section>
-
-    <!-- ABA 3: PROFESSORES -->
-    <section id="aba-professores" class="aba-conteudo" style="display: none;">
-      <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
-        <h2 class="text-base font-bold text-[#1b4332] mb-4">Registro de Ocorrências com Professores</h2>
-        <form id="formProfessores" onsubmit="salvarOcorrenciaProfessor(event)" class="space-y-4">
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
-              <label class="block text-xs font-medium text-gray-700 mb-1">Segmento / Turno</label>
-              <select id="profSegmento" onchange="atualizarListaProfessores()" class="w-full border border-gray-300 rounded px-3 py-2 text-sm" required>
-                <option value="6ano">6º Ano Matutino</option>
-                <option value="7ano">7º Ano Matutino</option>
-                <option value="8ano">8º Ano Matutino</option>
-                <option value="9ano">9º Ano Matutino</option>
-                <option value="vespertino">Vespertino / Oficinas / Esportes</option>
-              </select>
+              <label class="block text-xs font-medium text-gray-700 mb-1">Aluno (Busca Rápida Inteligente)</label>
+              <input list="listaAlunosDatalist" id="atendAlunoInput" oninput="completarInfoAluno(this.value, 'atendTurmaLabel')" autocomplete="off" placeholder="Digite o nome do aluno..." class="w-full border border-gray-300 rounded px-3 py-2 text-sm font-medium focus:outline-none focus:border-[#1b4332]" required />
+              <p id="atendTurmaLabel" class="text-xs text-emerald-800 font-bold mt-1.5"></p>
             </div>
             <div>
-              <label class="block text-xs font-medium text-gray-700 mb-1">Professor & Disciplina</label>
-              <select id="profNome" class="w-full border border-gray-300 rounded px-3 py-2 text-sm" required></select>
+              <label class="block text-xs font-medium text-gray-700 mb-1">Relato / Observações</label>
+              <textarea id="atendRelato" rows="4" class="w-full border border-gray-300 rounded p-3 text-xs" required></textarea>
             </div>
-            <div>
-              <label class="block text-xs font-medium text-gray-700 mb-1">Data</label>
-              <input type="date" id="profData" class="w-full border border-gray-300 rounded px-3 py-2 text-sm" required />
+            <div class="flex justify-end">
+              <button type="submit" class="bg-[#1b4332] text-white px-5 py-2 rounded text-sm font-medium hover:bg-emerald-900">Salvar Atendimento</button>
             </div>
-          </div>
-
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2 border-t text-xs">
-            <div class="flex items-center gap-2">
-              <input type="checkbox" id="profChamada" />
-              <label class="font-medium text-gray-700">Não fez chamada</label>
-            </div>
-            <div>
-              <label class="flex items-center gap-2 font-medium mb-1">
-                <input type="checkbox" id="profAtrasoInicio" onchange="document.getElementById('profMinutosInicio').disabled = !this.checked" />
-                Não entrou no horário
-              </label>
-              <input type="number" id="profMinutosInicio" placeholder="Minutos de atraso" disabled class="w-full border border-gray-300 rounded px-2 py-1 text-xs" />
-            </div>
-            <div>
-              <label class="flex items-center gap-2 font-medium mb-1">
-                <input type="checkbox" id="profAtrasoInterv" onchange="document.getElementById('profMinutosInterv').disabled = !this.checked" />
-                Atraso após o intervalo
-              </label>
-              <input type="number" id="profMinutosInterv" placeholder="Minutos de atraso" disabled class="w-full border border-gray-300 rounded px-2 py-1 text-xs" />
-            </div>
-          </div>
-
-          <div>
-            <label class="block text-xs font-medium text-gray-700 mb-1">Observações Adicionais</label>
-            <input type="text" id="profObs" placeholder="Ex: Substituição necessária, turma aguardando..." class="w-full border border-gray-300 rounded px-3 py-2 text-sm" />
-          </div>
-
-          <div class="flex justify-end">
-            <button type="submit" class="bg-[#1b4332] text-white px-5 py-2 rounded text-sm font-medium hover:bg-emerald-900">
-              Registrar Ocorrência
-            </button>
-          </div>
-        </form>
-      </div>
-
-      <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <h3 class="font-bold text-gray-700 text-sm mb-3">Histórico de Ocorrências Docentes</h3>
-        <table class="w-full text-left text-xs border border-gray-200">
-          <thead class="bg-gray-100 font-semibold text-gray-700">
-            <tr>
-              <th class="p-2 border">Data</th>
-              <th class="p-2 border">Professor / Matéria</th>
-              <th class="p-2 border">Chamada Pendente</th>
-              <th class="p-2 border">Atraso Entrada</th>
-              <th class="p-2 border">Atraso Intervalo</th>
-              <th class="p-2 border">Observações</th>
-            </tr>
-          </thead>
-          <tbody id="listaProfessoresTbody"></tbody>
-        </table>
-      </div>
-    </section>
-
-    <!-- ABA 4: INSPETORES -->
-    <section id="aba-inspetores" class="aba-conteudo" style="display: none;">
-      <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
-        <h2 class="text-base font-bold text-[#1b4332] mb-4">Registro de Orientações — Inspetores</h2>
-        <form id="formInspetores" onsubmit="salvarInspetor(event)" class="space-y-4">
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div>
-              <label class="block text-xs font-medium text-gray-700 mb-1">Orientador / Inspetor</label>
-              <input type="text" id="inspNome" class="w-full border border-gray-300 rounded px-3 py-2 text-sm" placeholder="Nome do colaborador..." required />
-            </div>
-            <div>
-              <label class="block text-xs font-medium text-gray-700 mb-1">Data</label>
-              <input type="date" id="inspData" class="w-full border border-gray-300 rounded px-3 py-2 text-sm" required />
-            </div>
-            <div>
-              <label class="block text-xs font-medium text-gray-700 mb-1">Horário</label>
-              <input type="time" id="inspHora" class="w-full border border-gray-300 rounded px-3 py-2 text-sm" required />
-            </div>
-          </div>
-          <div>
-            <label class="block text-xs font-medium text-gray-700 mb-1">Problema / Situação Identificada</label>
-            <textarea id="inspProblema" rows="2" class="w-full border border-gray-300 rounded p-3 text-xs" required></textarea>
-          </div>
-          <div>
-            <label class="block text-xs font-medium text-gray-700 mb-1">Feedback / Encaminhamento</label>
-            <textarea id="inspFeedback" rows="2" class="w-full border border-gray-300 rounded p-3 text-xs" required></textarea>
-          </div>
-          <div class="flex justify-end">
-            <button type="submit" class="bg-[#1b4332] text-white px-5 py-2 rounded text-sm font-medium hover:bg-emerald-900">Salvar Orientação</button>
-          </div>
-        </form>
-      </div>
-      <div id="listaInspetoresCards" class="space-y-3"></div>
-    </section>
-
-    <!-- ABA 5: ATENDIMENTOS -->
-    <section id="aba-atendimentos" class="aba-conteudo" style="display: none;">
-      <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
-        <h2 class="text-base font-bold text-[#1b4332] mb-4">Registro de Atendimentos</h2>
-        <form id="formAtendimento" onsubmit="salvarAtendimento(event)" class="space-y-4">
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label class="block text-xs font-medium text-gray-700 mb-1">Data</label>
-              <input type="date" id="atendDate" class="w-full border border-gray-300 rounded px-3 py-2 text-sm" required />
-            </div>
-            <div>
-              <label class="block text-xs font-medium text-gray-700 mb-1">Tema</label>
-              <select id="atendTema" class="w-full border border-gray-300 rounded px-3 py-2 text-sm">
-                <option value="Acadêmico">Acadêmico</option>
-                <option value="Disciplinar">Disciplinar</option>
-                <option value="Pedagógico / Família">Pedagógico / Família</option>
-                <option value="Acolhimento">Acolhimento</option>
-              </select>
-            </div>
-          </div>
-          <div>
-            <label class="block text-xs font-medium text-gray-700 mb-1">Aluno (Sugestões automáticas)</label>
-            <input list="listaAlunosDatalist" id="atendAlunoInput" oninput="completarInfoAluno(this.value, 'atendTurmaLabel')" autocomplete="off" placeholder="Digite o nome do aluno..." class="w-full border border-gray-300 rounded px-3 py-2 text-sm font-medium focus:outline-none focus:border-[#1b4332]" required />
-            <p id="atendTurmaLabel" class="text-xs text-emerald-800 font-bold mt-1.5"></p>
-          </div>
-          <div>
-            <label class="block text-xs font-medium text-gray-700 mb-1">Relato / Observações</label>
-            <textarea id="atendRelato" rows="4" class="w-full border border-gray-300 rounded p-3 text-xs" required></textarea>
-          </div>
-          <div class="flex justify-end">
-            <button type="submit" class="bg-[#1b4332] text-white px-5 py-2 rounded text-sm font-medium hover:bg-emerald-900">Salvar Atendimento</button>
-          </div>
-        </form>
-      </div>
-      <div id="listaAtendimentosTbody" class="space-y-3"></div>
-    </section>
-
-    <!-- ABA 6: CONTATOS -->
-    <section id="aba-contatos" class="aba-conteudo" style="display: none;">
-      <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <div class="flex justify-between items-center mb-3">
-          <h2 class="text-base font-bold text-[#1b4332]">Busca Rápida de Responsáveis</h2>
-          <span class="text-xs font-semibold text-gray-500 bg-gray-100 px-3 py-1 rounded-full">1.160 alunos cadastrados</span>
+          </form>
         </div>
-        <input type="text" id="filtroContatos" oninput="filtrarContatos(this.value)" placeholder="Buscar por aluno, turma ou responsável..." class="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm mb-4 focus:outline-none focus:border-[#1b4332]" />
-        <div class="overflow-x-auto max-h-[550px]">
-          <table class="w-full text-left text-xs border border-gray-200">
-            <thead class="bg-gray-100 font-semibold text-gray-700 sticky top-0">
-              <tr>
-                <th class="p-2.5 border">Aluno</th>
-                <th class="p-2.5 border">Turma</th>
-                <th class="p-2.5 border">Responsável</th>
-                <th class="p-2.5 border">Telefone</th>
-                <th class="p-2.5 border text-center">WhatsApp</th>
-              </tr>
-            </thead>
-            <tbody id="listaContatosTbody"></tbody>
-          </table>
+        <div id="listaAtendimentosTbody" class="space-y-3"></div>
+      </section>
+
+      <!-- ==================== ABA 6: CONTATOS ==================== -->
+      <section id="aba-contatos" class="aba-conteudo" style="display: none;">
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+          <div class="flex justify-between items-center mb-3">
+            <h2 class="text-base font-bold text-[#1b4332]">Busca Rápida de Responsáveis</h2>
+            <span class="text-xs font-semibold text-gray-500 bg-gray-100 px-3 py-1 rounded-full">1.160 alunos cadastrados</span>
+          </div>
+          <input type="text" id="filtroContatos" oninput="filtrarContatos(this.value)" placeholder="Buscar por aluno, turma ou responsável..." class="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm mb-4 focus:outline-none focus:border-[#1b4332]" />
+          <div class="overflow-x-auto max-h-[550px]">
+            <table class="w-full text-left text-xs border border-gray-200">
+              <thead class="bg-gray-100 font-semibold text-gray-700 sticky top-0">
+                <tr>
+                  <th class="p-2.5 border">Aluno</th>
+                  <th class="p-2.5 border">Turma</th>
+                  <th class="p-2.5 border">Responsável</th>
+                  <th class="p-2.5 border">Telefone</th>
+                  <th class="p-2.5 border text-center">WhatsApp</th>
+                </tr>
+              </thead>
+              <tbody id="listaContatosTbody"></tbody>
+            </table>
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
 
-  </main>
+    </main>
+  </div>
 
-  <!-- LISTA DE AUTOCOMPLETE DO NAVEGADOR -->
+  <!-- LISTA NATIVA DO NAVEGADOR COM TODOS OS 1.160 ALUNOS -->
   <datalist id="listaAlunosDatalist"></datalist>
 
   <script>
+    // PERFIS DE USUÁRIO E ACESSOS
+    const USUARIOS_SISTEMA = [
+      { usuario: "coordenacao", senha: "123", nome: "Coordenação Pedagógica", perfil: "coordenacao", abasPermitidas: ["atrasos", "sala-estudos", "professores", "inspetores", "atendimentos", "contatos"] },
+      { usuario: "assistente", senha: "123", nome: "Assistente de Coordenação", perfil: "assistente", abasPermitidas: ["atrasos", "sala-estudos", "professores", "atendimentos", "contatos"] },
+      { usuario: "inspetor", senha: "123", nome: "Equipe de Inspetoria / Orientação", perfil: "inspetor", abasPermitidas: ["atrasos", "sala-estudos", "inspetores"] }
+    ];
+
     const PROFESSORES_DATA = {
-      "6ano": ["João Leonardo (MAT1)", "Renato Neto (MAT2)", "Stênio (MAT3)", "Grazielly (GRA)", "Elaine (LIT)", "Pauliany (TEXTO)", "Kaila (RED)", "Alexandre (HISTÓRIA)", "Emilly (GEOGRAFIA)", "Danielle (CIÊNCIAS)", "Ângela (ARTE)", "Élbio (INGLÊS 1)", "Thalita (INGLÊS 2)", "Sebastião (ED. FÍSICA)", "Marlon (SOCIOEMOCIONAL)"],
-      "7ano": ["Fernanda (MAT1)", "Fernando (MAT2)", "Bruno (MAT3)", "Tomás (GRA)", "Cecília (LIT)", "Luana (TEXTO)", "Lorena (RED)", "Letícia (HISTÓRIA)", "Wilker (GEOGRAFIA)", "Paula (CIÊNCIAS)", "Ângela (ARTE)", "Lucas (INGLÊS)", "Thalita (INGLÊS 2)", "Gustavo Coutinho (ED. FÍSICA)", "Marlon (SOCIOEMOCIONAL)"],
-      "8ano": ["Kairo (MAT1)", "Pedrinho (MAT2)", "Bruno (MAT3)", "Maria José (GRA)", "Leandro (LIT)", "Sarah (TEXTO)", "Mariany (RED)", "Daiany (HISTÓRIA)", "Marco Túlio (GEOGRAFIA 1)", "Rodrigo (GEOGRAFIA 2)", "Alexandre (QUÍMICA)", "César Augusto (FÍSICA)", "Renato Feijão (BIOLOGIA 1)", "Diogo (BIOLOGIA 2)", "Karlla (ARTE)", "Wilker (INGLÊS 1)", "Gunther (INGLÊS 2)", "Gabriel (SOCIOEMOCIONAL)"],
-      "9ano": ["Ceagá (MAT1)", "Hugo (MAT2)", "Rodolfo (MAT3)", "Cléssia (GRA)", "Sarah (LIT)", "Jade (TEXTO)", "Fred (RED)", "João Patrício (HISTÓRIA 1)", "Elby (HISTÓRIA 2)", "Marco Túlio (GEOGRAFIA)", "Gustavo Batista (QUÍMICA)", "César Augusto (FÍSICA)", "Diogo (BIOLOGIA)", "Karlla (ARTE)", "Cláudia (INGLÊS)", "Gunther (INGLÊS 2)", "Gabriel (SOCIOEMOCIONAL)"],
-      "vespertino": ["João Leonardo + Fernando (MAT)", "Cléssia (LP)", "Carolina Ferraz Bucar Paredes (INGLÊS)", "Caroline Baylão Silva Araújo Gedda (CAMBRIDGE)", "Amanda Bueno Godinho Pancieri (BEO)", "Lajla Katherine Rocha Simião (MONITORIA REDAÇÃO)", "Gustavo Coutinho (ED. FÍSICA)", "Marcelo (VÔLEI)", "Fellipe Gustavo (JUDÔ)", "Dênis (FUTSAL)", "Ananda (DANÇAS)", "Fhellipe Augusto (XADREZ)", "Renato (HANDEBOL)", "Nívea (MEDITAÇÃO)", "Nayara (FUNCIONAL)", "Rodolfo (ED. FINANCEIRA)", "Robótica", "André Arantes (TEATRO/PINTURA)", "André Mols (SONANTE)", "Marco Túlio (EAGLE+BEO)"]
+      "6ano": ["João Leonardo (MAT1)", "Renato Neto (MAT2)", "Stênio (MAT3)", "Grazielly (GRA)", "Elaine (LIT)", "Pauliany (TEXTO)", "Kaila (RED)", "Alexandre (HISTÓRIA)", "Emilly (GEOGRAFIA)", "Danielle (CIÊNCIAS)", "Ângela (ARTE)", "Élbio (INGLÊS 1)", "Thalita (INGLÊS 2)", "Sebastião (ED. FÍSICA)", "Marlon (SOCIOEMOCIONAL)"][cite: 1],
+      "7ano": ["Fernanda (MAT1)", "Fernando (MAT2)", "Bruno (MAT3)", "Tomás (GRA)", "Cecília (LIT)", "Luana (TEXTO)", "Lorena (RED)", "Letícia (HISTÓRIA)", "Wilker (GEOGRAFIA)", "Paula (CIÊNCIAS)", "Ângela (ARTE)", "Lucas (INGLÊS)", "Thalita (INGLÊS 2)", "Gustavo Coutinho (ED. FÍSICA)", "Marlon (SOCIOEMOCIONAL)"][cite: 1],
+      "8ano": ["Kairo (MAT1)", "Pedrinho (MAT2)", "Bruno (MAT3)", "Maria José (GRA)", "Leandro (LIT)", "Sarah (TEXTO)", "Mariany (RED)", "Daiany (HISTÓRIA)", "Marco Túlio (GEOGRAFIA 1)", "Rodrigo (GEOGRAFIA 2)", "Alexandre (QUÍMICA)", "César Augusto (FÍSICA)", "Renato Feijão (BIOLOGIA 1)", "Diogo (BIOLOGIA 2)", "Karlla (ARTE)", "Wilker (INGLÊS 1)", "Gunther (INGLÊS 2)", "Gabriel (SOCIOEMOCIONAL)"][cite: 1],
+      "9ano": ["Ceagá (MAT1)", "Hugo (MAT2)", "Rodolfo (MAT3)", "Cléssia (GRA)", "Sarah (LIT)", "Jade (TEXTO)", "Fred (RED)", "João Patrício (HISTÓRIA 1)", "Elby (HISTÓRIA 2)", "Marco Túlio (GEOGRAFIA)", "Gustavo Batista (QUÍMICA)", "César Augusto (FÍSICA)", "Diogo (BIOLOGIA)", "Karlla (ARTE)", "Cláudia (INGLÊS)", "Gunther (INGLÊS 2)", "Gabriel (SOCIOEMOCIONAL)"][cite: 1],
+      "vespertino": ["João Leonardo + Fernando (MAT)", "Cléssia (LP)", "Carolina Ferraz Bucar Paredes (INGLÊS)", "Caroline Baylão Silva Araújo Gedda (CAMBRIDGE)", "Amanda Bueno Godinho Pancieri (BEO)", "Lajla Katherine Rocha Simião (MONITORIA REDAÇÃO)", "Gustavo Coutinho (ED. FÍSICA)", "Marcelo (VÔLEI)", "Fellipe Gustavo (JUDÔ)", "Dênis (FUTSAL)", "Ananda (DANÇAS)", "Fhellipe Augusto (XADREZ)", "Renato (HANDEBOL)", "Nívea (MEDITAÇÃO)", "Nayara (FUNCIONAL)", "Rodolfo (ED. FINANCEIRA)", "Robótica", "André Arantes (TEATRO/PINTURA)", "André Mols (SONANTE)", "Marco Túlio (EAGLE+BEO)"][cite: 1]
     };
 
     const MAPA_ALUNOS = {};
     let ALUNOS_DATA = [];
 
+    let usuarioLogadoAtual = null;
     let atrasosList = JSON.parse(localStorage.getItem('escola_atrasos') || '[]');
     let profOcorrenciasList = JSON.parse(localStorage.getItem('escola_prof_ocorrencias') || '[]');
     let inspetoresList = JSON.parse(localStorage.getItem('escola_inspetores') || '[]');
@@ -420,8 +493,51 @@
     let salaEstudosList = JSON.parse(localStorage.getItem('escola_sala_estudos') || '[]');
     let turnoAtrasoAtual = 'Matutino';
 
-    // Inicialização segura
     window.addEventListener('DOMContentLoaded', () => {
+      const salvo = localStorage.getItem('usuario_logado_arena');
+      if (salvo) {
+        usuarioLogadoAtual = JSON.parse(salvo);
+        exibirSistemaPrincipal();
+      }
+    });
+
+    function preencherLogin(perfil, usuario, senha) {
+      document.getElementById('loginPerfil').value = perfil;
+      document.getElementById('loginUsuario').value = usuario;
+      document.getElementById('loginSenha').value = senha;
+    }
+
+    function fazerLogin(e) {
+      e.preventDefault();
+      const perfil = document.getElementById('loginPerfil').value;
+      const usuario = document.getElementById('loginUsuario').value.trim();
+      const senha = document.getElementById('loginSenha').value;
+
+      const user = USUARIOS_SISTEMA.find(u => u.perfil === perfil && (u.usuario === usuario || usuario.length > 0) && (u.senha === senha || senha === 'arena123' || senha === '123'));
+
+      if (user) {
+        usuarioLogadoAtual = user;
+        localStorage.setItem('usuario_logado_arena', JSON.stringify(user));
+        exibirSistemaPrincipal();
+      } else {
+        alert('Credenciais incorretas.');
+      }
+    }
+
+    function fazerLogout() {
+      localStorage.removeItem('usuario_logado_arena');
+      usuarioLogadoAtual = null;
+      document.getElementById('sistema-principal').classList.add('hidden');
+      document.getElementById('tela-login').classList.remove('hidden');
+    }
+
+    function exibirSistemaPrincipal() {
+      document.getElementById('tela-login').classList.add('hidden');
+      document.getElementById('sistema-principal').classList.remove('hidden');
+
+      document.getElementById('usuarioLogadoNome').textContent = usuarioLogadoAtual.nome;
+      document.getElementById('usuarioLogadoCargo').textContent = 'Perfil: ' + usuarioLogadoAtual.perfil.toUpperCase();
+
       const hoje = new Date().toISOString().split('T')[0];
       const hora = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
       document.getElementById('atrasoData').value = hoje;
@@ -434,16 +550,29 @@
       document.getElementById('currentDateDisplay').textContent = new Date().toLocaleDateString('pt-BR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
 
       carregarBaseAlunos();
+
+      // Controle de visibilidade das abas pelo perfil
+      const todasAbas = ["atrasos", "sala-estudos", "professores", "inspetores", "atendimentos", "contatos"];
+      todasAbas.forEach(aba => {
+        const btn = document.getElementById('btn-aba-' + aba);
+        if (usuarioLogadoAtual.abasPermitidas.includes(aba)) {
+          btn.style.display = 'flex';
+        } else {
+          btn.style.display = 'none';
+        }
+      });
+
+      mudarAba(usuarioLogadoAtual.abasPermitidas[0]);
+
       atualizarListaProfessores();
       renderizarAtrasos();
       renderizarContatos();
       renderizarAtendimentos();
       renderizarProfOcorrencias();
       renderizarInspetores();
-    });
+    }
 
     function carregarBaseAlunos() {
-      // Carrega lista com os 1.160 alunos
       const nomes = [
         ["CARLOS EDUARDO ANDRADE BITTENCOURT", "8ºG", "62982131364", "VIVIENE ANDRADE VAZ"],
         ["EDUARDA MELO SOUSA", "8ºG", "62984173000", "ANDREZZA LOPES E SOUSA"],
@@ -569,7 +698,7 @@
       dl.innerHTML = html;
     }
 
-    // TROCA DE ABAS
+    // TROCA DE ABAS DIRETA
     function mudarAba(nomeAba) {
       document.querySelectorAll('.aba-conteudo').forEach(el => el.style.display = 'none');
       document.querySelectorAll('.aba-btn').forEach(btn => {
@@ -706,10 +835,14 @@
 
     function salvarSalaEstudos(e) {
       e.preventDefault();
+      const alunoNome = document.getElementById('seAlunoInput').value.trim().toUpperCase();
+      const info = MAPA_ALUNOS[alunoNome];
       const item = {
         id: Date.now(),
         data: document.getElementById('seData').value,
         professor: document.getElementById('seProfessor').value,
+        aluno: alunoNome || 'Geral / Coletivo',
+        turma: info ? info.turma : '—',
         silencio: document.querySelector('input[name="ind_silencio"]:checked').value,
         foco: document.querySelector('input[name="ind_foco"]:checked').value,
         celular: document.querySelector('input[name="ind_celular"]:checked').value,
