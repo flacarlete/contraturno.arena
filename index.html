@@ -10,9 +10,8 @@
     .aba-btn.active { border-bottom: 3px solid #1b4332; color: #1b4332; font-weight: 700; background-color: #f0fdf4; }
     @media print {
       body * { visibility: hidden; }
-      #printableProfArea, #printableProfArea *,
-      #printableArea, #printableArea * { visibility: visible; }
-      #printableProfArea, #printableArea { 
+      #printableProfArea, #printableProfArea * { visibility: visible; }
+      #printableProfArea { 
         position: absolute; left: 0; top: 0; width: 100%; background: white !important; padding: 0 !important; margin: 0 !important;
       }
       .no-print { display: none !important; }
@@ -276,13 +275,14 @@
       <section id="aba-professores" class="aba-conteudo">
         <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6 no-print">
           <div class="flex justify-between items-center mb-4">
-            <h2 class="text-base font-bold text-[#1b4332]">Ocorrências com Professores</h2>
+            <h2 id="profFormTitulo" class="text-base font-bold text-[#1b4332]">Ocorrências com Professores</h2>
             <button onclick="imprimirRelatorioProfessores()" class="bg-[#1b4332] text-white px-4 py-2 rounded text-xs font-semibold hover:bg-emerald-900 flex items-center gap-1.5 shadow">
               🖨️ Imprimir Relatório
             </button>
           </div>
 
           <form id="formProfessores" onsubmit="salvarOcorrenciaProfessor(event)" class="space-y-4">
+            <input type="hidden" id="profEditId" value="" />
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
                 <label class="block text-xs font-medium text-gray-700 mb-1">Segmento / Turno</label>
@@ -330,8 +330,9 @@
               <input type="text" id="profObs" placeholder="Ex: Substituição necessária, turma aguardando..." class="w-full border border-gray-300 rounded px-3 py-2 text-sm" />
             </div>
 
-            <div class="flex justify-end">
-              <button type="submit" class="bg-[#1b4332] text-white px-5 py-2 rounded text-sm font-medium hover:bg-emerald-900">
+            <div class="flex justify-end gap-2">
+              <button type="button" id="btnCancelaEditProf" onclick="cancelarEdicaoProfessor()" class="hidden bg-gray-500 text-white px-4 py-2 rounded text-xs font-medium">Cancelar</button>
+              <button type="submit" id="btnSalvaProf" class="bg-[#1b4332] text-white px-5 py-2 rounded text-sm font-medium hover:bg-emerald-900">
                 Registrar Ocorrência
               </button>
             </div>
@@ -358,6 +359,7 @@
                 <th class="p-2 border text-center">Atraso Entrada</th>
                 <th class="p-2 border text-center">Atraso Intervalo</th>
                 <th class="p-2 border">Observações</th>
+                <th class="p-2 border text-center no-print">Ações</th>
               </tr>
             </thead>
             <tbody id="listaProfessoresTbody"></tbody>
@@ -368,8 +370,9 @@
       <!-- ABA 4: INSPETORES -->
       <section id="aba-inspetores" class="aba-conteudo">
         <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
-          <h2 class="text-base font-bold text-[#1b4332] mb-4">Registro de Orientações — Inspetores</h2>
+          <h2 id="inspFormTitulo" class="text-base font-bold text-[#1b4332] mb-4">Registro de Orientações — Inspetores</h2>
           <form id="formInspetores" onsubmit="salvarInspetor(event)" class="space-y-4">
+            <input type="hidden" id="inspEditId" value="" />
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
                 <label class="block text-xs font-medium text-gray-700 mb-1">Orientador / Inspetor</label>
@@ -392,8 +395,9 @@
               <label class="block text-xs font-medium text-gray-700 mb-1">Feedback / Encaminhamento</label>
               <textarea id="inspFeedback" rows="2" class="w-full border rounded p-3 text-xs" required></textarea>
             </div>
-            <div class="flex justify-end">
-              <button type="submit" class="bg-[#1b4332] text-white px-5 py-2 rounded text-xs font-semibold">Salvar Orientação</button>
+            <div class="flex justify-end gap-2">
+              <button type="button" id="btnCancelaEditInsp" onclick="cancelarEdicaoInspetor()" class="hidden bg-gray-500 text-white px-4 py-2 rounded text-xs font-medium">Cancelar</button>
+              <button type="submit" id="btnSalvaInsp" class="bg-[#1b4332] text-white px-5 py-2 rounded text-xs font-semibold">Salvar Orientação</button>
             </div>
           </form>
         </div>
@@ -841,8 +845,9 @@
 
     function salvarOcorrenciaProfessor(e) {
       e.preventDefault();
+      const editId = document.getElementById('profEditId').value;
       const item = {
-        id: Date.now(),
+        id: editId ? Number(editId) : Date.now(),
         data: document.getElementById('profData').value,
         professor: document.getElementById('profNome').value,
         semChamada: document.getElementById('profChamada').checked,
@@ -850,9 +855,16 @@
         atrasoIntervalo: document.getElementById('profAtrasoInterv').checked ? document.getElementById('profMinutosInterv').value + ' min' : 'Não',
         obs: document.getElementById('profObs').value
       };
-      profOcorrenciasList.unshift(item);
+
+      if (editId) {
+        const index = profOcorrenciasList.findIndex(p => p.id === Number(editId));
+        if (index !== -1) profOcorrenciasList[index] = item;
+      } else {
+        profOcorrenciasList.unshift(item);
+      }
+
       localStorage.setItem('escola_prof_ocorrencias', JSON.stringify(profOcorrenciasList));
-      e.target.reset();
+      cancelarEdicaoProfessor();
       renderizarProfOcorrencias();
     }
 
@@ -869,9 +881,68 @@
             <td class="p-2.5 border text-center">${p.atrasoInicio !== 'Não' ? p.atrasoInicio : '—'}</td>
             <td class="p-2.5 border text-center">${p.atrasoIntervalo !== 'Não' ? p.atrasoIntervalo : '—'}</td>
             <td class="p-2.5 border">${p.obs || '—'}</td>
+            <td class="p-2.5 border text-center no-print">
+              <button onclick="editarOcorrenciaProfessor(${p.id})" class="text-blue-600 hover:text-blue-800 font-bold text-xs bg-blue-50 px-2 py-1 rounded border border-blue-200 mr-1">✏️ Editar</button>
+              <button onclick="excluirOcorrenciaProfessor(${p.id})" class="text-red-600 hover:text-red-800 font-bold text-xs bg-red-50 px-2 py-1 rounded border border-red-200">🗑️ Apagar</button>
+            </td>
           </tr>
         `;
       });
+    }
+
+    function editarOcorrenciaProfessor(id) {
+      const item = profOcorrenciasList.find(p => p.id === id);
+      if (!item) return;
+
+      document.getElementById('profEditId').value = item.id;
+      document.getElementById('profData').value = item.data;
+      document.getElementById('profObs').value = item.obs === '—' ? '' : item.obs;
+      document.getElementById('profChamada').checked = item.semChamada;
+      
+      if (item.atrasoInicio !== 'Não') {
+        document.getElementById('profAtrasoInicio').checked = true;
+        const min = item.atrasoInicio.replace(' min', '');
+        document.getElementById('profMinutosInicio').value = min;
+        document.getElementById('profMinutosInicio').disabled = false;
+      } else {
+        document.getElementById('profAtrasoInicio').checked = false;
+        document.getElementById('profMinutosInicio').value = '';
+        document.getElementById('profMinutosInicio').disabled = true;
+      }
+
+      if (item.atrasoIntervalo !== 'Não') {
+        document.getElementById('profAtrasoInterv').checked = true;
+        const min = item.atrasoIntervalo.replace(' min', '');
+        document.getElementById('profMinutosInterv').value = min;
+        document.getElementById('profMinutosInterv').disabled = false;
+      } else {
+        document.getElementById('profAtrasoInterv').checked = false;
+        document.getElementById('profMinutosInterv').value = '';
+        document.getElementById('profMinutosInterv').disabled = true;
+      }
+
+      document.getElementById('profFormTitulo').textContent = 'Editar Ocorrência com Professor';
+      document.getElementById('btnSalvaProf').textContent = 'Salvar Alterações';
+      document.getElementById('btnCancelaEditProf').classList.remove('hidden');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function cancelarEdicaoProfessor() {
+      document.getElementById('formProfessores').reset();
+      document.getElementById('profEditId').value = '';
+      document.getElementById('profFormTitulo').textContent = 'Ocorrências com Professores';
+      document.getElementById('btnSalvaProf').textContent = 'Registrar Ocorrência';
+      document.getElementById('btnCancelaEditProf').classList.add('hidden');
+      document.getElementById('profMinutosInicio').disabled = true;
+      document.getElementById('profMinutosInterv').disabled = true;
+    }
+
+    function excluirOcorrenciaProfessor(id) {
+      if (confirm('Tem certeza de que deseja apagar este registro?')) {
+        profOcorrenciasList = profOcorrenciasList.filter(p => p.id !== id);
+        localStorage.setItem('escola_prof_ocorrencias', JSON.stringify(profOcorrenciasList));
+        renderizarProfOcorrencias();
+      }
     }
 
     function imprimirRelatorioProfessores() {
@@ -881,17 +952,25 @@
 
     function salvarInspetor(e) {
       e.preventDefault();
+      const editId = document.getElementById('inspEditId').value;
       const item = {
-        id: Date.now(),
+        id: editId ? Number(editId) : Date.now(),
         data: document.getElementById('inspData').value,
         hora: document.getElementById('inspHora').value,
         nome: document.getElementById('inspNome').value,
         problema: document.getElementById('inspProblema').value,
         feedback: document.getElementById('inspFeedback').value
       };
-      inspetoresList.unshift(item);
+
+      if (editId) {
+        const index = inspetoresList.findIndex(i => i.id === Number(editId));
+        if (index !== -1) inspetoresList[index] = item;
+      } else {
+        inspetoresList.unshift(item);
+      }
+
       localStorage.setItem('escola_inspetores', JSON.stringify(inspetoresList));
-      e.target.reset();
+      cancelarEdicaoInspetor();
       renderizarInspetores();
     }
 
@@ -901,13 +980,52 @@
       c.innerHTML = '';
       inspetoresList.forEach(i => {
         c.innerHTML += `
-          <div class="border p-3.5 rounded bg-gray-50 text-xs mb-2">
-            <p class="font-bold">Orientador: ${i.nome} (${i.data} às ${i.hora})</p>
-            <p><strong>Situação:</strong> ${i.problema}</p>
-            <p><strong>Feedback:</strong> ${i.feedback}</p>
+          <div class="border p-3.5 rounded bg-gray-50 text-xs mb-2 flex justify-between items-start">
+            <div>
+              <p class="font-bold">Orientador: ${i.nome} (${i.data} às ${i.hora})</p>
+              <p><strong>Situação:</strong> ${i.problema}</p>
+              <p><strong>Feedback:</strong> ${i.feedback}</p>
+            </div>
+            <div class="flex gap-1">
+              <button onclick="editarInspetor(${i.id})" class="text-blue-600 font-bold text-xs bg-blue-50 px-2 py-1 rounded border border-blue-200">✏️ Editar</button>
+              <button onclick="excluirInspetor(${i.id})" class="text-red-600 font-bold text-xs bg-red-50 px-2 py-1 rounded border border-red-200">🗑️ Apagar</button>
+            </div>
           </div>
         `;
       });
+    }
+
+    function editarInspetor(id) {
+      const item = inspetoresList.find(i => i.id === id);
+      if (!item) return;
+
+      document.getElementById('inspEditId').value = item.id;
+      document.getElementById('inspNome').value = item.nome;
+      document.getElementById('inspData').value = item.data;
+      document.getElementById('inspHora').value = item.hora;
+      document.getElementById('inspProblema').value = item.problema;
+      document.getElementById('inspFeedback').value = item.feedback;
+
+      document.getElementById('inspFormTitulo').textContent = 'Editar Orientação de Inspetor';
+      document.getElementById('btnSalvaInsp').textContent = 'Salvar Alterações';
+      document.getElementById('btnCancelaEditInsp').classList.remove('hidden');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function cancelarEdicaoInspetor() {
+      document.getElementById('formInspetores').reset();
+      document.getElementById('inspEditId').value = '';
+      document.getElementById('inspFormTitulo').textContent = 'Registro de Orientações — Inspetores';
+      document.getElementById('btnSalvaInsp').textContent = 'Salvar Orientação';
+      document.getElementById('btnCancelaEditInsp').classList.add('hidden');
+    }
+
+    function excluirInspetor(id) {
+      if (confirm('Tem certeza de que deseja apagar esta orientação?')) {
+        inspetoresList = inspetoresList.filter(i => i.id !== id);
+        localStorage.setItem('escola_inspetores', JSON.stringify(inspetoresList));
+        renderizarInspetores();
+      }
     }
 
     function salvarAtendimento(e) {
