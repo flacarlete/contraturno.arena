@@ -3,250 +3,101 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Controle de Gestão Escolar & Contraturno</title>
+  <title>Controle de Gestão e Contraturno</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     .aba-conteudo { display: none; }
     .aba-btn.active { border-bottom: 3px solid #1b4332; color: #1b4332; font-weight: 700; background-color: #f0fdf4; }
-    @media print {
-      body * { visibility: hidden; }
-      #printableProfArea, #printableProfArea *,
-      #printableArea, #printableArea * { visibility: visible; }
-      #printableProfArea, #printableArea { 
-        position: absolute; left: 0; top: 0; width: 100%; background: white !important; padding: 0 !important; margin: 0 !important;
-      }
-      .no-print { display: none !important; }
-    }
   </style>
 </head>
 <body class="bg-gray-100 text-gray-800 font-sans min-h-screen flex flex-col">
 
-  <!-- ==================== TELA DE LOGIN ==================== -->
-  <div id="tela-login" class="fixed inset-0 bg-[#1b4332] z-50 flex items-center justify-center p-4">
-    <div class="bg-white rounded-xl shadow-2xl p-8 max-w-md w-full border border-emerald-900/20">
-      <div class="text-center mb-6">
-        <div class="inline-flex p-3 bg-emerald-100 text-[#1b4332] rounded-full mb-3 text-2xl">📋</div>
-        <h1 class="text-xl font-bold text-gray-800">Arena Contraturno</h1>
-        <p class="text-xs text-gray-500 mt-1">Ensino Fundamental - Sistema de Gestão</p>
-      </div>
-
-      <form id="formLogin" onsubmit="fazerLogin(event)" class="space-y-4">
-        <div>
-          <label class="block text-xs font-semibold text-gray-700 mb-1">Usuário</label>
-          <input type="text" id="loginUsuario" value="coordenacao" placeholder="Digite seu usuário..." class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-[#1b4332]" required />
-        </div>
-        <div>
-          <label class="block text-xs font-semibold text-gray-700 mb-1">Senha</label>
-          <input type="password" id="loginSenha" value="123" placeholder="Digite sua senha..." class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-[#1b4332]" required />
-        </div>
-        <button type="submit" class="w-full bg-[#1b4332] text-white py-2.5 rounded text-sm font-semibold hover:bg-emerald-900 transition flex items-center justify-center gap-2">
-          <span>Entrar no Sistema</span> →
-        </button>
-      </form>
-
-      <div class="mt-6 pt-4 border-t text-center text-[11px] text-gray-500">
-        <p class="font-semibold mb-2 text-gray-600">Acesso Inicial:</p>
-        <button type="button" onclick="entrarComoCoord()" class="px-3 py-1.5 bg-emerald-50 hover:bg-emerald-100 rounded text-[#1b4332] border border-emerald-300 font-semibold">
-          Entrar como Coordenação
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- ==================== SISTEMA PRINCIPAL ==================== -->
-  <div id="sistema-principal" class="hidden flex flex-col flex-1 min-h-screen">
-    
-    <header class="bg-[#1b4332] text-white px-6 py-3.5 shadow flex flex-col md:flex-row justify-between items-start md:items-center no-print gap-3">
-      <div>
-        <h1 class="text-lg font-bold flex items-center gap-2">
-          <span>📋</span> Controle de Gestão e Contraturno
-        </h1>
-        <p id="currentDateDisplay" class="text-xs text-emerald-200 mt-0.5"></p>
-      </div>
-
-      <div class="flex items-center gap-3">
-        <div class="text-right">
-          <p id="usuarioLogadoNome" class="text-xs font-bold text-white"></p>
-          <p id="usuarioLogadoCargo" class="text-[11px] text-emerald-200"></p>
-        </div>
-        <button onclick="fazerLogout()" class="bg-red-800 hover:bg-red-700 text-white px-3 py-1.5 rounded text-xs font-semibold">
-          Sair ⎋
-        </button>
-      </div>
+  <!-- SISTEMA PRINCIPAL -->
+  <div id="sistema-principal" class="flex flex-col flex-1 min-h-screen">
+    <header class="bg-[#1b4332] text-white px-6 py-3.5 shadow flex justify-between items-center">
+      <h1 class="text-lg font-bold">📋 Controle de Gestão e Contraturno</h1>
+      <span id="usuarioLogadoNome" class="text-xs bg-emerald-900 px-3 py-1 rounded">Coordenação</span>
     </header>
 
-    <nav class="bg-white border-b border-gray-200 px-6 flex flex-wrap gap-2 text-sm font-medium text-gray-600 no-print">
-      <button onclick="mudarAba('atrasos')" id="btn-aba-atrasos" class="aba-btn py-3 px-4 border-b-2 text-gray-600 flex items-center gap-2">⏰ Atrasos</button>
-      <button onclick="mudarAba('sala-estudos')" id="btn-aba-sala-estudos" class="aba-btn py-3 px-4 border-b-2 text-gray-600 flex items-center gap-2">📚 Sala de Estudos</button>
-      <button onclick="mudarAba('professores')" id="btn-aba-professores" class="aba-btn py-3 px-4 border-b-2 text-gray-600 flex items-center gap-2">👨‍🏫 Professores</button>
-      <button onclick="mudarAba('inspetores')" id="btn-aba-inspetores" class="aba-btn py-3 px-4 border-b-2 text-gray-600 flex items-center gap-2">📋 Inspetores</button>
-      <button onclick="mudarAba('atendimentos')" id="btn-aba-atendimentos" class="aba-btn py-3 px-4 border-b-2 text-gray-600 flex items-center gap-2">📑 Atendimentos</button>
-      <button onclick="mudarAba('contatos')" id="btn-aba-contatos" class="aba-btn py-3 px-4 border-b-2 text-gray-600 flex items-center gap-2">📞 Contatos</button>
-      <button onclick="mudarAba('gerenciador-acessos')" id="btn-aba-gerenciador-acessos" class="aba-btn py-3 px-4 border-b-2 text-gray-600 flex items-center gap-2 bg-emerald-50">🔐 Acessos</button>
+    <nav class="bg-white border-b border-gray-200 px-6 flex flex-wrap gap-2 text-sm font-medium text-gray-600">
+      <button onclick="mudarAba('atrasos')" id="btn-aba-atrasos" class="aba-btn py-3 px-4 border-b-2 active flex items-center gap-2">⏰ Atrasos</button>
+      <button onclick="mudarAba('sala-estudos')" id="btn-aba-sala-estudos" class="aba-btn py-3 px-4 border-b-2 flex items-center gap-2">📚 Sala de Estudos</button>
+      <button onclick="mudarAba('professores')" id="btn-aba-professores" class="aba-btn py-3 px-4 border-b-2 flex items-center gap-2">👨‍🏫 Professores</button>
+      <button onclick="mudarAba('inspetores')" id="btn-aba-inspetores" class="aba-btn py-3 px-4 border-b-2 flex items-center gap-2">📋 Inspetores</button>
+      <button onclick="mudarAba('atendimentos')" id="btn-aba-atendimentos" class="aba-btn py-3 px-4 border-b-2 flex items-center gap-2">📑 Atendimentos</button>
+      <button onclick="mudarAba('contatos')" id="btn-aba-contatos" class="aba-btn py-3 px-4 border-b-2 flex items-center gap-2">📞 Contatos</button>
+      <button onclick="mudarAba('gerenciador-acessos')" id="btn-aba-gerenciador-acessos" class="aba-btn py-3 px-4 border-b-2 flex items-center gap-2 bg-emerald-50">🔐 Acessos</button>
     </nav>
 
     <main class="p-6 max-w-6xl w-full mx-auto flex-1">
-
       <!-- ABA 1: ATRASOS -->
-      <section id="aba-atrasos" class="aba-conteudo">
-        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
-          <div class="bg-[#1b4332] text-white p-3 rounded-t-md font-semibold text-sm">⏰ Registrar Atrasos</div>
-          <form id="formAtraso" onsubmit="salvarAtraso(event)" class="border border-gray-200 border-t-0 p-4 rounded-b-md bg-gray-50 space-y-4">
-            <div>
-              <label class="block text-xs font-medium text-gray-700 mb-1">Nome do Aluno (Busca Rápida)</label>
-              <input list="listaAlunosDatalist" id="atrasoAluno" oninput="completarInfoAluno(this.value, 'atrasoTurmaLabel')" autocomplete="off" placeholder="Digite o nome do aluno..." class="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm" required />
-              <p id="atrasoTurmaLabel" class="text-xs text-emerald-800 font-bold mt-1.5"></p>
-            </div>
-            <div class="flex justify-end">
-              <button type="submit" class="bg-[#1b4332] text-white px-5 py-2 rounded text-sm font-semibold">Registrar Atraso</button>
-            </div>
-          </form>
-        </div>
-        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <h3 class="font-bold text-gray-700 text-sm mb-3">Histórico de Atrasos</h3>
-          <table class="w-full text-left text-xs border border-gray-200">
-            <thead class="bg-gray-100"><tr><th class="p-2 border">Aluno</th><th class="p-2 border">Turma</th></tr></thead>
-            <tbody id="listaAtrasosTbody"></tbody>
-          </table>
+      <section id="aba-atrasos" class="aba-conteudo" style="display: block;">
+        <div class="bg-white rounded-lg shadow border p-6">
+          <h2 class="text-base font-bold text-[#1b4332] mb-4">⏰ Registro de Atrasos</h2>
+          <p class="text-xs text-gray-600">Painel de controle de horários e reincidências.</p>
         </div>
       </section>
 
       <!-- ABA 2: SALA DE ESTUDOS -->
       <section id="aba-sala-estudos" class="aba-conteudo">
-        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <h2 class="text-base font-bold text-[#1b4332] mb-4">Controle Diário — Sala de Estudos e Biblioteca</h2>
-          <p class="text-xs text-gray-600">Ambiente de acompanhamento e foco dos alunos.</p>
+        <div class="bg-white rounded-lg shadow border p-6">
+          <h2 class="text-base font-bold text-[#1b4332] mb-4">📚 Sala de Estudos e Biblioteca</h2>
+          <p class="text-xs text-gray-600">Acompanhamento do ambiente e Padrão Ouro.</p>
         </div>
       </section>
 
       <!-- ABA 3: PROFESSORES -->
       <section id="aba-professores" class="aba-conteudo">
-        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
-          <div class="flex justify-between items-center mb-4">
-            <h2 class="text-base font-bold text-[#1b4332]">Ocorrências com Professores</h2>
-            <button onclick="window.print()" class="bg-[#1b4332] text-white px-4 py-2 rounded text-xs font-semibold">🖨️ Imprimir Relatório</button>
-          </div>
+        <div class="bg-white rounded-lg shadow border p-6">
+          <h2 class="text-base font-bold text-[#1b4332] mb-4">👨‍🏫 Ocorrências com Professores</h2>
+          <p class="text-xs text-gray-600">Controle de chamadas e pontualidade docente.</p>
         </div>
       </section>
 
       <!-- ABA 4: INSPETORES -->
       <section id="aba-inspetores" class="aba-conteudo">
-        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <h2 class="text-base font-bold text-[#1b4332] mb-4">Orientações — Inspetores</h2>
+        <div class="bg-white rounded-lg shadow border p-6">
+          <h2 class="text-base font-bold text-[#1b4332] mb-4">📋 Orientações e Inspetoria</h2>
+          <p class="text-xs text-gray-600">Registro de orientações da equipe de pátio.</p>
         </div>
       </section>
 
       <!-- ABA 5: ATENDIMENTOS -->
       <section id="aba-atendimentos" class="aba-conteudo">
-        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <h2 class="text-base font-bold text-[#1b4332] mb-4">Registro de Atendimentos</h2>
+        <div class="bg-white rounded-lg shadow border p-6">
+          <h2 class="text-base font-bold text-[#1b4332] mb-4">📑 Registro de Atendimentos</h2>
+          <p class="text-xs text-gray-600">Histórico de conversas com famílias e alunos.</p>
         </div>
       </section>
 
       <!-- ABA 6: CONTATOS -->
       <section id="aba-contatos" class="aba-conteudo">
-        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <h2 class="text-base font-bold text-[#1b4332] mb-4">Contatos Rápidos</h2>
+        <div class="bg-white rounded-lg shadow border p-6">
+          <h2 class="text-base font-bold text-[#1b4332] mb-4">📞 Busca Rápida de Responsáveis</h2>
+          <p class="text-xs text-gray-600">Diretório de contatos e WhatsApp dos responsáveis.</p>
         </div>
       </section>
 
       <!-- ABA 7: GERENCIADOR DE ACESSOS -->
       <section id="aba-gerenciador-acessos" class="aba-conteudo">
-        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <h2 class="text-base font-bold text-[#1b4332] mb-4">🔐 Gerenciador de Acessos</h2>
+        <div class="bg-white rounded-lg shadow border p-6">
+          <h2 class="text-base font-bold text-[#1b4332] mb-4">🔐 Gerenciador de Usuários & Acessos</h2>
+          <p class="text-xs text-gray-500">Área restrita da coordenação para liberação de perfis.</p>
         </div>
       </section>
-
     </main>
   </div>
 
-  <datalist id="listaAlunosDatalist"></datalist>
-
   <script>
-    const USUARIOS_PADRAO = [
-      { usuario: "coordenacao", senha: "123", nome: "Coordenação", perfil: "coordenacao", abas: ["atrasos", "sala-estudos", "professores", "inspetores", "atendimentos", "contatos", "gerenciador-acessos"] },
-      { usuario: "assistente", senha: "123", nome: "Assistente", perfil: "assistente", abas: ["atrasos", "sala-estudos", "professores", "atendimentos", "contatos"] },
-      { usuario: "inspetor", senha: "123", nome: "Inspetor", perfil: "inspetor", abas: ["sala-estudos"] }
-    ];
-
-    const MAPA_ALUNOS = {};
-    const ALUNOS_RAW = [
-      ["CARLOS EDUARDO ANDRADE BITTENCOURT", "8ºG", "62982131364", "VIVIENE ANDRADE VAZ"],
-      ["EDUARDA MELO SOUSA", "8ºG", "62984173000", "ANDREZZA LOPES E SOUSA"],
-      ["EDUARDO ANDRADE NOLASCO SILVA", "6ºH", "62999884257", "LARISSA ANDRADE NOLASCO"],
-      ["YURI LIEBERENZ KAGAN", "8ºB", "62996379695", "ISABELLA LIEBERENZ CAMILO KAGAN"]
-    ];
-
-    window.addEventListener('DOMContentLoaded', () => {
-      const salvo = localStorage.getItem('usuario_logado_arena_obj');
-      if (salvo) {
-        usuarioLogadoAtual = JSON.parse(salvo);
-        exibirSistemaPrincipal();
-      } else {
-        entrarComoCoord();
-      }
-    });
-
-    function entrarComoCoord() {
-      usuarioLogadoAtual = USUARIOS_PADRAO[0];
-      localStorage.setItem('usuario_logado_arena_obj', JSON.stringify(usuarioLogadoAtual));
-      exibirSistemaPrincipal();
-    }
-
-    function fazerLogin(e) {
-      e.preventDefault();
-      entrarComoCoord();
-    }
-
-    function fazerLogout() {
-      localStorage.removeItem('usuario_logado_arena_obj');
-      location.reload();
-    }
-
-    let usuarioLogadoAtual = null;
-
-    function exibirSistemaPrincipal() {
-      document.getElementById('tela-login').classList.add('hidden');
-      document.getElementById('sistema-principal').classList.remove('hidden');
-      document.getElementById('usuarioLogadoNome').textContent = usuarioLogadoAtual.nome;
-      document.getElementById('usuarioLogadoCargo').textContent = 'Perfil: ' + usuarioLogadoAtual.perfil.toUpperCase();
-
-      const dl = document.getElementById('listaAlunosDatalist');
-      let html = '';
-      ALUNOS_RAW.forEach(n => {
-        MAPA_ALUNOS[n[0].toUpperCase()] = { aluno: n[0], turma: n[1], telefone: n[2], responsavel: n[3] };
-        html += `<option value="${n[0]}">${n[1]} — Resp: ${n[3]}</option>`;
-      });
-      dl.innerHTML = html;
-
-      const todasAbas = ["atrasos", "sala-estudos", "professores", "inspetores", "atendimentos", "contatos", "gerenciador-acessos"];
-      todasAbas.forEach(aba => {
-        const btn = document.getElementById('btn-aba-' + aba);
-        if (btn) {
-          btn.style.display = usuarioLogadoAtual.abas.includes(aba) ? 'flex' : 'none';
-        }
-      });
-
-      mudarAba(usuarioLogadoAtual.abas[0]);
-    }
-
     function mudarAba(abaId) {
       document.querySelectorAll('.aba-conteudo').forEach(el => el.style.display = 'none');
       document.querySelectorAll('.aba-btn').forEach(btn => btn.classList.remove('active'));
-      const aba = document.getElementById('aba-' + abaId);
-      const btn = document.getElementById('btn-aba-' + abaId);
-      if (aba) aba.style.display = 'block';
-      if (btn) btn.classList.add('active');
-    }
-
-    function completarInfoAluno(nome, labelId) {
-      const info = MAPA_ALUNOS[nome.trim().toUpperCase()];
-      const label = document.getElementById(labelId);
-      if (info) {
-        label.textContent = `Turma: ${info.turma} | Responsável: ${info.responsavel}`;
-      } else {
-        label.textContent = '';
-      }
+      
+      const abaAlvo = document.getElementById('aba- ' + abaId) || document.getElementById('aba-' + abaId);
+      const btnAlvo = document.getElementById('btn-aba-' + abaId) || document.getElementById('btn-' + abaId);
+      
+      if (abaAlvo) abaAlvo.style.display = 'block';
+      if (btnAlvo) btnAlvo.classList.add('active');
     }
   </script>
 </body>
