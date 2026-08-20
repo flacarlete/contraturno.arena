@@ -30,17 +30,34 @@
     </nav>
 
     <main class="p-6 max-w-6xl w-full mx-auto flex-1">
+      
       <!-- ABA 1: ATRASOS -->
       <section id="aba-atrasos" class="aba-conteudo" style="display: block;">
-        <div class="bg-white rounded-lg shadow border p-6">
-          <h2 class="text-base font-bold text-[#1b4332] mb-4">⏰ Registro de Atrasos</h2>
-          <div class="space-y-4">
+        <div class="bg-white rounded-lg shadow border p-6 mb-6">
+          <h2 class="text-base font-bold text-[#1b4332] mb-4">⏰ Registrar Atrasos</h2>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
             <div>
-              <label class="block text-xs font-medium text-gray-700 mb-1">Nome do Aluno</label>
-              <input type="text" placeholder="Digite o nome do aluno..." class="w-full border rounded px-3 py-2 text-sm" />
+              <label class="block text-xs font-medium text-gray-700 mb-1">Espaço / Aula</label>
+              <select class="w-full border rounded px-3 py-2 text-sm">
+                <option>Nivelamentos</option>
+                <option>Sala de estudos</option>
+                <option>Biblioteca</option>
+              </select>
             </div>
-            <button class="bg-[#1b4332] text-white px-4 py-2 rounded text-xs font-semibold">Registrar Atraso</button>
+            <div>
+              <label class="block text-xs font-medium text-gray-700 mb-1">Horário de Chegada</label>
+              <input type="time" class="w-full border rounded px-3 py-2 text-sm" />
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-gray-700 mb-1">Data</label>
+              <input type="date" class="w-full border rounded px-3 py-2 text-sm" />
+            </div>
           </div>
+          <div class="mb-4">
+            <label class="block text-xs font-medium text-gray-700 mb-1">Nome do Aluno</label>
+            <input type="text" placeholder="Digite o nome do aluno..." class="w-full border rounded px-3 py-2 text-sm" />
+          </div>
+          <button class="bg-[#1b4332] text-white px-5 py-2 rounded text-xs font-semibold">Registrar Atraso</button>
         </div>
       </section>
 
@@ -48,23 +65,48 @@
       <section id="aba-sala-estudos" class="aba-conteudo">
         <div class="bg-white rounded-lg shadow border p-6">
           <h2 class="text-base font-bold text-[#1b4332] mb-4">📚 Sala de Estudos e Biblioteca</h2>
-          <p class="text-xs text-gray-600">Controle de ambiente, silêncio e Padrão Ouro.</p>
+          <p class="text-xs text-gray-600 mb-4">Controle diário de ambiente, silêncio e Padrão Ouro.</p>
+          <div class="space-y-3">
+            <label class="flex items-center gap-2 text-xs"><input type="checkbox" /> Apostila Viva (Grifos e anotações)</label>
+            <label class="flex items-center gap-2 text-xs"><input type="checkbox" /> Respostas Completas</label>
+          </div>
         </div>
       </section>
 
       <!-- ABA 3: PROFESSORES -->
       <section id="aba-professores" class="aba-conteudo">
         <div class="bg-white rounded-lg shadow border p-6">
-          <h2 class="text-base font-bold text-[#1b4332] mb-4">👨‍🏫 Ocorrências com Professores</h2>
-          <button onclick="window.print()" class="bg-[#1b4332] text-white px-4 py-2 rounded text-xs font-semibold mb-4">🖨️ Imprimir Relatório</button>
+          <div class="flex justify-between items-center mb-4">
+            <h2 class="text-base font-bold text-[#1b4332]">👨‍🏫 Ocorrências com Professores</h2>
+            <button onclick="window.print()" class="bg-[#1b4332] text-white px-4 py-2 rounded text-xs font-semibold">🖨️ Imprimir Relatório</button>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+            <div>
+              <label class="block text-xs font-medium text-gray-700 mb-1">Segmento / Turno</label>
+              <select class="w-full border rounded px-3 py-2 text-sm">
+                <option>6º Ano Matutino</option>
+                <option>7º Ano Matutino</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-gray-700 mb-1">Professor & Disciplina</label>
+              <select class="w-full border rounded px-3 py-2 text-sm"></select>
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-gray-700 mb-1">Data</label>
+              <input type="date" class="w-full border rounded px-3 py-2 text-sm" />
+            </div>
+          </div>
+          <button class="bg-[#1b4332] text-white px-5 py-2 rounded text-xs font-semibold">Salvar Ocorrência</button>
         </div>
       </section>
 
       <!-- ABA 4: INSPETORES -->
       <section id="aba-inspetores" class="aba-conteudo">
         <div class="bg-white rounded-lg shadow border p-6">
-          <h2 class="text-base font-bold text-[#1b4332] mb-4">📋 Orientações e Inspetoria</h2>
-          <p class="text-xs text-gray-600">Registro de orientações da equipe de pátio.</p>
+          <h2 class="text-base font-bold text-[#1b4332] mb-4">📋 Orientações — Inspetores</h2>
+          <textarea placeholder="Relate a situação identificada..." class="w-full border rounded p-3 text-xs mb-3" rows="3"></textarea>
+          <button class="bg-[#1b4332] text-white px-5 py-2 rounded text-xs font-semibold">Salvar Orientação</button>
         </div>
       </section>
 
@@ -72,7 +114,9 @@
       <section id="aba-atendimentos" class="aba-conteudo">
         <div class="bg-white rounded-lg shadow border p-6">
           <h2 class="text-base font-bold text-[#1b4332] mb-4">📑 Registro de Atendimentos</h2>
-          <p class="text-xs text-gray-600">Histórico de conversas com famílias e alunos.</p>
+          <input type="text" placeholder="Nome do aluno..." class="w-full border rounded px-3 py-2 text-sm mb-3" />
+          <textarea placeholder="Relato do atendimento..." class="w-full border rounded p-3 text-xs mb-3" rows="3"></textarea>
+          <button class="bg-[#1b4332] text-white px-5 py-2 rounded text-xs font-semibold">Salvar Atendimento</button>
         </div>
       </section>
 
@@ -80,7 +124,18 @@
       <section id="aba-contatos" class="aba-conteudo">
         <div class="bg-white rounded-lg shadow border p-6">
           <h2 class="text-base font-bold text-[#1b4332] mb-4">📞 Busca Rápida de Responsáveis</h2>
-          <p class="text-xs text-gray-600">Diretório de contatos e WhatsApp dos responsáveis.</p>
+          <input type="text" placeholder="Buscar por aluno, turma ou responsável..." class="w-full border rounded px-3 py-2 text-sm mb-4" />
+          <table class="w-full text-left text-xs border">
+            <thead class="bg-gray-100">
+              <tr>
+                <th class="p-2 border">Aluno</th>
+                <th class="p-2 border">Turma</th>
+                <th class="p-2 border">Responsável</th>
+                <th class="p-2 border">Telefone</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
         </div>
       </section>
 
@@ -88,7 +143,13 @@
       <section id="aba-gerenciador-acessos" class="aba-conteudo">
         <div class="bg-white rounded-lg shadow border p-6">
           <h2 class="text-base font-bold text-[#1b4332] mb-4">🔐 Gerenciador de Usuários & Acessos</h2>
-          <p class="text-xs text-gray-500">Área restrita da coordenação para liberação de perfis.</p>
+          <p class="text-xs text-gray-500 mb-4">Cadastre novos usuários e controle o acesso às abas.</p>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
+            <input type="text" placeholder="Nome do profissional" class="border rounded px-3 py-2 text-xs" />
+            <input type="text" placeholder="Usuário (login)" class="border rounded px-3 py-2 text-xs" />
+            <input type="password" placeholder="Senha" class="border rounded px-3 py-2 text-xs" />
+          </div>
+          <button class="bg-[#1b4332] text-white px-4 py-2 rounded text-xs font-semibold">+ Cadastrar Usuário</button>
         </div>
       </section>
     </main>
