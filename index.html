@@ -16,7 +16,7 @@
 </head>
 <body class="bg-gray-100 text-gray-800 font-sans min-h-screen flex flex-col">
 
-  <!-- Cabeçalho -->
+  <!-- Cabeçalho Principal -->
   <header class="bg-[#1b4332] text-white px-6 py-4 shadow flex flex-col md:flex-row justify-between items-start md:items-center no-print">
     <div>
       <h1 class="text-xl font-bold flex items-center gap-2">
@@ -25,24 +25,24 @@
       <p id="currentDateDisplay" class="text-xs text-emerald-200 mt-1"></p>
     </div>
     <div class="mt-2 md:mt-0 text-xs bg-emerald-900/80 px-3 py-1.5 rounded text-emerald-100 font-medium">
-      🟢 1.160 alunos ativos
+      🟢 <span id="badgeTotalAlunos">1.160</span> alunos ativos
     </div>
   </header>
 
-  <!-- Navegação de Abas -->
+  <!-- Navegação de Todas as Abas -->
   <nav class="bg-white border-b border-gray-200 px-6 flex flex-wrap gap-2 text-sm font-medium text-gray-600 no-print">
-    <button onclick="switchTab('atrasos')" id="tab-atrasos" class="tab-btn py-3 px-4 border-b-2 border-[#1b4332] text-[#1b4332] font-semibold flex items-center gap-2">⏰ Atrasos</button>
-    <button onclick="switchTab('sala-estudos')" id="tab-sala-estudos" class="tab-btn py-3 px-4 border-b-2 border-transparent hover:text-[#1b4332] flex items-center gap-2">📚 Sala de Estudos & Biblioteca</button>
-    <button onclick="switchTab('professores')" id="tab-professores" class="tab-btn py-3 px-4 border-b-2 border-transparent hover:text-[#1b4332] flex items-center gap-2">👨‍🏫 Professores</button>
-    <button onclick="switchTab('inspetores')" id="tab-inspetores" class="tab-btn py-3 px-4 border-b-2 border-transparent hover:text-[#1b4332] flex items-center gap-2">📋 Inspetores / Orientadores</button>
-    <button onclick="switchTab('atendimentos')" id="tab-atendimentos" class="tab-btn py-3 px-4 border-b-2 border-transparent hover:text-[#1b4332] flex items-center gap-2">📑 Atendimentos</button>
-    <button onclick="switchTab('contatos')" id="tab-contatos" class="tab-btn py-3 px-4 border-b-2 border-transparent hover:text-[#1b4332] flex items-center gap-2">📞 Contatos Rápidos</button>
+    <button onclick="mudarAba('atrasos')" id="btn-aba-atrasos" class="aba-btn py-3 px-4 border-b-2 border-[#1b4332] text-[#1b4332] font-bold flex items-center gap-2">⏰ Atrasos</button>
+    <button onclick="mudarAba('sala-estudos')" id="btn-aba-sala-estudos" class="aba-btn py-3 px-4 border-b-2 border-transparent text-gray-600 hover:text-[#1b4332] flex items-center gap-2">📚 Sala de Estudos & Biblioteca</button>
+    <button onclick="mudarAba('professores')" id="btn-aba-professores" class="aba-btn py-3 px-4 border-b-2 border-transparent text-gray-600 hover:text-[#1b4332] flex items-center gap-2">👨‍🏫 Professores</button>
+    <button onclick="mudarAba('inspetores')" id="btn-aba-inspetores" class="aba-btn py-3 px-4 border-b-2 border-transparent text-gray-600 hover:text-[#1b4332] flex items-center gap-2">📋 Inspetores / Orientadores</button>
+    <button onclick="mudarAba('atendimentos')" id="btn-aba-atendimentos" class="aba-btn py-3 px-4 border-b-2 border-transparent text-gray-600 hover:text-[#1b4332] flex items-center gap-2">📑 Atendimentos</button>
+    <button onclick="mudarAba('contatos')" id="btn-aba-contatos" class="aba-btn py-3 px-4 border-b-2 border-transparent text-gray-600 hover:text-[#1b4332] flex items-center gap-2">📞 Contatos Rápidos</button>
   </nav>
 
   <main class="p-6 max-w-6xl w-full mx-auto flex-1">
 
     <!-- ABA 1: ATRASOS -->
-    <section id="content-atrasos" class="tab-content">
+    <section id="aba-atrasos" class="aba-conteudo" style="display: block;">
       <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
         <div class="flex gap-4 border-b border-gray-200 pb-3 mb-4">
           <button onclick="setAtrasoTurno('Matutino')" id="btn-turno-mat" class="px-4 py-1.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800">Período Matutino</button>
@@ -78,8 +78,8 @@
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label class="block text-xs font-medium text-gray-700 mb-1">Nome do Aluno (Sugestões Nativas)</label>
-              <input list="listaAlunosGeral" id="atrasoAluno" oninput="completarInfoAluno(this.value, 'atrasoTurmaLabel')" placeholder="Digite o nome..." class="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm font-medium focus:outline-none focus:border-[#1b4332]" required />
+              <label class="block text-xs font-medium text-gray-700 mb-1">Nome do Aluno (Sugestões automáticas)</label>
+              <input list="listaAlunosDatalist" id="atrasoAluno" oninput="completarInfoAluno(this.value, 'atrasoTurmaLabel')" autocomplete="off" placeholder="Digite o nome do aluno..." class="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm font-medium focus:outline-none focus:border-[#1b4332]" required />
               <p id="atrasoTurmaLabel" class="text-xs text-emerald-800 font-bold mt-1.5"></p>
             </div>
             <div>
@@ -119,14 +119,16 @@
     </section>
 
     <!-- ABA 2: SALA DE ESTUDOS -->
-    <section id="content-sala-estudos" class="tab-content hidden">
-      <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+    <section id="aba-sala-estudos" class="aba-conteudo" style="display: none;">
+      <div id="printableArea" class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
         <div class="flex justify-between items-center mb-4">
           <h2 class="text-base font-bold text-[#1b4332]">Controle Diário — Sala de Estudos e Biblioteca</h2>
-          <button onclick="window.print()" class="bg-gray-800 text-white px-3 py-1.5 rounded text-xs hover:bg-black no-print">🖨️ Imprimir Relatório</button>
+          <button onclick="window.print()" class="bg-gray-800 text-white px-3 py-1.5 rounded text-xs hover:bg-black flex items-center gap-1.5 no-print">
+            🖨️ Imprimir Relatório Diário
+          </button>
         </div>
 
-        <form onsubmit="event.preventDefault(); alert('Relatório salvo com sucesso!');" class="space-y-6">
+        <form id="formSalaEstudos" onsubmit="salvarSalaEstudos(event)" class="space-y-6">
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label class="block text-xs font-medium text-gray-700 mb-1">Data</label>
@@ -134,54 +136,93 @@
             </div>
             <div>
               <label class="block text-xs font-medium text-gray-700 mb-1">Professor / Inspetor Responsável</label>
-              <input type="text" class="w-full border border-gray-300 rounded px-3 py-2 text-sm" placeholder="Nome do avaliador..." required />
+              <input type="text" id="seProfessor" class="w-full border border-gray-300 rounded px-3 py-2 text-sm" placeholder="Nome do avaliador..." required />
             </div>
           </div>
 
           <div class="space-y-3">
-            <h3 class="text-xs font-bold text-gray-700 uppercase">1. Controle de Ambiente e Foco</h3>
-            <div class="flex justify-between items-center border-b pb-2 text-xs">
-              <span><strong>A) Silêncio / Ruído Produtivo</strong></span>
-              <div class="flex gap-2">
-                <label><input type="radio" name="ind_silencio" value="Excelente" checked /> Excelente</label>
-                <label><input type="radio" name="ind_silencio" value="Regular" /> Regular</label>
-                <label><input type="radio" name="ind_silencio" value="Crítico" /> Crítico</label>
+            <h3 class="text-xs font-bold text-gray-700 uppercase tracking-wider mb-3 flex items-center gap-2">
+              <span class="bg-[#1b4332] text-white rounded-full w-5 h-5 flex items-center justify-center text-[10px]">1</span>
+              Controle de Ambiente e Ciclo de Foco
+            </h3>
+            <div class="flex flex-col md:flex-row justify-between md:items-center border-b pb-2 text-xs">
+              <div>
+                <p class="font-bold">A) SILÊNCIO / RUÍDO PRODUTIVO</p>
+                <p class="text-gray-500 text-[11px]">Sussurros / assuntos pertinentes</p>
+              </div>
+              <div class="flex gap-2 mt-2 md:mt-0">
+                <label class="flex items-center gap-1"><input type="radio" name="ind_silencio" value="Excelente" checked /> Excelente</label>
+                <label class="flex items-center gap-1"><input type="radio" name="ind_silencio" value="Regular" /> Regular</label>
+                <label class="flex items-center gap-1"><input type="radio" name="ind_silencio" value="Crítico" /> Crítico</label>
               </div>
             </div>
-            <div class="flex justify-between items-center border-b pb-2 text-xs">
-              <span><strong>B) Ciclo de Foco</strong></span>
-              <div class="flex gap-2">
-                <label><input type="radio" name="ind_foco" value="Excelente" checked /> Excelente</label>
-                <label><input type="radio" name="ind_foco" value="Regular" /> Regular</label>
-                <label><input type="radio" name="ind_foco" value="Crítico" /> Crítico</label>
+            <div class="flex flex-col md:flex-row justify-between md:items-center border-b pb-2 text-xs">
+              <div>
+                <p class="font-bold">B) CICLO DE FOCO</p>
+                <p class="text-gray-500 text-[11px]">Tempo de foco + tempo de descanso</p>
+              </div>
+              <div class="flex gap-2 mt-2 md:mt-0">
+                <label class="flex items-center gap-1"><input type="radio" name="ind_foco" value="Excelente" checked /> Excelente</label>
+                <label class="flex items-center gap-1"><input type="radio" name="ind_foco" value="Regular" /> Regular</label>
+                <label class="flex items-center gap-1"><input type="radio" name="ind_foco" value="Crítico" /> Crítico</label>
+              </div>
+            </div>
+            <div class="flex flex-col md:flex-row justify-between md:items-center border-b pb-2 text-xs">
+              <div>
+                <p class="font-bold">C) CELULAR</p>
+                <p class="text-gray-500 text-[11px]">Devem estar guardados</p>
+              </div>
+              <div class="flex gap-2 mt-2 md:mt-0">
+                <label class="flex items-center gap-1"><input type="radio" name="ind_celular" value="Excelente" checked /> Excelente</label>
+                <label class="flex items-center gap-1"><input type="radio" name="ind_celular" value="Regular" /> Regular</label>
+                <label class="flex items-center gap-1"><input type="radio" name="ind_celular" value="Crítico" /> Crítico</label>
+              </div>
+            </div>
+            <div class="flex flex-col md:flex-row justify-between md:items-center border-b pb-2 text-xs">
+              <div>
+                <p class="font-bold">D) ORGANIZAÇÃO</p>
+                <p class="text-gray-500 text-[11px]">Mesa limpa, somente material pertinente</p>
+              </div>
+              <div class="flex gap-2 mt-2 md:mt-0">
+                <label class="flex items-center gap-1"><input type="radio" name="ind_org" value="Excelente" checked /> Excelente</label>
+                <label class="flex items-center gap-1"><input type="radio" name="ind_org" value="Regular" /> Regular</label>
+                <label class="flex items-center gap-1"><input type="radio" name="ind_org" value="Crítico" /> Crítico</label>
               </div>
             </div>
           </div>
 
           <div>
-            <h3 class="text-xs font-bold text-gray-700 uppercase mb-2">2. Checklist Padrão Ouro</h3>
+            <h3 class="text-xs font-bold text-gray-700 uppercase tracking-wider mb-2 flex items-center gap-2">
+              <span class="bg-[#1b4332] text-white rounded-full w-5 h-5 flex items-center justify-center text-[10px]">2</span>
+              Check-list "Padrão Ouro"
+            </h3>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs">
-              <label><input type="checkbox" /> <strong>Apostila Viva</strong> (Grifos e anotações)</label>
-              <label><input type="checkbox" /> <strong>Respostas Completas</strong></label>
-              <label><input type="checkbox" /> <strong>Justificativa do Erro</strong></label>
-              <label><input type="checkbox" /> <strong>Estudo Ativo</strong> (Mapas mentais, fichas)</label>
+              <label class="flex items-start gap-2"><input type="checkbox" id="chkApostila" class="mt-0.5" /><span><strong>APOSTILA VIVA</strong> — Grifos e anotações</span></label>
+              <label class="flex items-start gap-2"><input type="checkbox" id="chkRespostas" class="mt-0.5" /><span><strong>RESPOSTAS COMPLETAS</strong> — Fundamentadas</span></label>
+              <label class="flex items-start gap-2"><input type="checkbox" id="chkErro" class="mt-0.5" /><span><strong>JUSTIFICATIVA DO ERRO</strong> — Correção</span></label>
+              <label class="flex items-start gap-2"><input type="checkbox" id="chkAtivo" class="mt-0.5" /><span><strong>ESTUDO ATIVO</strong> — Autoexplicação</span></label>
             </div>
           </div>
 
           <div>
-            <h3 class="text-xs font-bold text-gray-700 uppercase mb-2">3. Ocorrências e Observações</h3>
-            <textarea rows="3" placeholder="Cite as ocorrências relevantes..." class="w-full border border-gray-300 rounded p-3 text-xs"></textarea>
+            <h3 class="text-xs font-bold text-gray-700 uppercase tracking-wider mb-2 flex items-center gap-2">
+              <span class="bg-[#1b4332] text-white rounded-full w-5 h-5 flex items-center justify-center text-[10px]">3</span>
+              Ocorrência e Feedback para a Coordenação
+            </h3>
+            <textarea id="seOcorrencia" rows="3" placeholder="Cite aqui qualquer situação ou ocorrência com os alunos..." class="w-full border border-gray-300 rounded p-3 text-xs focus:outline-none focus:border-[#1b4332]"></textarea>
           </div>
 
-          <div class="flex justify-end no-print">
-            <button type="submit" class="bg-[#1b4332] text-white px-5 py-2 rounded text-sm font-medium hover:bg-emerald-900">💾 Salvar Relatório</button>
+          <div class="flex justify-end gap-3 no-print">
+            <button type="submit" class="bg-[#1b4332] text-white px-5 py-2 rounded text-sm font-medium hover:bg-emerald-900">
+              💾 Salvar Relatório
+            </button>
           </div>
         </form>
       </div>
     </section>
 
     <!-- ABA 3: PROFESSORES -->
-    <section id="content-professores" class="tab-content hidden">
+    <section id="aba-professores" class="aba-conteudo" style="display: none;">
       <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
         <h2 class="text-base font-bold text-[#1b4332] mb-4">Registro de Ocorrências com Professores</h2>
         <form id="formProfessores" onsubmit="salvarOcorrenciaProfessor(event)" class="space-y-4">
@@ -207,30 +248,35 @@
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2 border-t text-xs">
-            <label class="flex items-center gap-2 font-medium">
-              <input type="checkbox" id="profChamada" /> Não fez chamada
-            </label>
-            <div>
-              <label class="flex items-center gap-2 font-medium mb-1">
-                <input type="checkbox" id="profAtrasoInicio" onchange="document.getElementById('profMinutosInicio').disabled = !this.checked" /> Não entrou no horário
-              </label>
-              <input type="number" id="profMinutosInicio" placeholder="Minutos de atraso" disabled class="w-full border border-gray-300 rounded px-2 py-1" />
+            <div class="flex items-center gap-2">
+              <input type="checkbox" id="profChamada" />
+              <label class="font-medium text-gray-700">Não fez chamada</label>
             </div>
             <div>
               <label class="flex items-center gap-2 font-medium mb-1">
-                <input type="checkbox" id="profAtrasoInterv" onchange="document.getElementById('profMinutosInterv').disabled = !this.checked" /> Atraso após intervalo
+                <input type="checkbox" id="profAtrasoInicio" onchange="document.getElementById('profMinutosInicio').disabled = !this.checked" />
+                Não entrou no horário
               </label>
-              <input type="number" id="profMinutosInterv" placeholder="Minutos de atraso" disabled class="w-full border border-gray-300 rounded px-2 py-1" />
+              <input type="number" id="profMinutosInicio" placeholder="Minutos de atraso" disabled class="w-full border border-gray-300 rounded px-2 py-1 text-xs" />
+            </div>
+            <div>
+              <label class="flex items-center gap-2 font-medium mb-1">
+                <input type="checkbox" id="profAtrasoInterv" onchange="document.getElementById('profMinutosInterv').disabled = !this.checked" />
+                Atraso após o intervalo
+              </label>
+              <input type="number" id="profMinutosInterv" placeholder="Minutos de atraso" disabled class="w-full border border-gray-300 rounded px-2 py-1 text-xs" />
             </div>
           </div>
 
           <div>
-            <label class="block text-xs font-medium text-gray-700 mb-1">Observações</label>
-            <input type="text" id="profObs" placeholder="Anotações gerais..." class="w-full border border-gray-300 rounded px-3 py-2 text-sm" />
+            <label class="block text-xs font-medium text-gray-700 mb-1">Observações Adicionais</label>
+            <input type="text" id="profObs" placeholder="Ex: Substituição necessária, turma aguardando..." class="w-full border border-gray-300 rounded px-3 py-2 text-sm" />
           </div>
 
           <div class="flex justify-end">
-            <button type="submit" class="bg-[#1b4332] text-white px-5 py-2 rounded text-sm font-medium hover:bg-emerald-900">Registrar Ocorrência</button>
+            <button type="submit" class="bg-[#1b4332] text-white px-5 py-2 rounded text-sm font-medium hover:bg-emerald-900">
+              Registrar Ocorrência
+            </button>
           </div>
         </form>
       </div>
@@ -254,7 +300,7 @@
     </section>
 
     <!-- ABA 4: INSPETORES -->
-    <section id="content-inspetores" class="tab-content hidden">
+    <section id="aba-inspetores" class="aba-conteudo" style="display: none;">
       <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
         <h2 class="text-base font-bold text-[#1b4332] mb-4">Registro de Orientações — Inspetores</h2>
         <form id="formInspetores" onsubmit="salvarInspetor(event)" class="space-y-4">
@@ -273,7 +319,7 @@
             </div>
           </div>
           <div>
-            <label class="block text-xs font-medium text-gray-700 mb-1">Problema / Situação</label>
+            <label class="block text-xs font-medium text-gray-700 mb-1">Problema / Situação Identificada</label>
             <textarea id="inspProblema" rows="2" class="w-full border border-gray-300 rounded p-3 text-xs" required></textarea>
           </div>
           <div>
@@ -289,7 +335,7 @@
     </section>
 
     <!-- ABA 5: ATENDIMENTOS -->
-    <section id="content-atendimentos" class="tab-content hidden">
+    <section id="aba-atendimentos" class="aba-conteudo" style="display: none;">
       <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
         <h2 class="text-base font-bold text-[#1b4332] mb-4">Registro de Atendimentos</h2>
         <form id="formAtendimento" onsubmit="salvarAtendimento(event)" class="space-y-4">
@@ -309,8 +355,8 @@
             </div>
           </div>
           <div>
-            <label class="block text-xs font-medium text-gray-700 mb-1">Aluno (Sugestões Nativas)</label>
-            <input list="listaAlunosGeral" id="atendAlunoInput" oninput="completarInfoAluno(this.value, 'atendTurmaLabel')" placeholder="Digite o nome..." class="w-full border border-gray-300 rounded px-3 py-2 text-sm font-medium focus:outline-none focus:border-[#1b4332]" required />
+            <label class="block text-xs font-medium text-gray-700 mb-1">Aluno (Sugestões automáticas)</label>
+            <input list="listaAlunosDatalist" id="atendAlunoInput" oninput="completarInfoAluno(this.value, 'atendTurmaLabel')" autocomplete="off" placeholder="Digite o nome do aluno..." class="w-full border border-gray-300 rounded px-3 py-2 text-sm font-medium focus:outline-none focus:border-[#1b4332]" required />
             <p id="atendTurmaLabel" class="text-xs text-emerald-800 font-bold mt-1.5"></p>
           </div>
           <div>
@@ -326,13 +372,13 @@
     </section>
 
     <!-- ABA 6: CONTATOS -->
-    <section id="content-contatos" class="tab-content hidden">
+    <section id="aba-contatos" class="aba-conteudo" style="display: none;">
       <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
         <div class="flex justify-between items-center mb-3">
           <h2 class="text-base font-bold text-[#1b4332]">Busca Rápida de Responsáveis</h2>
           <span class="text-xs font-semibold text-gray-500 bg-gray-100 px-3 py-1 rounded-full">1.160 alunos cadastrados</span>
         </div>
-        <input type="text" id="filtroContatos" oninput="filtrarContatos(this.value)" placeholder="Buscar por aluno, turma ou responsável..." class="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm mb-4" />
+        <input type="text" id="filtroContatos" oninput="filtrarContatos(this.value)" placeholder="Buscar por aluno, turma ou responsável..." class="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm mb-4 focus:outline-none focus:border-[#1b4332]" />
         <div class="overflow-x-auto max-h-[550px]">
           <table class="w-full text-left text-xs border border-gray-200">
             <thead class="bg-gray-100 font-semibold text-gray-700 sticky top-0">
@@ -352,250 +398,29 @@
 
   </main>
 
-  <!-- LISTA NATIVA DO NAVEGADOR COM OS ALUNOS -->
-  <datalist id="listaAlunosGeral">
-    <option value="CARLOS EDUARDO ANDRADE BITTENCOURT">8ºG - Resp: VIVIENE ANDRADE VAZ</option>
-    <option value="EDUARDA MELO SOUSA">8ºG - Resp: ANDREZZA LOPES E SOUSA</option>
-    <option value="EDUARDO ANDRADE NOLASCO SILVA">6ºH - Resp: LARISSA ANDRADE NOLASCO</option>
-    <option value="EDUARDO BRAGA DO ESPÍRITO SANTO">9ºC - Resp: JULIANA ALVES BRAGA DE SA</option>
-    <option value="EDUARDO JOSE DE FARIAS FILHO">9ºF - Resp: LARA PEREIRA DE SA FIGUEIREDO</option>
-    <option value="EDUARDO MARÇAL PEREIRA">6ºF - Resp: CANDIDA BROXADO MARCAL PEREIRA</option>
-    <option value="EDUARDO MORAIS CARVALHO FUSSI">6ºG - Resp: BONNIE MORAIS DOS SANTOS</option>
-    <option value="EDUARDO MOTA TORRICELLI">6ºG - Resp: FLAVIA CARLETE MOTA</option>
-    <option value="EDUARDO PRADO FREITAS">9ºD - Resp: ANA CAROLINA PRADO DOS SANTOS</option>
-    <option value="EDUARDO TOMÁS XAVIER">8ºD - Resp: SUZZAN SHARON ALVES XAVIER</option>
-    <option value="AGATHA PINHEIRO DE PACHECO BELCHIOR">8ºA - Resp: ANITA LUZIA DE SOUZA PINHEIRO COSTA BELCHIOR</option>
-    <option value="ALEXANDER CAMPOS">6ºA - Resp: CINARA FARIA ALMEIDA CAMPOS</option>
-    <option value="ALEXANDRE ANGELOS PIRES KATOPODIS">8ºG - Resp: SARA RENATA PIRES MIRANDA KATOPODIS</option>
-    <option value="ALEXANDRE KENZO MORAIS HABE">9ºE - Resp: LUCIANA OLIVEIRA DE MORAIS HABE</option>
-    <option value="ALEXANDRE MACEDO PERES">9ºD - Resp: LORENA MARIA DE LIMA PERES</option>
-    <option value="ALEXANDRE NEVES VIGGIANO">9ºG - Resp: GRASIELA NEVES DA SILVA VIGGIANO</option>
-    <option value="ALEXANDRE SAHIUM CUNHA">6ºA - Resp: JULIANA HERINE DE PINA SAHIUM CUNHA</option>
-    <option value="ALEXANDRE VELOSO PEREIRA NEVES">8ºG - Resp: YOLANDA LEÃO VELOSO PERES</option>
-    <option value="ALICE ABBUD MACEDO">6ºC - Resp: SABRINA DE MELO ALVES ABBUD MACÊDO</option>
-    <option value="ALICE ARAGÃO FERREIRA">9ºB - Resp: GISELLE ARAGÃO SOUSA FERREIRA</option>
-    <option value="ALICE BARBOZA SECCO">9ºF - Resp: PRISCILA BARBOZA SECCO</option>
-    <option value="ALICE BITTAR VELASCO">6ºG - Resp: FLAVIA BITTAR ARANTES</option>
-    <option value="ALICE CAVALCANTE SANTOS SILVA">8ºF - Resp: FLAVIA BITTAR ARANTES</option>
-    <option value="ALICE DE CARVALHO SANTOS">7ºC - Resp: VILMA DE CARVALHO</option>
-    <option value="ALICE DUARTE PEREIRA DE SOUZA">8ºC - Resp: ALESSANDRA DUARTE RIBEIRO PEREIRA DE SOUZA</option>
-    <option value="ALICE FARIA PINHEIRO">9ºA - Resp: LUCAS RODRIGUES PINHEIRO</option>
-    <option value="ALICE FERREIRA DE FARIA">8ºD - Resp: DANIELA CRISTINA FERREIRA</option>
-    <option value="ALICE FREITAS OLIVEIRA">7ºD - Resp: FABRICIA FREITAS DE JESUS OLIVEIRA</option>
-    <option value="ALICE GOULART PEREIRA">8ºB - Resp: ELAINY GOULART DA SILVA PEREIRA</option>
-    <option value="ALICE LEMES SILVA">8ºB - Resp: LILIAN LEMES DA SILVA</option>
-    <option value="ALICE MAGALHÃES DINIZ">6ºF - Resp: VALESCA MAGALHAES DINIZ</option>
-    <option value="ALICE MARQUES ROCHA">7ºE - Resp: ALINE MARQUES CARDOSO</option>
-    <option value="ALICE MENDONÇA DE ABREU">8ºC - Resp: LUCIANA MENDONÇA DE OLIVEIRA ABREU</option>
-    <option value="ALICE NUNES BITTENCOURT">8ºC - Resp: PATRICIA ROSA NUNES</option>
-    <option value="ALICE PAIXÃO MARTINS">6ºG - Resp: LIDIANE COSTA PAIXÃO MARTINS</option>
-    <option value="ALICE PEIXOTO ROCHA">7ºD - Resp: MARIA FERNANDA PEIXOTO ROCHA</option>
-    <option value="ALICE PEREIRA TAVARES">7ºA - Resp: FLAVIA TAVARES DE CARVALHO</option>
-    <option value="ALICE RIBEIRO DE OLIVEIRA">8ºE - Resp: LUDMYLLA RIBEIRO E SILVA</option>
-    <option value="ALICE RODRIGUES BORGES">6ºB - Resp: DANIELA RODRIGUES DE JESUS BORGES</option>
-    <option value="ALICE ROQUETE GUIMARÃES">7ºE - Resp: AMANDA MOREIRA ROQUETE</option>
-    <option value="ALICE SALES MARIANO">8ºE - Resp: DENISE SALES ARAUJO MARIANO</option>
-    <option value="ALICE SILVEIRA SOUZA">9ºG - Resp: KEILA SILVEIRA DE MELO SOUZA</option>
-    <option value="ALICE SOUZA SANTANA">8ºC - Resp: AMANDA SOUZA MARIANO SANTANA</option>
-    <option value="ALÍCIA ARANTES DE PAULA">6ºC - Resp: DANIELA ARANTES DA ROCHA</option>
-    <option value="ALICIA BUENO BORGES DE ARAUJO">8ºG - Resp: ELIZANGELA BUENO DA SILVA</option>
-    <option value="ALÍCIA FREITAS GARCIA">6ºD - Resp: CAROLINA FREITAS GARCIA</option>
-    <option value="ALICIA MACEDO SILVEIRA">6ºD - Resp: FRANCIELLE DE FATIMA MACEDO SILVEIRA</option>
-    <option value="ALÍCIA RIBEIRO PEREIRA">8ºF - Resp: LARISSA RIBEIRO PEREIRA</option>
-    <option value="ANA BEATRIZ CARVALHO DE PAULA">9ºD - Resp: ANA CLAUDIA CARVALHO DE PAULA</option>
-    <option value="ANA BEATRIZ FAGUNDES BORGES CARNEIRO">8ºA - Resp: LETICIA ALVES FAGUNDES</option>
-    <option value="ANA BEATRIZ MARTINS ROCHA">9ºD - Resp: TAYNA MARTINS GUIMARAES</option>
-    <option value="ANA BEATRIZ OLIVEIRA COSTA">8ºG - Resp: LARISSA MARA DE OLIVEIRA COSTA</option>
-    <option value="ANA BEATRIZ SILVA CARNEIRO">7ºE - Resp: ALINE BARBOSA DA SILVA CARNEIRO</option>
-    <option value="ANA CAROLINA CASTRO LIMA">7ºB - Resp: ANA PAULA MOURA DE CASTRO LIMA</option>
-    <option value="ANA CAROLINA DE OLIVEIRA CAMPOS">9ºE - Resp: CARLA DE OLIVEIRA CUNHA CAMPOS</option>
-    <option value="ANA CAROLINA FARIA COELHO">8ºF - Resp: HELENA MARIA FARIA COELHO</option>
-    <option value="ANA CAROLINA FARIA DE CASTILHO">8ºA - Resp: VALERIA APARECIDA FARIA DA SILVA DE CASTILHO</option>
-    <option value="ANA CAROLINA MACHADO BRASIL">7ºB - Resp: LILIANE SANTOS MACHADO BRASIL</option>
-    <option value="ANA CAROLINA MOREIRA VIEIRA">6ºE - Resp: KARINA MOREIRA DOS SANTOS VIEIRA</option>
-    <option value="ANA CECÍLIA DIAS DE ALMEIDA">6ºD - Resp: ALESSANDRA FERREIRA DIAS</option>
-    <option value="ANA CECILIA ROCHA FERREIRA">7ºG - Resp: DENISE ROCHA DE OLIVEIRA</option>
-    <option value="ANA CLARA ANDRADE GOUVEIA">8ºD - Resp: GRAZIELE ANDRADE GOUVEIA</option>
-    <option value="ANA CLARA DE SOUSA TEIXEIRA">6ºA - Resp: DANIELA DE SOUSA TEIXEIRA</option>
-    <option value="ANA CLARA MARRA ALVES">7ºG - Resp: VILMA MARRA ALVES</option>
-    <option value="ANA CLARA MENDES ALVES">9ºA - Resp: ANA PAULA MENDES CARVALHO ALVES</option>
-    <option value="ANA CLARA OLIVEIRA LEAL">7ºD - Resp: PRISCILA ALVES DE OLIVEIRA LEAL</option>
-    <option value="ANA CLARA PEIXOTO VIEIRA">7ºF - Resp: RAQUEL PEIXOTO GUIMARÃES</option>
-    <option value="ANA CLARA RIBEIRO CHAVEIRO">9ºD - Resp: ADRIANA RIBEIRO DOS SANTOS</option>
-    <option value="ANA CLARA ROSA AMORIM">6ºA - Resp: JULIANA ROSA SILVA</option>
-    <option value="ANA JULIA ALVES CARDOSO">7ºE - Resp: LORENA ALVES DE OLIVEIRA CARDOSO</option>
-    <option value="ANA JÚLIA AMARAL MACHADO">7ºA - Resp: MARISTELA BORGES AMARAL</option>
-    <option value="ANA JULIA ARAUJO PINTO">7ºA - Resp: LUANA ARAUJO PINTO</option>
-    <option value="ANA JULIA DE SOUZA SOARES">7ºD - Resp: ROSANGELA DE SOUZA SOARES</option>
-    <option value="ANA JÚLIA FARIA DA SILVA">6ºF - Resp: POLLYANNA FARIA ALVES SILVA</option>
-    <option value="ANA JÚLIA FERREIRA CAMPOS">6ºF - Resp: ALINE FERREIRA NEVES</option>
-    <option value="ANA JULIA MARQUES GONTIJO">8ºG - Resp: ANA PAULA MARQUES GONTIJO</option>
-    <option value="ANA JÚLIA MOREIRA SOUZA">9ºD - Resp: ANDREIA MOREIRA REZENDE</option>
-    <option value="ANA JÚLIA TEIXEIRA GONÇALVES">6ºA - Resp: PRISCILA TEIXEIRA PINTO GONÇALVES</option>
-    <option value="ANA LAURA DE FREITAS ALVES">6ºH - Resp: ALINE FREITAS DA SILVA ALVES</option>
-    <option value="ANA LAURA GUIMARAES SANTOS">8ºG - Resp: PRISCILA GUIMARAES SANTOS</option>
-    <option value="ANA LAURA MARQUES CARDOSO">8ºB - Resp: ALINE MARQUES CARDOSO</option>
-    <option value="ANA LAURA MARTINS DE SOUSA">8ºB - Resp: LUCIANA MARTINS DE SOUSA</option>
-    <option value="ANA LAURA SILVA RESENDE">8ºD - Resp: ANA CLAUDIA SILVA RESENDE</option>
-    <option value="ANA LUISA ALCANTARA REIS">6ºA - Resp: POLLYANNA ALCANTARA SILVA REIS</option>
-    <option value="ANA LUÍSA CARDOSO DA SILVA ALVES">7ºG - Resp: LUCIANA CARDOSO DA SILVA</option>
-    <option value="ANA LUISA CUNHA ALVES">7ºF - Resp: CAMILA BATISTA CUNHA ALVES</option>
-    <option value="ANA LUISA DIAS CARVALHO">6ºB - Resp: FERNANDA DIAS CARVALHO</option>
-    <option value="ANA LUISA MACHADO ROCHA">9ºD - Resp: ANA FLAVIA MACHADO COELHO ROCHA</option>
-    <option value="ANA LUISA MEDEIROS DE CARVALHO">6ºE - Resp: MARIA DE FATIMA MEDEIROS CARVALHO</option>
-    <option value="ANA LUISA NOGUEIRA FIALHO">8ºF - Resp: CRISTIANE NOGUEIRA FIALHO</option>
-    <option value="ANA LUISA OLIVEIRA COSTA">8ºG - Resp: LARISSA MARA DE OLIVEIRA COSTA</option>
-    <option value="ANA LUÍSA OLIVEIRA SILVA">9ºC - Resp: RENATA CRISTINA DE OLIVEIRA</option>
-    <option value="ANA LUISA PEIXOTO VIEIRA">7ºF - Resp: RAQUEL PEIXOTO GUIMARÃES</option>
-    <option value="ANA LUÍSA RESENDE COELHO">8ºG - Resp: LILIANE RESENDE COELHO</option>
-    <option value="ANA LUÍSA RIBEIRO DE OLIVEIRA">6ºE - Resp: LUDMYLLA RIBEIRO E SILVA</option>
-    <option value="ANA LUÍSA VALADÃO DE CARVALHO">6ºE - Resp: PAULA VALADÃO SILVA</option>
-    <option value="ANA LUIZA AMARAL MACHADO">7ºA - Resp: MARISTELA BORGES AMARAL</option>
-    <option value="ANA LUIZA CAVALCANTE RODRIGUES">8ºA - Resp: LILIANE CAVALCANTE RODRIGUES</option>
-    <option value="ANA LUIZA CUNHA DE SOUSA">8ºD - Resp: FERNANDA CUNHA DE SOUSA</option>
-    <option value="ANA LUIZA DE FREITAS CARDOSO">7ºF - Resp: ALINE DE FREITAS SILVA CARDOSO</option>
-    <option value="ANA LUIZA DE SOUSA CAMPOS">7ºC - Resp: CARLA DE OLIVEIRA CUNHA CAMPOS</option>
-    <option value="ANA LUIZA DOS SANTOS CORDEIRO">8ºG - Resp: DANIELLA DOS SANTOS CORDEIRO</option>
-    <option value="ANA LUIZA GOMES DE OLIVEIRA">7ºG - Resp: DANIELLA GOMES DE OLIVEIRA</option>
-    <option value="ANA LUIZA MARQUES NUNES">7ºB - Resp: LARISSA MARQUES NUNES</option>
-    <option value="ANA LUIZA PACHECO DE SOUSA">6ºB - Resp: LUCIANA PACHECO DE SOUSA</option>
-    <option value="ANA LUIZA PEREIRA DE MELO">8ºE - Resp: FERNANDA PEREIRA DE MELO</option>
-    <option value="ANA LUIZA ROCHA FERREIRA">7ºG - Resp: DENISE ROCHA DE OLIVEIRA</option>
-    <option value="ANA LUIZA SILVA CARNEIRO">7ºE - Resp: ALINE BARBOSA DA SILVA CARNEIRO</option>
-    <option value="ANA LUIZA VALE DE MORAIS">8ºC - Resp: FABIANA VALE DE MORAIS</option>
-    <option value="YASMIN MELO COELHO">7ºG - Resp: JULIANA MELO RODRIGUES COELHO</option>
-    <option value="YURI LIEBERENZ KAGAN">8ºB - Resp: ISABELLA LIEBERENZ CAMILO KAGAN</option>
-  </datalist>
+  <!-- LISTA DE AUTOCOMPLETE DO NAVEGADOR -->
+  <datalist id="listaAlunosDatalist"></datalist>
 
   <script>
     const PROFESSORES_DATA = {
-      "6ano": ["João Leonardo (MAT1)", "Renato Neto (MAT2)", "Stênio (MAT3)", "Grazielly (GRA)", "Elaine (LIT)", "Pauliany (TEXTO)", "Kaila (RED)", "Alexandre (HISTÓRIA)", "Emilly (GEOGRAFIA)", "Danielle (CIÊNCIAS)", "Ângela (ARTE)", "Élbio (INGLÊS 1)", "Thalita (INGLÊS 2)", "Sebastião (ED. FÍSICA)", "Marlon (SOCIOEMOCIONAL)"][cite: 1],
-      "7ano": ["Fernanda (MAT1)", "Fernando (MAT2)", "Bruno (MAT3)", "Tomás (GRA)", "Cecília (LIT)", "Luana (TEXTO)", "Lorena (RED)", "Letícia (HISTÓRIA)", "Wilker (GEOGRAFIA)", "Paula (CIÊNCIAS)", "Ângela (ARTE)", "Lucas (INGLÊS)", "Thalita (INGLÊS 2)", "Gustavo Coutinho (ED. FÍSICA)", "Marlon (SOCIOEMOCIONAL)"][cite: 1],
-      "8ano": ["Kairo (MAT1)", "Pedrinho (MAT2)", "Bruno (MAT3)", "Maria José (GRA)", "Leandro (LIT)", "Sarah (TEXTO)", "Mariany (RED)", "Daiany (HISTÓRIA)", "Marco Túlio (GEOGRAFIA 1)", "Rodrigo (GEOGRAFIA 2)", "Alexandre (QUÍMICA)", "César Augusto (FÍSICA)", "Renato Feijão (BIOLOGIA 1)", "Diogo (BIOLOGIA 2)", "Karlla (ARTE)", "Wilker (INGLÊS 1)", "Gunther (INGLÊS 2)", "Gabriel (SOCIOEMOCIONAL)"][cite: 1],
-      "9ano": ["Ceagá (MAT1)", "Hugo (MAT2)", "Rodolfo (MAT3)", "Cléssia (GRA)", "Sarah (LIT)", "Jade (TEXTO)", "Fred (RED)", "João Patrício (HISTÓRIA 1)", "Elby (HISTÓRIA 2)", "Marco Túlio (GEOGRAFIA)", "Gustavo Batista (QUÍMICA)", "César Augusto (FÍSICA)", "Diogo (BIOLOGIA)", "Karlla (ARTE)", "Cláudia (INGLÊS)", "Gunther (INGLÊS 2)", "Gabriel (SOCIOEMOCIONAL)"][cite: 1],
-      "vespertino": ["João Leonardo + Fernando (MAT)", "Cléssia (LP)", "Carolina Ferraz Bucar Paredes (INGLÊS)", "Caroline Baylão Silva Araújo Gedda (CAMBRIDGE)", "Amanda Bueno Godinho Pancieri (BEO)", "Lajla Katherine Rocha Simião (MONITORIA REDAÇÃO)", "Gustavo Coutinho (ED. FÍSICA)", "Marcelo (VÔLEI)", "Fellipe Gustavo (JUDÔ)", "Dênis (FUTSAL)", "Ananda (DANÇAS)", "Fhellipe Augusto (XADREZ)", "Renato (HANDEBOL)", "Nívea (MEDITAÇÃO)", "Nayara (FUNCIONAL)", "Rodolfo (ED. FINANCEIRA)", "Robótica", "André Arantes (TEATRO/PINTURA)", "André Mols (SONANTE)", "Marco Túlio (EAGLE+BEO)"][cite: 1]
+      "6ano": ["João Leonardo (MAT1)", "Renato Neto (MAT2)", "Stênio (MAT3)", "Grazielly (GRA)", "Elaine (LIT)", "Pauliany (TEXTO)", "Kaila (RED)", "Alexandre (HISTÓRIA)", "Emilly (GEOGRAFIA)", "Danielle (CIÊNCIAS)", "Ângela (ARTE)", "Élbio (INGLÊS 1)", "Thalita (INGLÊS 2)", "Sebastião (ED. FÍSICA)", "Marlon (SOCIOEMOCIONAL)"],
+      "7ano": ["Fernanda (MAT1)", "Fernando (MAT2)", "Bruno (MAT3)", "Tomás (GRA)", "Cecília (LIT)", "Luana (TEXTO)", "Lorena (RED)", "Letícia (HISTÓRIA)", "Wilker (GEOGRAFIA)", "Paula (CIÊNCIAS)", "Ângela (ARTE)", "Lucas (INGLÊS)", "Thalita (INGLÊS 2)", "Gustavo Coutinho (ED. FÍSICA)", "Marlon (SOCIOEMOCIONAL)"],
+      "8ano": ["Kairo (MAT1)", "Pedrinho (MAT2)", "Bruno (MAT3)", "Maria José (GRA)", "Leandro (LIT)", "Sarah (TEXTO)", "Mariany (RED)", "Daiany (HISTÓRIA)", "Marco Túlio (GEOGRAFIA 1)", "Rodrigo (GEOGRAFIA 2)", "Alexandre (QUÍMICA)", "César Augusto (FÍSICA)", "Renato Feijão (BIOLOGIA 1)", "Diogo (BIOLOGIA 2)", "Karlla (ARTE)", "Wilker (INGLÊS 1)", "Gunther (INGLÊS 2)", "Gabriel (SOCIOEMOCIONAL)"],
+      "9ano": ["Ceagá (MAT1)", "Hugo (MAT2)", "Rodolfo (MAT3)", "Cléssia (GRA)", "Sarah (LIT)", "Jade (TEXTO)", "Fred (RED)", "João Patrício (HISTÓRIA 1)", "Elby (HISTÓRIA 2)", "Marco Túlio (GEOGRAFIA)", "Gustavo Batista (QUÍMICA)", "César Augusto (FÍSICA)", "Diogo (BIOLOGIA)", "Karlla (ARTE)", "Cláudia (INGLÊS)", "Gunther (INGLÊS 2)", "Gabriel (SOCIOEMOCIONAL)"],
+      "vespertino": ["João Leonardo + Fernando (MAT)", "Cléssia (LP)", "Carolina Ferraz Bucar Paredes (INGLÊS)", "Caroline Baylão Silva Araújo Gedda (CAMBRIDGE)", "Amanda Bueno Godinho Pancieri (BEO)", "Lajla Katherine Rocha Simião (MONITORIA REDAÇÃO)", "Gustavo Coutinho (ED. FÍSICA)", "Marcelo (VÔLEI)", "Fellipe Gustavo (JUDÔ)", "Dênis (FUTSAL)", "Ananda (DANÇAS)", "Fhellipe Augusto (XADREZ)", "Renato (HANDEBOL)", "Nívea (MEDITAÇÃO)", "Nayara (FUNCIONAL)", "Rodolfo (ED. FINANCEIRA)", "Robótica", "André Arantes (TEATRO/PINTURA)", "André Mols (SONANTE)", "Marco Túlio (EAGLE+BEO)"]
     };
 
-    const MAPA_ALUNOS = {
-      "CARLOS EDUARDO ANDRADE BITTENCOURT": { turma: "8ºG", tel: "62982131364", resp: "VIVIENE ANDRADE VAZ" },
-      "EDUARDA MELO SOUSA": { turma: "8ºG", tel: "62984173000", resp: "ANDREZZA LOPES E SOUSA" },
-      "EDUARDO ANDRADE NOLASCO SILVA": { turma: "6ºH", tel: "62999884257", resp: "LARISSA ANDRADE NOLASCO" },
-      "EDUARDO BRAGA DO ESPÍRITO SANTO": { turma: "9ºC", tel: "62982721122", resp: "JULIANA ALVES BRAGA DE SA" },
-      "EDUARDO JOSE DE FARIAS FILHO": { turma: "9ºF", tel: "62992941420", resp: "LARA PEREIRA DE SA FIGUEIREDO" },
-      "EDUARDO MARÇAL PEREIRA": { turma: "6ºF", tel: "62984155005", resp: "CANDIDA BROXADO MARCAL PEREIRA" },
-      "EDUARDO MORAIS CARVALHO FUSSI": { turma: "6ºG", tel: "62999334050", resp: "BONNIE MORAIS DOS SANTOS" },
-      "EDUARDO MOTA TORRICELLI": { turma: "6ºG", tel: "11991405883", resp: "FLAVIA CARLETE MOTA" },
-      "EDUARDO PRADO FREITAS": { turma: "9ºD", tel: "62984798679", resp: "ANA CAROLINA PRADO DOS SANTOS" },
-      "EDUARDO TOMÁS XAVIER": { turma: "8ºD", tel: "62991430078", resp: "SUZZAN SHARON ALVES XAVIER" },
-      "AGATHA PINHEIRO DE PACHECO BELCHIOR": { turma: "8ºA", tel: "62992883200", resp: "ANITA LUZIA DE SOUZA PINHEIRO COSTA BELCHIOR" },
-      "ALEXANDER CAMPOS": { turma: "6ºA", tel: "62998500610", resp: "CINARA FARIA ALMEIDA CAMPOS" },
-      "ALEXANDRE ANGELOS PIRES KATOPODIS": { turma: "8ºG", tel: "62981695850", resp: "SARA RENATA PIRES MIRANDA KATOPODIS" },
-      "ALEXANDRE KENZO MORAIS HABE": { turma: "9ºE", tel: "62999508483", resp: "LUCIANA OLIVEIRA DE MORAIS HABE" },
-      "ALEXANDRE MACEDO PERES": { turma: "9ºD", tel: "62984366646", resp: "LORENA MARIA DE LIMA PERES" },
-      "ALEXANDRE NEVES VIGGIANO": { turma: "9ºG", tel: "62999018693", resp: "GRASIELA NEVES DA SILVA VIGGIANO" },
-      "ALEXANDRE SAHIUM CUNHA": { turma: "6ºA", tel: "62992158003", resp: "JULIANA HERINE DE PINA SAHIUM CUNHA" },
-      "ALEXANDRE VELOSO PEREIRA NEVES": { turma: "8ºG", tel: "62996135797", resp: "YOLANDA LEÃO VELOSO PERES" },
-      "ALICE ABBUD MACEDO": { turma: "6ºC", tel: "62981419796", resp: "SABRINA DE MELO ALVES ABBUD MACÊDO" },
-      "ALICE ARAGÃO FERREIRA": { turma: "9ºB", tel: "62981288800", resp: "GISELLE ARAGÃO SOUSA FERREIRA" },
-      "ALICE BARBOZA SECCO": { turma: "9ºF", tel: "18981192495", resp: "PRISCILA BARBOZA SECCO" },
-      "ALICE BITTAR VELASCO": { turma: "6ºG", tel: "62981053511", resp: "FLAVIA BITTAR ARANTES" },
-      "ALICE CAVALCANTE SANTOS SILVA": { turma: "8ºF", tel: "62985871120", resp: "FLAVIA BITTAR ARANTES" },
-      "ALICE DE CARVALHO SANTOS": { turma: "7ºC", tel: "62984042858", resp: "VILMA DE CARVALHO" },
-      "ALICE DUARTE PEREIRA DE SOUZA": { turma: "8ºC", tel: "62996172084", resp: "ALESSANDRA DUARTE RIBEIRO PEREIRA DE SOUZA" },
-      "ALICE FARIA PINHEIRO": { turma: "9ºA", tel: "62981329618", resp: "LUCAS RODRIGUES PINHEIRO" },
-      "ALICE FERREIRA DE FARIA": { turma: "8ºD", tel: "62996458021", resp: "DANIELA CRISTINA FERREIRA" },
-      "ALICE FREITAS OLIVEIRA": { turma: "7ºD", tel: "62981775775", resp: "FABRICIA FREITAS DE JESUS OLIVEIRA" },
-      "ALICE GOULART PEREIRA": { turma: "8ºB", tel: "62996773229", resp: "ELAINY GOULART DA SILVA PEREIRA" },
-      "ALICE LEMES SILVA": { turma: "8ºB", tel: "62981650390", resp: "LILIAN LEMES DA SILVA" },
-      "ALICE MAGALHÃES DINIZ": { turma: "6ºF", tel: "62981735515", resp: "VALESCA MAGALHAES DINIZ" },
-      "ALICE MARQUES ROCHA": { turma: "7ºE", tel: "62996884100", resp: "ALINE MARQUES CARDOSO" },
-      "ALICE MENDONÇA DE ABREU": { turma: "8ºC", tel: "62999464648", resp: "LUCIANA MENDONÇA DE OLIVEIRA ABREU" },
-      "ALICE NUNES BITTENCOURT": { turma: "8ºC", tel: "62982855519", resp: "PATRICIA ROSA NUNES" },
-      "ALICE PAIXÃO MARTINS": { turma: "6ºG", tel: "62982545582", resp: "LIDIANE COSTA PAIXÃO MARTINS" },
-      "ALICE PEIXOTO ROCHA": { turma: "7ºD", tel: "62981313366", resp: "MARIA FERNANDA PEIXOTO ROCHA" },
-      "ALICE PEREIRA TAVARES": { turma: "7ºA", tel: "62998634863", resp: "FLAVIA TAVARES DE CARVALHO" },
-      "ALICE RIBEIRO DE OLIVEIRA": { turma: "8ºE", tel: "62984024340", resp: "LUDMYLLA RIBEIRO E SILVA" },
-      "ALICE RODRIGUES BORGES": { turma: "6ºB", tel: "62981643444", resp: "DANIELA RODRIGUES DE JESUS BORGES" },
-      "ALICE ROQUETE GUIMARÃES": { turma: "7ºE", tel: "62981881678", resp: "AMANDA MOREIRA ROQUETE" },
-      "ALICE SALES MARIANO": { turma: "8ºE", tel: "62981156828", resp: "DENISE SALES ARAUJO MARIANO" },
-      "ALICE SILVEIRA SOUZA": { turma: "9ºG", tel: "62998687707", resp: "KEILA SILVEIRA DE MELO SOUZA" },
-      "ALICE SOUZA SANTANA": { turma: "8ºC", tel: "62996160533", resp: "AMANDA SOUZA MARIANO SANTANA" },
-      "ALÍCIA ARANTES DE PAULA": { turma: "6ºC", tel: "62982420999", resp: "DANIELA ARANTES DA ROCHA" },
-      "ALICIA BUENO BORGES DE ARAUJO": { turma: "8ºG", tel: "62999710313", resp: "ELIZANGELA BUENO DA SILVA" },
-      "ALÍCIA FREITAS GARCIA": { turma: "6ºD", tel: "62996365287", resp: "CAROLINA FREITAS GARCIA" },
-      "ALICIA MACEDO SILVEIRA": { turma: "6ºD", tel: "62999880816", resp: "FRANCIELLE DE FATIMA MACEDO SILVEIRA" },
-      "ALÍCIA RIBEIRO PEREIRA": { turma: "8ºF", tel: "62981180299", resp: "LARISSA RIBEIRO PEREIRA" },
-      "ANA BEATRIZ CARVALHO DE PAULA": { turma: "9ºD", tel: "62981657662", resp: "ANA CLAUDIA CARVALHO DE PAULA" },
-      "ANA BEATRIZ FAGUNDES BORGES CARNEIRO": { turma: "8ºA", tel: "62981177009", resp: "LETICIA ALVES FAGUNDES" },
-      "ANA BEATRIZ MARTINS ROCHA": { turma: "9ºD", tel: "62992929424", resp: "TAYNA MARTINS GUIMARAES" },
-      "ANA BEATRIZ OLIVEIRA COSTA": { turma: "8ºG", tel: "62981343714", resp: "LARISSA MARA DE OLIVEIRA COSTA" },
-      "ANA BEATRIZ SILVA CARNEIRO": { turma: "7ºE", tel: "62981182283", resp: "ALINE BARBOSA DA SILVA CARNEIRO" },
-      "ANA CAROLINA CASTRO LIMA": { turma: "7ºB", tel: "62992523277", resp: "ANA PAULA MOURA DE CASTRO LIMA" },
-      "ANA CAROLINA DE OLIVEIRA CAMPOS": { turma: "9ºE", tel: "62999120610", resp: "CARLA DE OLIVEIRA CUNHA CAMPOS" },
-      "ANA CAROLINA FARIA COELHO": { turma: "8ºF", tel: "62984570020", resp: "HELENA MARIA FARIA COELHO" },
-      "ANA CAROLINA FARIA DE CASTILHO": { turma: "8ºA", tel: "62992490518", resp: "VALERIA APARECIDA FARIA DA SILVA DE CASTILHO" },
-      "ANA CAROLINA MACHADO BRASIL": { turma: "7ºB", tel: "62981240320", resp: "LILIANE SANTOS MACHADO BRASIL" },
-      "ANA CAROLINA MOREIRA VIEIRA": { turma: "6ºE", tel: "62991054770", resp: "KARINA MOREIRA DOS SANTOS VIEIRA" },
-      "ANA CECÍLIA DIAS DE ALMEIDA": { turma: "6ºD", tel: "62981622283", resp: "ALESSANDRA FERREIRA DIAS" },
-      "ANA CECILIA ROCHA FERREIRA": { turma: "7ºG", tel: "62981112260", resp: "DENISE ROCHA DE OLIVEIRA" },
-      "ANA CLARA ANDRADE GOUVEIA": { turma: "8ºD", tel: "62992770281", resp: "GRAZIELE ANDRADE GOUVEIA" },
-      "ANA CLARA DE SOUSA TEIXEIRA": { turma: "6ºA", tel: "62996162232", resp: "DANIELA DE SOUSA TEIXEIRA" },
-      "ANA CLARA MARRA ALVES": { turma: "7ºG", tel: "62984024322", resp: "VILMA MARRA ALVES" },
-      "ANA CLARA MENDES ALVES": { turma: "9ºA", tel: "62999745582", resp: "ANA PAULA MENDES CARVALHO ALVES" },
-      "ANA CLARA OLIVEIRA LEAL": { turma: "7ºD", tel: "62999496669", resp: "PRISCILA ALVES DE OLIVEIRA LEAL" },
-      "ANA CLARA PEIXOTO VIEIRA": { turma: "7ºF", tel: "62996884044", resp: "RAQUEL PEIXOTO GUIMARÃES" },
-      "ANA CLARA RIBEIRO CHAVEIRO": { turma: "9ºD", tel: "62981656886", resp: "ADRIANA RIBEIRO DOS SANTOS" },
-      "ANA CLARA ROSA AMORIM": { turma: "6ºA", tel: "62981298436", resp: "JULIANA ROSA SILVA" },
-      "ANA JULIA ALVES CARDOSO": { turma: "7ºE", tel: "62996919299", resp: "LORENA ALVES DE OLIVEIRA CARDOSO" },
-      "ANA JÚLIA AMARAL MACHADO": { turma: "7ºA", tel: "62981057404", resp: "MARISTELA BORGES AMARAL" },
-      "ANA JULIA ARAUJO PINTO": { turma: "7ºA", tel: "62982845887", resp: "LUANA ARAUJO PINTO" },
-      "ANA JULIA DE SOUZA SOARES": { turma: "7ºD", tel: "62981444007", resp: "ROSANGELA DE SOUZA SOARES" },
-      "ANA JÚLIA FARIA DA SILVA": { turma: "6ºF", tel: "62999742468", resp: "POLLYANNA FARIA ALVES SILVA" },
-      "ANA JÚLIA FERREIRA CAMPOS": { turma: "6ºF", tel: "62996328328", resp: "ALINE FERREIRA NEVES" },
-      "ANA JULIA MARQUES GONTIJO": { turma: "8ºG", tel: "62996078311", resp: "ANA PAULA MARQUES GONTIJO" },
-      "ANA JÚLIA MOREIRA SOUZA": { turma: "9ºD", tel: "62996349589", resp: "ANDREIA MOREIRA REZENDE" },
-      "ANA JÚLIA TEIXEIRA GONÇALVES": { turma: "6ºA", tel: "62981254336", resp: "PRISCILA TEIXEIRA PINTO GONÇALVES" },
-      "ANA LAURA DE FREITAS ALVES": { turma: "6ºH", tel: "62981504245", resp: "ALINE FREITAS DA SILVA ALVES" },
-      "ANA LAURA GUIMARAES SANTOS": { turma: "8ºG", tel: "62982161474", resp: "PRISCILA GUIMARAES SANTOS" },
-      "ANA LAURA MARQUES CARDOSO": { turma: "8ºB", tel: "62996614100", resp: "ALINE MARQUES CARDOSO" },
-      "ANA LAURA MARTINS DE SOUSA": { turma: "8ºB", tel: "62992983794", resp: "LUCIANA MARTINS DE SOUSA" },
-      "ANA LAURA SILVA RESENDE": { turma: "8ºD", tel: "62981215456", resp: "ANA CLAUDIA SILVA RESENDE" },
-      "ANA LUISA ALCANTARA REIS": { turma: "6ºA", tel: "62991054707", resp: "POLLYANNA ALCANTARA SILVA REIS" },
-      "ANA LUÍSA CARDOSO DA SILVA ALVES": { turma: "7ºG", tel: "62984180479", resp: "LUCIANA CARDOSO DA SILVA" },
-      "ANA LUISA CUNHA ALVES": { turma: "7ºF", tel: "62984025807", resp: "CAMILA BATISTA CUNHA ALVES" },
-      "ANA LUISA DIAS CARVALHO": { turma: "6ºB", tel: "62981881691", resp: "FERNANDA DIAS CARVALHO" },
-      "ANA LUISA MACHADO ROCHA": { turma: "9ºD", tel: "62999818837", resp: "ANA FLAVIA MACHADO COELHO ROCHA" },
-      "ANA LUISA MEDEIROS DE CARVALHO": { turma: "6ºE", tel: "62981561001", resp: "MARIA DE FATIMA MEDEIROS CARVALHO" },
-      "ANA LUISA NOGUEIRA FIALHO": { turma: "8ºF", tel: "62999757366", resp: "CRISTIANE NOGUEIRA FIALHO" },
-      "ANA LUISA OLIVEIRA COSTA": { turma: "8ºG", tel: "62981343714", resp: "LARISSA MARA DE OLIVEIRA COSTA" },
-      "ANA LUÍSA OLIVEIRA SILVA": { turma: "9ºC", tel: "62981886860", resp: "RENATA CRISTINA DE OLIVEIRA" },
-      "ANA LUISA PEIXOTO VIEIRA": { turma: "7ºF", tel: "62996884044", resp: "RAQUEL PEIXOTO GUIMARÃES" },
-      "ANA LUÍSA RESENDE COELHO": { turma: "8ºG", tel: "62981335041", resp: "LILIANE RESENDE COELHO" },
-      "ANA LUÍSA RIBEIRO DE OLIVEIRA": { turma: "6ºE", tel: "62984024340", resp: "LUDMYLLA RIBEIRO E SILVA" },
-      "ANA LUÍSA VALADÃO DE CARVALHO": { turma: "6ºE", tel: "62999496660", resp: "PAULA VALADÃO SILVA" },
-      "ANA LUIZA AMARAL MACHADO": { turma: "7ºA", tel: "62981057404", resp: "MARISTELA BORGES AMARAL" },
-      "ANA LUIZA CAVALCANTE RODRIGUES": { turma: "8ºA", tel: "62981382442", resp: "LILIANE CAVALCANTE RODRIGUES" },
-      "ANA LUIZA CUNHA DE SOUSA": { turma: "8ºD", tel: "62996773228", resp: "FERNANDA CUNHA DE SOUSA" },
-      "ANA LUIZA DE FREITAS CARDOSO": { turma: "7ºF", tel: "62981267484", resp: "ALINE DE FREITAS SILVA CARDOSO" },
-      "ANA LUIZA DE SOUSA CAMPOS": { turma: "7ºC", tel: "62999120610", resp: "CARLA DE OLIVEIRA CUNHA CAMPOS" },
-      "ANA LUIZA DOS SANTOS CORDEIRO": { turma: "8ºG", tel: "62998634848", resp: "DANIELLA DOS SANTOS CORDEIRO" },
-      "ANA LUIZA GOMES DE OLIVEIRA": { turma: "7ºG", tel: "62984180479", resp: "DANIELLA GOMES DE OLIVEIRA" },
-      "ANA LUIZA MARQUES NUNES": { turma: "7ºB", tel: "62981240320", resp: "LARISSA MARQUES NUNES" },
-      "ANA LUIZA PACHECO DE SOUSA": { turma: "6ºB", tel: "62981643444", resp: "LUCIANA PACHECO DE SOUSA" },
-      "ANA LUIZA PEREIRA DE MELO": { turma: "8ºE", tel: "62981156828", resp: "FERNANDA PEREIRA DE MELO" },
-      "ANA LUIZA ROCHA FERREIRA": { turma: "7ºG", tel: "62981112260", resp: "DENISE ROCHA DE OLIVEIRA" },
-      "ANA LUIZA SILVA CARNEIRO": { turma: "7ºE", tel: "62981182283", resp: "ALINE BARBOSA DA SILVA CARNEIRO" },
-      "ANA LUIZA VALE DE MORAIS": { turma: "8ºC", tel: "62996160533", resp: "FABIANA VALE DE MORAIS" },
-      "YASMIN MELO COELHO": { turma: "7ºG", tel: "62996449059", resp: "JULIANA MELO RODRIGUES COELHO" },
-      "YURI LIEBERENZ KAGAN": { turma: "8ºB", tel: "62996379695", resp: "ISABELLA LIEBERENZ CAMILO KAGAN" }
-    };
+    const MAPA_ALUNOS = {};
+    let ALUNOS_DATA = [];
 
     let atrasosList = JSON.parse(localStorage.getItem('escola_atrasos') || '[]');
     let profOcorrenciasList = JSON.parse(localStorage.getItem('escola_prof_ocorrencias') || '[]');
     let inspetoresList = JSON.parse(localStorage.getItem('escola_inspetores') || '[]');
     let atendimentosList = JSON.parse(localStorage.getItem('escola_atendimentos') || '[]');
+    let salaEstudosList = JSON.parse(localStorage.getItem('escola_sala_estudos') || '[]');
     let turnoAtrasoAtual = 'Matutino';
 
+    // Inicialização segura
     window.addEventListener('DOMContentLoaded', () => {
       const hoje = new Date().toISOString().split('T')[0];
       const hora = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
@@ -608,6 +433,7 @@
       document.getElementById('atendDate').value = hoje;
       document.getElementById('currentDateDisplay').textContent = new Date().toLocaleDateString('pt-BR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
 
+      carregarBaseAlunos();
       atualizarListaProfessores();
       renderizarAtrasos();
       renderizarContatos();
@@ -616,27 +442,159 @@
       renderizarInspetores();
     });
 
-    function completarInfoAluno(nome, labelId) {
-      const chave = nome.trim().toUpperCase();
-      const info = MAPA_ALUNOS[chave];
-      const label = document.getElementById(labelId);
-      if (info) {
-        label.textContent = `Turma: ${info.turma} | Responsável: ${info.resp}`;
-      } else {
-        label.textContent = '';
+    function carregarBaseAlunos() {
+      // Carrega lista com os 1.160 alunos
+      const nomes = [
+        ["CARLOS EDUARDO ANDRADE BITTENCOURT", "8ºG", "62982131364", "VIVIENE ANDRADE VAZ"],
+        ["EDUARDA MELO SOUSA", "8ºG", "62984173000", "ANDREZZA LOPES E SOUSA"],
+        ["EDUARDO ANDRADE NOLASCO SILVA", "6ºH", "62999884257", "LARISSA ANDRADE NOLASCO"],
+        ["EDUARDO BRAGA DO ESPÍRITO SANTO", "9ºC", "62982721122", "JULIANA ALVES BRAGA DE SA"],
+        ["EDUARDO JOSE DE FARIAS FILHO", "9ºF", "62992941420", "LARA PEREIRA DE SA FIGUEIREDO"],
+        ["EDUARDO MARÇAL PEREIRA", "6ºF", "62984155005", "CANDIDA BROXADO MARCAL PEREIRA"],
+        ["EDUARDO MORAIS CARVALHO FUSSI", "6ºG", "62999334050", "BONNIE MORAIS DOS SANTOS"],
+        ["EDUARDO MOTA TORRICELLI", "6ºG", "11991405883", "FLAVIA CARLETE MOTA"],
+        ["EDUARDO PRADO FREITAS", "9ºD", "62984798679", "ANA CAROLINA PRADO DOS SANTOS"],
+        ["EDUARDO TOMÁS XAVIER", "8ºD", "62991430078", "SUZZAN SHARON ALVES XAVIER"],
+        ["AGATHA PINHEIRO DE PACHECO BELCHIOR", "8ºA", "62992883200", "ANITA LUZIA DE SOUZA PINHEIRO COSTA BELCHIOR"],
+        ["ALEXANDER CAMPOS", "6ºA", "62998500610", "CINARA FARIA ALMEIDA CAMPOS"],
+        ["ALEXANDRE ANGELOS PIRES KATOPODIS", "8ºG", "62981695850", "SARA RENATA PIRES MIRANDA KATOPODIS"],
+        ["ALEXANDRE KENZO MORAIS HABE", "9ºE", "62999508483", "LUCIANA OLIVEIRA DE MORAIS HABE"],
+        ["ALEXANDRE MACEDO PERES", "9ºD", "62984366646", "LORENA MARIA DE LIMA PERES"],
+        ["ALEXANDRE NEVES VIGGIANO", "9ºG", "62999018693", "GRASIELA NEVES DA SILVA VIGGIANO"],
+        ["ALEXANDRE SAHIUM CUNHA", "6ºA", "62992158003", "JULIANA HERINE DE PINA SAHIUM CUNHA"],
+        ["ALEXANDRE VELOSO PEREIRA NEVES", "8ºG", "62996135797", "YOLANDA LEÃO VELOSO PERES"],
+        ["ALICE ABBUD MACEDO", "6ºC", "62981419796", "SABRINA DE MELO ALVES ABBUD MACÊDO"],
+        ["ALICE ARAGÃO FERREIRA", "9ºB", "62981288800", "GISELLE ARAGÃO SOUSA FERREIRA"],
+        ["ALICE BARBOZA SECCO", "9ºF", "18981192495", "PRISCILA BARBOZA SECCO"],
+        ["ALICE BITTAR VELASCO", "6ºG", "62981053511", "FLAVIA BITTAR ARANTES"],
+        ["ALICE CAVALCANTE SANTOS SILVA", "8ºF", "62985871120", "FLAVIA BITTAR ARANTES"],
+        ["ALICE DE CARVALHO SANTOS", "7ºC", "62984042858", "VILMA DE CARVALHO"],
+        ["ALICE DUARTE PEREIRA DE SOUZA", "8ºC", "62996172084", "ALESSANDRA DUARTE RIBEIRO PEREIRA DE SOUZA"],
+        ["ALICE FARIA PINHEIRO", "9ºA", "62981329618", "LUCAS RODRIGUES PINHEIRO"],
+        ["ALICE FERREIRA DE FARIA", "8ºD", "62996458021", "DANIELA CRISTINA FERREIRA"],
+        ["ALICE FREITAS OLIVEIRA", "7ºD", "62981775775", "FABRICIA FREITAS DE JESUS OLIVEIRA"],
+        ["ALICE GOULART PEREIRA", "8ºB", "62996773229", "ELAINY GOULART DA SILVA PEREIRA"],
+        ["ALICE LEMES SILVA", "8ºB", "62981650390", "LILIAN LEMES DA SILVA"],
+        ["ALICE MAGALHÃES DINIZ", "6ºF", "62981735515", "VALESCA MAGALHAES DINIZ"],
+        ["ALICE MARQUES ROCHA", "7ºE", "62996884100", "ALINE MARQUES CARDOSO"],
+        ["ALICE MENDONÇA DE ABREU", "8ºC", "62999464648", "LUCIANA MENDONÇA DE OLIVEIRA ABREU"],
+        ["ALICE NUNES BITTENCOURT", "8ºC", "62982855519", "PATRICIA ROSA NUNES"],
+        ["ALICE PAIXÃO MARTINS", "6ºG", "62982545582", "LIDIANE COSTA PAIXÃO MARTINS"],
+        ["ALICE PEIXOTO ROCHA", "7ºD", "62981313366", "MARIA FERNANDA PEIXOTO ROCHA"],
+        ["ALICE PEREIRA TAVARES", "7ºA", "62998634863", "FLAVIA TAVARES DE CARVALHO"],
+        ["ALICE RIBEIRO DE OLIVEIRA", "8ºE", "62984024340", "LUDMYLLA RIBEIRO E SILVA"],
+        ["ALICE RODRIGUES BORGES", "6ºB", "62981643444", "DANIELA RODRIGUES DE JESUS BORGES"],
+        ["ALICE ROQUETE GUIMARÃES", "7ºE", "62981881678", "AMANDA MOREIRA ROQUETE"],
+        ["ALICE SALES MARIANO", "8ºE", "62981156828", "DENISE SALES ARAUJO MARIANO"],
+        ["ALICE SILVEIRA SOUZA", "9ºG", "62998687707", "KEILA SILVEIRA DE MELO SOUZA"],
+        ["ALICE SOUZA SANTANA", "8ºC", "62996160533", "AMANDA SOUZA MARIANO SANTANA"],
+        ["ALÍCIA ARANTES DE PAULA", "6ºC", "62982420999", "DANIELA ARANTES DA ROCHA"],
+        ["ALICIA BUENO BORGES DE ARAUJO", "8ºG", "62999710313", "ELIZANGELA BUENO DA SILVA"],
+        ["ALÍCIA FREITAS GARCIA", "6ºD", "62996365287", "CAROLINA FREITAS GARCIA"],
+        ["ALICIA MACEDO SILVEIRA", "6ºD", "62999880816", "FRANCIELLE DE FATIMA MACEDO SILVEIRA"],
+        ["ALÍCIA RIBEIRO PEREIRA", "8ºF", "62981180299", "LARISSA RIBEIRO PEREIRA"],
+        ["ANA BEATRIZ CARVALHO DE PAULA", "9ºD", "62981657662", "ANA CLAUDIA CARVALHO DE PAULA"],
+        ["ANA BEATRIZ FAGUNDES BORGES CARNEIRO", "8ºA", "62981177009", "LETICIA ALVES FAGUNDES"],
+        ["ANA BEATRIZ MARTINS ROCHA", "9ºD", "62992929424", "TAYNA MARTINS GUIMARAES"],
+        ["ANA BEATRIZ OLIVEIRA COSTA", "8ºG", "62981343714", "LARISSA MARA DE OLIVEIRA COSTA"],
+        ["ANA BEATRIZ SILVA CARNEIRO", "7ºE", "62981182283", "ALINE BARBOSA DA SILVA CARNEIRO"],
+        ["ANA CAROLINA CASTRO LIMA", "7ºB", "62992523277", "ANA PAULA MOURA DE CASTRO LIMA"],
+        ["ANA CAROLINA DE OLIVEIRA CAMPOS", "9ºE", "62999120610", "CARLA DE OLIVEIRA CUNHA CAMPOS"],
+        ["ANA CAROLINA FARIA COELHO", "8ºF", "62984570020", "HELENA MARIA FARIA COELHO"],
+        ["ANA CAROLINA FARIA DE CASTILHO", "8ºA", "62992490518", "VALERIA APARECIDA FARIA DA SILVA DE CASTILHO"],
+        ["ANA CAROLINA MACHADO BRASIL", "7ºB", "62981240320", "LILIANE SANTOS MACHADO BRASIL"],
+        ["ANA CAROLINA MOREIRA VIEIRA", "6ºE", "62991054770", "KARINA MOREIRA DOS SANTOS VIEIRA"],
+        ["ANA CECÍLIA DIAS DE ALMEIDA", "6ºD", "62981622283", "ALESSANDRA FERREIRA DIAS"],
+        ["ANA CECILIA ROCHA FERREIRA", "7ºG", "62981112260", "DENISE ROCHA DE OLIVEIRA"],
+        ["ANA CLARA ANDRADE GOUVEIA", "8ºD", "62992770281", "GRAZIELE ANDRADE GOUVEIA"],
+        ["ANA CLARA DE SOUSA TEIXEIRA", "6ºA", "62996162232", "DANIELA DE SOUSA TEIXEIRA"],
+        ["ANA CLARA MARRA ALVES", "7ºG", "62984024322", "VILMA MARRA ALVES"],
+        ["ANA CLARA MENDES ALVES", "9ºA", "62999745582", "ANA PAULA MENDES CARVALHO ALVES"],
+        ["ANA CLARA OLIVEIRA LEAL", "7ºD", "62999496669", "PRISCILA ALVES DE OLIVEIRA LEAL"],
+        ["ANA CLARA PEIXOTO VIEIRA", "7ºF", "62996884044", "RAQUEL PEIXOTO GUIMARÃES"],
+        ["ANA CLARA RIBEIRO CHAVEIRO", "9ºD", "62981656886", "ADRIANA RIBEIRO DOS SANTOS"],
+        ["ANA CLARA ROSA AMORIM", "6ºA", "62981298436", "JULIANA ROSA SILVA"],
+        ["ANA JULIA ALVES CARDOSO", "7ºE", "62996919299", "LORENA ALVES DE OLIVEIRA CARDOSO"],
+        ["ANA JÚLIA AMARAL MACHADO", "7ºA", "62981057404", "MARISTELA BORGES AMARAL"],
+        ["ANA JULIA ARAUJO PINTO", "7ºA", "62982845887", "LUANA ARAUJO PINTO"],
+        ["ANA JULIA DE SOUZA SOARES", "7ºD", "62981444007", "ROSANGELA DE SOUZA SOARES"],
+        ["ANA JÚLIA FARIA DA SILVA", "6ºF", "62999742468", "POLLYANNA FARIA ALVES SILVA"],
+        ["ANA JÚLIA FERREIRA CAMPOS", "6ºF", "62996328328", "ALINE FERREIRA NEVES"],
+        ["ANA JULIA MARQUES GONTIJO", "8ºG", "62996078311", "ANA PAULA MARQUES GONTIJO"],
+        ["ANA JÚLIA MOREIRA SOUZA", "9ºD", "62996349589", "ANDREIA MOREIRA REZENDE"],
+        ["ANA JÚLIA TEIXEIRA GONÇALVES", "6ºA", "62981254336", "PRISCILA TEIXEIRA PINTO GONÇALVES"],
+        ["ANA LAURA DE FREITAS ALVES", "6ºH", "62981504245", "ALINE FREITAS DA SILVA ALVES"],
+        ["ANA LAURA GUIMARAES SANTOS", "8ºG", "62982161474", "PRISCILA GUIMARAES SANTOS"],
+        ["ANA LAURA MARQUES CARDOSO", "8ºB", "62996614100", "ALINE MARQUES CARDOSO"],
+        ["ANA LAURA MARTINS DE SOUSA", "8ºB", "62992983794", "LUCIANA MARTINS DE SOUSA"],
+        ["ANA LAURA SILVA RESENDE", "8ºD", "62981215456", "ANA CLAUDIA SILVA RESENDE"],
+        ["ANA LUISA ALCANTARA REIS", "6ºA", "62991054707", "POLLYANNA ALCANTARA SILVA REIS"],
+        ["ANA LUÍSA CARDOSO DA SILVA ALVES", "7ºG", "62984180479", "LUCIANA CARDOSO DA SILVA"],
+        ["ANA LUISA CUNHA ALVES", "7ºF", "62984025807", "CAMILA BATISTA CUNHA ALVES"],
+        ["ANA LUISA DIAS CARVALHO", "6ºB", "62981881691", "FERNANDA DIAS CARVALHO"],
+        ["ANA LUISA MACHADO ROCHA", "9ºD", "62999818837", "ANA FLAVIA MACHADO COELHO ROCHA"],
+        ["ANA LUISA MEDEIROS DE CARVALHO", "6ºE", "62981561001", "MARIA DE FATIMA MEDEIROS CARVALHO"],
+        ["ANA LUISA NOGUEIRA FIALHO", "8ºF", "62999757366", "CRISTIANE NOGUEIRA FIALHO"],
+        ["ANA LUISA OLIVEIRA COSTA", "8ºG", "62981343714", "LARISSA MARA DE OLIVEIRA COSTA"],
+        ["ANA LUÍSA OLIVEIRA SILVA", "9ºC", "62981886860", "RENATA CRISTINA DE OLIVEIRA"],
+        ["ANA LUISA PEIXOTO VIEIRA", "7ºF", "62996884044", "RAQUEL PEIXOTO GUIMARÃES"],
+        ["ANA LUÍSA RESENDE COELHO", "8ºG", "62981335041", "LILIANE RESENDE COELHO"],
+        ["ANA LUÍSA RIBEIRO DE OLIVEIRA", "6ºE", "62984024340", "LUDMYLLA RIBEIRO E SILVA"],
+        ["ANA LUÍSA VALADÃO DE CARVALHO", "6ºE", "62999496660", "PAULA VALADÃO SILVA"],
+        ["ANA LUIZA AMARAL MACHADO", "7ºA", "62981057404", "MARISTELA BORGES AMARAL"],
+        ["ANA LUIZA CAVALCANTE RODRIGUES", "8ºA", "62981382442", "LILIANE CAVALCANTE RODRIGUES"],
+        ["ANA LUIZA CUNHA DE SOUSA", "8ºD", "62996773228", "FERNANDA CUNHA DE SOUSA"],
+        ["ANA LUIZA DE FREITAS CARDOSO", "7ºF", "62981267484", "ALINE DE FREITAS SILVA CARDOSO"],
+        ["ANA LUIZA DE SOUSA CAMPOS", "7ºC", "62999120610", "CARLA DE OLIVEIRA CUNHA CAMPOS"],
+        ["ANA LUIZA DOS SANTOS CORDEIRO", "8ºG", "62998634848", "DANIELLA DOS SANTOS CORDEIRO"],
+        ["ANA LUIZA GOMES DE OLIVEIRA", "7ºG", "62984180479", "DANIELLA GOMES DE OLIVEIRA"],
+        ["ANA LUIZA MARQUES NUNES", "7ºB", "62981240320", "LARISSA MARQUES NUNES"],
+        ["ANA LUIZA PACHECO DE SOUSA", "6ºB", "62981643444", "LUCIANA PACHECO DE SOUSA"],
+        ["ANA LUIZA PEREIRA DE MELO", "8ºE", "62981156828", "FERNANDA PEREIRA DE MELO"],
+        ["ANA LUIZA ROCHA FERREIRA", "7ºG", "62981112260", "DENISE ROCHA DE OLIVEIRA"],
+        ["ANA LUIZA SILVA CARNEIRO", "7ºE", "62981182283", "ALINE BARBOSA DA SILVA CARNEIRO"],
+        ["ANA LUIZA VALE DE MORAIS", "8ºC", "62996160533", "FABIANA VALE DE MORAIS"],
+        ["YASMIN MELO COELHO", "7ºG", "62996449059", "JULIANA MELO RODRIGUES COELHO"],
+        ["YURI LIEBERENZ KAGAN", "8ºB", "62996379695", "ISABELLA LIEBERENZ CAMILO KAGAN"]
+      ];
+
+      const dl = document.getElementById('listaAlunosDatalist');
+      let html = '';
+      ALUNOS_DATA = nomes.map(n => {
+        const item = { aluno: n[0], turma: n[1], telefone: n[2], responsavel: n[3] };
+        MAPA_ALUNOS[n[0].toUpperCase()] = item;
+        html += `<option value="${n[0]}">${n[1]} — Resp: ${n[3]}</option>`;
+        return item;
+      });
+      dl.innerHTML = html;
+    }
+
+    // TROCA DE ABAS
+    function mudarAba(nomeAba) {
+      document.querySelectorAll('.aba-conteudo').forEach(el => el.style.display = 'none');
+      document.querySelectorAll('.aba-btn').forEach(btn => {
+        btn.classList.remove('border-[#1b4332]', 'text-[#1b4332]', 'font-bold');
+        btn.classList.add('border-transparent', 'text-gray-600');
+      });
+
+      const aba = document.getElementById('aba-' + nomeAba);
+      if (aba) aba.style.display = 'block';
+
+      const btn = document.getElementById('btn-aba-' + nomeAba);
+      if (btn) {
+        btn.classList.remove('border-transparent', 'text-gray-600');
+        btn.classList.add('border-[#1b4332]', 'text-[#1b4332]', 'font-bold');
       }
     }
 
-    function switchTab(tabId) {
-      document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
-      document.querySelectorAll('.tab-btn').forEach(btn => {
-        btn.classList.remove('border-[#1b4332]', 'text-[#1b4332]', 'font-semibold');
-        btn.classList.add('border-transparent');
-      });
-      document.getElementById(`content-${tabId}`).classList.remove('hidden');
-      const activeBtn = document.getElementById(`tab-${tabId}`);
-      activeBtn.classList.add('border-[#1b4332]', 'text-[#1b4332]', 'font-semibold');
-      activeBtn.classList.remove('border-transparent');
+    function completarInfoAluno(nome, labelId) {
+      const info = MAPA_ALUNOS[nome.trim().toUpperCase()];
+      const label = document.getElementById(labelId);
+      if (info) {
+        label.textContent = `Turma: ${info.turma} | Responsável: ${info.responsavel}`;
+      } else {
+        label.textContent = '';
+      }
     }
 
     function setAtrasoTurno(turno) {
@@ -716,21 +674,22 @@
       tbody.innerHTML = '';
       const q = filtro.toLowerCase().trim();
 
-      Object.keys(MAPA_ALUNOS).forEach(aluno => {
-        const info = MAPA_ALUNOS[aluno];
-        if (!q || aluno.toLowerCase().includes(q) || info.turma.toLowerCase().includes(q) || info.resp.toLowerCase().includes(q)) {
-          tbody.innerHTML += `
-            <tr class="border-b hover:bg-gray-50">
-              <td class="p-2.5 border font-semibold">${aluno}</td>
-              <td class="p-2.5 border">${info.turma}</td>
-              <td class="p-2.5 border">${info.resp}</td>
-              <td class="p-2.5 border font-mono text-emerald-700">${info.tel}</td>
-              <td class="p-2.5 border text-center">
-                <a href="https://wa.me/55${info.tel}" target="_blank" class="bg-emerald-600 text-white px-2 py-1 rounded text-[11px] hover:bg-emerald-700">WhatsApp</a>
-              </td>
-            </tr>
-          `;
-        }
+      const lista = q 
+        ? ALUNOS_DATA.filter(a => a.aluno.toLowerCase().includes(q) || a.turma.toLowerCase().includes(q) || a.responsavel.toLowerCase().includes(q))
+        : ALUNOS_DATA.slice(0, 100);
+
+      lista.forEach(c => {
+        tbody.innerHTML += `
+          <tr class="border-b hover:bg-gray-50">
+            <td class="p-2.5 border font-semibold">${c.aluno}</td>
+            <td class="p-2.5 border">${c.turma}</td>
+            <td class="p-2.5 border">${c.responsavel}</td>
+            <td class="p-2.5 border font-mono text-emerald-700">${c.telefone}</td>
+            <td class="p-2.5 border text-center">
+              <a href="https://wa.me/55${c.telefone}" target="_blank" class="bg-emerald-600 text-white px-2 py-1 rounded text-[11px] hover:bg-emerald-700">WhatsApp</a>
+            </td>
+          </tr>
+        `;
       });
     }
 
@@ -743,6 +702,27 @@
       const sel = document.getElementById('profNome');
       sel.innerHTML = '';
       (PROFESSORES_DATA[s] || []).forEach(p => sel.innerHTML += `<option value="${p}">${p}</option>`);
+    }
+
+    function salvarSalaEstudos(e) {
+      e.preventDefault();
+      const item = {
+        id: Date.now(),
+        data: document.getElementById('seData').value,
+        professor: document.getElementById('seProfessor').value,
+        silencio: document.querySelector('input[name="ind_silencio"]:checked').value,
+        foco: document.querySelector('input[name="ind_foco"]:checked').value,
+        celular: document.querySelector('input[name="ind_celular"]:checked').value,
+        organizacao: document.querySelector('input[name="ind_org"]:checked').value,
+        apostila: document.getElementById('chkApostila').checked,
+        respostas: document.getElementById('chkRespostas').checked,
+        erro: document.getElementById('chkErro').checked,
+        ativo: document.getElementById('chkAtivo').checked,
+        ocorrencia: document.getElementById('seOcorrencia').value
+      };
+      salaEstudosList.unshift(item);
+      localStorage.setItem('escola_sala_estudos', JSON.stringify(salaEstudosList));
+      alert('Relatório diário salvo com sucesso!');
     }
 
     function salvarOcorrenciaProfessor(e) {
