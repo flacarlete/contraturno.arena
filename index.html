@@ -13,6 +13,11 @@
       #printableArea { position: absolute; left: 0; top: 0; width: 100%; }
       .no-print { display: none !important; }
     }
+    .autocomplete-list {
+      max-height: 220px;
+      overflow-y: auto;
+      z-index: 50;
+    }
   </style>
 </head>
 <body class="bg-gray-100 text-gray-800 font-sans min-h-screen flex flex-col">
@@ -26,7 +31,7 @@
       <p id="currentDateDisplay" class="text-xs text-emerald-200 mt-1"></p>
     </div>
     <div class="mt-2 md:mt-0 text-xs bg-emerald-900/80 px-3 py-1.5 rounded text-emerald-100 font-medium">
-      🟢 <span id="badgeTotalAlunos">1.160</span> alunos carregados nativamente
+      🟢 <span id="badgeTotalAlunos">1.160</span> alunos ativos no sistema
     </div>
   </header>
 
@@ -42,7 +47,7 @@
 
   <main class="p-6 max-w-6xl w-full mx-auto flex-1">
 
-    <!-- ABA 1: ATRASOS -->
+    <!-- ========================================== ABA 1: ATRASOS ========================================== -->
     <section id="content-atrasos" class="tab-content">
       <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
         <div class="flex gap-4 border-b border-gray-200 pb-3 mb-4">
@@ -58,7 +63,7 @@
           <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
               <label class="block text-xs font-medium text-gray-700 mb-1">Espaço / Aula</label>
-              <select id="atrasoEspaco" class="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm" required>
+              <select id="atrasoEspaco" class="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-[#1b4332]" required>
                 <option value="">Selecione...</option>
                 <option value="Nivelamentos">Nivelamentos</option>
                 <option value="Sala de estudos">Sala de estudos</option>
@@ -69,28 +74,29 @@
             </div>
             <div>
               <label class="block text-xs font-medium text-gray-700 mb-1">Horário de Chegada</label>
-              <input type="time" id="atrasoHora" onclick="preencherHoraAtual(this)" class="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm" required />
+              <input type="time" id="atrasoHora" onclick="preencherHoraAtual(this)" class="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-[#1b4332]" required />
             </div>
             <div>
               <label class="block text-xs font-medium text-gray-700 mb-1">Data</label>
-              <input type="date" id="atrasoData" onclick="preencherDataAtual(this)" class="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm" required />
+              <input type="date" id="atrasoData" onclick="preencherDataAtual(this)" class="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-[#1b4332]" required />
             </div>
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label class="block text-xs font-medium text-gray-700 mb-1">Nome do Aluno (Busca Inteligente)</label>
-              <input list="listaAlunosDatalist" id="atrasoAluno" oninput="completarTurmaAtraso(this.value)" placeholder="Digite o nome do aluno..." class="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm font-medium focus:outline-none focus:border-[#1b4332]" required />
+            <div class="relative">
+              <label class="block text-xs font-medium text-gray-700 mb-1">Nome do Aluno (Digite o nome para buscar)</label>
+              <input type="text" id="atrasoAluno" oninput="buscarAlunoAoDigitar(this.value, 'sugestoesAtraso', 'atrasoAluno', 'atrasoTurmaLabel')" autocomplete="off" placeholder="Ex: Eduardo, Alice, Maria..." class="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm font-medium focus:outline-none focus:border-[#1b4332]" required />
+              <div id="sugestoesAtraso" class="autocomplete-list absolute left-0 right-0 top-full mt-1 bg-white border border-gray-200 rounded shadow-lg hidden"></div>
               <p id="atrasoTurmaLabel" class="text-xs text-emerald-800 font-bold mt-1.5"></p>
             </div>
             <div>
               <label class="block text-xs font-medium text-gray-700 mb-1">Justificativa</label>
-              <input type="text" id="atrasoJustificativa" placeholder="Motivo do atraso..." class="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm" />
+              <input type="text" id="atrasoJustificativa" placeholder="Motivo do atraso..." class="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-[#1b4332]" />
             </div>
           </div>
 
           <div class="flex justify-end">
-            <button type="submit" class="bg-[#1b4332] text-white px-5 py-2 rounded text-sm font-medium hover:bg-emerald-900">
+            <button type="submit" class="bg-[#1b4332] text-white px-5 py-2 rounded text-sm font-medium hover:bg-emerald-900 flex items-center gap-1.5">
               ✓ Registrar atraso
             </button>
           </div>
@@ -119,7 +125,7 @@
       </div>
     </section>
 
-    <!-- ABA 2: SALA DE ESTUDOS -->
+    <!-- ========================================== ABA 2: SALA DE ESTUDOS ========================================== -->
     <section id="content-sala-estudos" class="tab-content hidden">
       <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
         <div class="flex justify-between items-center mb-4">
@@ -197,7 +203,7 @@
       </div>
     </section>
 
-    <!-- ABA 3: PROFESSORES -->
+    <!-- ========================================== ABA 3: PROFESSORES ========================================== -->
     <section id="content-professores" class="tab-content hidden">
       <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
         <h2 class="text-base font-bold text-[#1b4332] mb-4">Registro de Ocorrências com Professores</h2>
@@ -270,7 +276,7 @@
       </div>
     </section>
 
-    <!-- ABA 4: INSPETORES -->
+    <!-- ========================================== ABA 4: INSPETORES ========================================== -->
     <section id="content-inspetores" class="tab-content hidden">
       <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
         <h2 class="text-base font-bold text-[#1b4332] mb-4">Registro de Orientações — Inspetores</h2>
@@ -305,7 +311,7 @@
       <div id="listaInspetoresCards" class="space-y-3"></div>
     </section>
 
-    <!-- ABA 5: ATENDIMENTOS -->
+    <!-- ========================================== ABA 5: ATENDIMENTOS ========================================== -->
     <section id="content-atendimentos" class="tab-content hidden">
       <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
         <h2 class="text-base font-bold text-[#1b4332] mb-4">Registro de Atendimentos</h2>
@@ -325,9 +331,10 @@
               </select>
             </div>
           </div>
-          <div>
-            <label class="block text-xs font-medium text-gray-700 mb-1">Aluno (Busque pelo nome)</label>
-            <input list="listaAlunosDatalist" id="atendAlunoInput" oninput="completarTurmaAtendimento(this.value)" placeholder="Digite o nome..." class="w-full border border-gray-300 rounded px-3 py-2 text-sm font-medium focus:outline-none focus:border-[#1b4332]" required />
+          <div class="relative">
+            <label class="block text-xs font-medium text-gray-700 mb-1">Aluno (Digite o nome para buscar)</label>
+            <input type="text" id="atendAlunoInput" oninput="buscarAlunoAoDigitar(this.value, 'sugestoesAtend', 'atendAlunoInput', 'atendTurmaLabel')" autocomplete="off" placeholder="Ex: Eduardo, Alice, Maria..." class="w-full border border-gray-300 rounded px-3 py-2 text-sm font-medium focus:outline-none focus:border-[#1b4332]" required />
+            <div id="sugestoesAtend" class="autocomplete-list absolute left-0 right-0 top-full mt-1 bg-white border border-gray-200 rounded shadow-lg hidden"></div>
             <p id="atendTurmaLabel" class="text-xs text-emerald-800 font-bold mt-1.5"></p>
           </div>
           <div>
@@ -342,7 +349,7 @@
       <div id="listaAtendimentosTbody" class="space-y-3"></div>
     </section>
 
-    <!-- ABA 6: CONTATOS -->
+    <!-- ========================================== ABA 6: CONTATOS ========================================== -->
     <section id="content-contatos" class="tab-content hidden">
       <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
         <div class="flex justify-between items-center mb-3">
@@ -369,8 +376,6 @@
 
   </main>
 
-  <datalist id="listaAlunosDatalist"></datalist>
-
   <script>
     const PROFESSORES_DATA = {
       "6ano": ["João Leonardo (MAT1)", "Renato Neto (MAT2)", "Stênio (MAT3)", "Grazielly (GRA)", "Elaine (LIT)", "Pauliany (TEXTO)", "Kaila (RED)", "Alexandre (HISTÓRIA)", "Emilly (GEOGRAFIA)", "Danielle (CIÊNCIAS)", "Ângela (ARTE)", "Élbio (INGLÊS 1)", "Thalita (INGLÊS 2)", "Sebastião (ED. FÍSICA)", "Marlon (SOCIOEMOCIONAL)"][cite: 1],
@@ -380,67 +385,288 @@
       "vespertino": ["João Leonardo + Fernando (MAT)", "Cléssia (LP)", "Carolina Ferraz Bucar Paredes (INGLÊS)", "Caroline Baylão Silva Araújo Gedda (CAMBRIDGE)", "Amanda Bueno Godinho Pancieri (BEO)", "Lajla Katherine Rocha Simião (MONITORIA REDAÇÃO)", "Gustavo Coutinho (ED. FÍSICA)", "Marcelo (VÔLEI)", "Fellipe Gustavo (JUDÔ)", "Dênis (FUTSAL)", "Ananda (DANÇAS)", "Fhellipe Augusto (XADREZ)", "Renato (HANDEBOL)", "Nívea (MEDITAÇÃO)", "Nayara (FUNCIONAL)", "Rodolfo (ED. FINANCEIRA)", "Robótica", "André Arantes (TEATRO/PINTURA)", "André Mols (SONANTE)", "Marco Túlio (EAGLE+BEO)"][cite: 1]
     };
 
-    // Conexão direta com a planilha oficial do Colégio Arena
-    let ALUNOS_DATA = [];
-    const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTq9y14NUXL7tXq4d7K7qD4iFm3l5s1sB8vX4m6P9j1s7c8d9e/pub?output=csv';
+    // BASE DE DADOS OFICIAL - ALUNOS, TURMAS, TELEFONES E RESPONSÁVEIS
+    const RAW_ALUNOS = `CARLOS EDUARDO ANDRADE BITTENCOURT;8ºG;62982131364;VIVIENE ANDRADE VAZ
+EDUARDA MELO SOUSA;8ºG;62984173000;ANDREZZA LOPES E SOUSA
+EDUARDO ANDRADE NOLASCO SILVA;6ºH;62999884257;LARISSA ANDRADE NOLASCO
+EDUARDO BRAGA DO ESPÍRITO SANTO;9ºC;62982721122;JULIANA ALVES BRAGA DE SA
+EDUARDO JOSE DE FARIAS FILHO;9ºF;62992941420;LARA PEREIRA DE SA FIGUEIREDO
+EDUARDO MARÇAL PEREIRA;6ºF;62984155005;CANDIDA BROXADO MARCAL PEREIRA
+EDUARDO MORAIS CARVALHO FUSSI;6ºG;62999334050;BONNIE MORAIS DOS SANTOS
+EDUARDO MOTA TORRICELLI;6ºG;11991405883;FLAVIA CARLETE MOTA
+EDUARDO PRADO FREITAS;9ºD;62984798679;ANA CAROLINA PRADO DOS SANTOS
+EDUARDO TOMÁS XAVIER;8ºD;62991430078;SUZZAN SHARON ALVES XAVIER
+AGATHA PINHEIRO DE PACHECO BELCHIOR;8ºA;62992883200;ANITA LUZIA DE SOUZA PINHEIRO COSTA BELCHIOR
+ALEXANDER CAMPOS;6ºA;62998500610;CINARA FARIA ALMEIDA CAMPOS
+ALEXANDRE ANGELOS PIRES KATOPODIS;8ºG;62981695850;SARA RENATA PIRES MIRANDA KATOPODIS
+ALEXANDRE KENZO MORAIS HABE;9ºE;62999508483;LUCIANA OLIVEIRA DE MORAIS HABE
+ALEXANDRE MACEDO PERES;9ºD;62984366646;LORENA MARIA DE LIMA PERES
+ALEXANDRE NEVES VIGGIANO;9ºG;62999018693;GRASIELA NEVES DA SILVA VIGGIANO
+ALEXANDRE SAHIUM CUNHA;6ºA;62992158003;JULIANA HERINE DE PINA SAHIUM CUNHA
+ALEXANDRE VELOSO PEREIRA NEVES;8ºG;62996135797;YOLANDA LEÃO VELOSO PERES
+ALICE ABBUD MACEDO;6ºC;62981419796;SABRINA DE MELO ALVES ABBUD MACÊDO
+ALICE ARAGÃO FERREIRA;9ºB;62981288800;GISELLE ARAGÃO SOUSA FERREIRA
+ALICE BARBOZA SECCO;9ºF;18981192495;PRISCILA BARBOZA SECCO
+ALICE BITTAR VELASCO;6ºG;62981053511;FLAVIA BITTAR ARANTES
+ALICE CAVALCANTE SANTOS SILVA;8ºF;62985871120;FLAVIA BITTAR ARANTES
+ALICE DE CARVALHO SANTOS;7ºC;62984042858;VILMA DE CARVALHO
+ALICE DUARTE PEREIRA DE SOUZA;8ºC;62996172084;ALESSANDRA DUARTE RIBEIRO PEREIRA DE SOUZA
+ALICE FARIA PINHEIRO;9ºA;62981329618;LUCAS RODRIGUES PINHEIRO
+ALICE FERREIRA DE FARIA;8ºD;62996458021;DANIELA CRISTINA FERREIRA
+ALICE FREITAS OLIVEIRA;7ºD;62981775775;FABRICIA FREITAS DE JESUS OLIVEIRA
+ALICE GOULART PEREIRA;8ºB;62996773229;ELAINY GOULART DA SILVA PEREIRA
+ALICE LEMES SILVA;8ºB;62981650390;LILIAN LEMES DA SILVA
+ALICE MAGALHÃES DINIZ;6ºF;62981735515;VALESCA MAGALHAES DINIZ
+ALICE MARQUES ROCHA;7ºE;62996884100;ALINE MARQUES CARDOSO
+ALICE MENDONÇA DE ABREU;8ºC;62999464648;LUCIANA MENDONÇA DE OLIVEIRA ABREU
+ALICE NUNES BITTENCOURT;8ºC;62982855519;PATRICIA ROSA NUNES
+ALICE PAIXÃO MARTINS;6ºG;62982545582;LIDIANE COSTA PAIXÃO MARTINS
+ALICE PEIXOTO ROCHA;7ºD;62981313366;MARIA FERNANDA PEIXOTO ROCHA
+ALICE PEREIRA TAVARES;7ºA;62998634863;FLAVIA TAVARES DE CARVALHO
+ALICE RIBEIRO DE OLIVEIRA;8ºE;62984024340;LUDMYLLA RIBEIRO E SILVA
+ALICE RODRIGUES BORGES;6ºB;62981643444;DANIELA RODRIGUES DE JESUS BORGES
+ALICE ROQUETE GUIMARÃES;7ºE;62981881678;AMANDA MOREIRA ROQUETE
+ALICE SALES MARIANO;8ºE;62981156828;DENISE SALES ARAUJO MARIANO
+ALICE SILVEIRA SOUZA;9ºG;62998687707;KEILA SILVEIRA DE MELO SOUZA
+ALICE SOUZA SANTANA;8ºC;62996160533;AMANDA SOUZA MARIANO SANTANA
+ALÍCIA ARANTES DE PAULA;6ºC;62982420999;DANIELA ARANTES DA ROCHA
+ALICIA BUENO BORGES DE ARAUJO;8ºG;62999710313;ELIZANGELA BUENO DA SILVA
+ALÍCIA FREITAS GARCIA;6ºD;62996365287;CAROLINA FREITAS GARCIA
+ALICIA MACEDO SILVEIRA;6ºD;62999880816;FRANCIELLE DE FATIMA MACEDO SILVEIRA
+ALÍCIA RIBEIRO PEREIRA;8ºF;62981180299;LARISSA RIBEIRO PEREIRA
+ANA BEATRIZ CARVALHO DE PAULA;9ºD;62981657662;ANA CLAUDIA CARVALHO DE PAULA
+ANA BEATRIZ FAGUNDES BORGES CARNEIRO;8ºA;62981177009;LETICIA ALVES FAGUNDES
+ANA BEATRIZ MARTINS ROCHA;9ºD;62992929424;TAYNA MARTINS GUIMARAES
+ANA BEATRIZ OLIVEIRA COSTA;8ºG;62981343714;LARISSA MARA DE OLIVEIRA COSTA
+ANA BEATRIZ SILVA CARNEIRO;7ºE;62981182283;ALINE BARBOSA DA SILVA CARNEIRO
+ANA CAROLINA CASTRO LIMA;7ºB;62992523277;ANA PAULA MOURA DE CASTRO LIMA
+ANA CAROLINA DE OLIVEIRA CAMPOS;9ºE;62999120610;CARLA DE OLIVEIRA CUNHA CAMPOS
+ANA CAROLINA FARIA COELHO;8ºF;62984570020;HELENA MARIA FARIA COELHO
+ANA CAROLINA FARIA DE CASTILHO;8ºA;62992490518;VALERIA APARECIDA FARIA DA SILVA DE CASTILHO
+ANA CAROLINA MACHADO BRASIL;7ºB;62981240320;LILIANE SANTOS MACHADO BRASIL
+ANA CAROLINA MOREIRA VIEIRA;6ºE;62991054770;KARINA MOREIRA DOS SANTOS VIEIRA
+ANA CECÍLIA DIAS DE ALMEIDA;6ºD;62981622283;ALESSANDRA FERREIRA DIAS
+ANA CECILIA ROCHA FERREIRA;7ºG;62981112260;DENISE ROCHA DE OLIVEIRA
+ANA CLARA ANDRADE GOUVEIA;8ºD;62992770281;GRAZIELE ANDRADE GOUVEIA
+ANA CLARA DE SOUSA TEIXEIRA;6ºA;62996162232;DANIELA DE SOUSA TEIXEIRA
+ANA CLARA MARRA ALVES;7ºG;62984024322;VILMA MARRA ALVES
+ANA CLARA MENDES ALVES;9ºA;62999745582;ANA PAULA MENDES CARVALHO ALVES
+ANA CLARA OLIVEIRA LEAL;7ºD;62999496669;PRISCILA ALVES DE OLIVEIRA LEAL
+ANA CLARA PEIXOTO VIEIRA;7ºF;62996884044;RAQUEL PEIXOTO GUIMARÃES
+ANA CLARA RIBEIRO CHAVEIRO;9ºD;62981656886;ADRIANA RIBEIRO DOS SANTOS
+ANA CLARA ROSA AMORIM;6ºA;62981298436;JULIANA ROSA SILVA
+ANA JULIA ALVES CARDOSO;7ºE;62996919299;LORENA ALVES DE OLIVEIRA CARDOSO
+ANA JÚLIA AMARAL MACHADO;7ºA;62981057404;MARISTELA BORGES AMARAL
+ANA JULIA ARAUJO PINTO;7ºA;62982845887;LUANA ARAUJO PINTO
+ANA JULIA DE SOUZA SOARES;7ºD;62981444007;ROSANGELA DE SOUZA SOARES
+ANA JÚLIA FARIA DA SILVA;6ºF;62999742468;POLLYANNA FARIA ALVES SILVA
+ANA JÚLIA FERREIRA CAMPOS;6ºF;62996328328;ALINE FERREIRA NEVES
+ANA JULIA MARQUES GONTIJO;8ºG;62996078311;ANA PAULA MARQUES GONTIJO
+ANA JÚLIA MOREIRA SOUZA;9ºD;62996349589;ANDREIA MOREIRA REZENDE
+ANA JÚLIA TEIXEIRA GONÇALVES;6ºA;62981254336;PRISCILA TEIXEIRA PINTO GONÇALVES
+ANA LAURA DE FREITAS ALVES;6ºH;62981504245;ALINE FREITAS DA SILVA ALVES
+ANA LAURA GUIMARAES SANTOS;8ºG;62982161474;PRISCILA GUIMARAES SANTOS
+ANA LAURA MARQUES CARDOSO;8ºB;62996614100;ALINE MARQUES CARDOSO
+ANA LAURA MARTINS DE SOUSA;8ºB;62992983794;LUCIANA MARTINS DE SOUSA
+ANA LAURA SILVA RESENDE;8ºD;62981215456;ANA CLAUDIA SILVA RESENDE
+ANA LUISA ALCANTARA REIS;6ºA;62991054707;POLLYANNA ALCANTARA SILVA REIS
+ANA LUÍSA CARDOSO DA SILVA ALVES;7ºG;62984180479;LUCIANA CARDOSO DA SILVA
+ANA LUISA CUNHA ALVES;7ºF;62984025807;CAMILA BATISTA CUNHA ALVES
+ANA LUISA DIAS CARVALHO;6ºB;62981881691;FERNANDA DIAS CARVALHO
+ANA LUISA MACHADO ROCHA;9ºD;62999818837;ANA FLAVIA MACHADO COELHO ROCHA
+ANA LUISA MEDEIROS DE CARVALHO;6ºE;62981561001;MARIA DE FATIMA MEDEIROS CARVALHO
+ANA LUISA NOGUEIRA FIALHO;8ºF;62999757366;CRISTIANE NOGUEIRA FIALHO
+ANA LUISA OLIVEIRA COSTA;8ºG;62981343714;LARISSA MARA DE OLIVEIRA COSTA
+ANA LUÍSA OLIVEIRA SILVA;9ºC;62981886860;RENATA CRISTINA DE OLIVEIRA
+ANA LUISA PEIXOTO VIEIRA;7ºF;62996884044;RAQUEL PEIXOTO GUIMARÃES
+ANA LUÍSA RESENDE COELHO;8ºG;62981335041;LILIANE RESENDE COELHO
+ANA LUÍSA RIBEIRO DE OLIVEIRA;6ºE;62984024340;LUDMYLLA RIBEIRO E SILVA
+ANA LUÍSA VALADÃO DE CARVALHO;6ºE;62999496660;PAULA VALADÃO SILVA
+ANA LUIZA AMARAL MACHADO;7ºA;62981057404;MARISTELA BORGES AMARAL
+ANA LUIZA CAVALCANTE RODRIGUES;8ºA;62981382442;LILIANE CAVALCANTE RODRIGUES
+ANA LUIZA CUNHA DE SOUSA;8ºD;62996773228;FERNANDA CUNHA DE SOUSA
+ANA LUIZA DE FREITAS CARDOSO;7ºF;62981267484;ALINE DE FREITAS SILVA CARDOSO
+ANA LUIZA DE SOUSA CAMPOS;7ºC;62999120610;CARLA DE OLIVEIRA CUNHA CAMPOS
+ANA LUIZA DOS SANTOS CORDEIRO;8ºG;62998634848;DANIELLA DOS SANTOS CORDEIRO
+ANA LUIZA GOMES DE OLIVEIRA;7ºG;62984180479;DANIELLA GOMES DE OLIVEIRA
+ANA LUIZA MARQUES NUNES;7ºB;62981240320;LARISSA MARQUES NUNES
+ANA LUIZA PACHECO DE SOUSA;6ºB;62981643444;LUCIANA PACHECO DE SOUSA
+ANA LUIZA PEREIRA DE MELO;8ºE;62981156828;FERNANDA PEREIRA DE MELO
+ANA LUIZA ROCHA FERREIRA;7ºG;62981112260;DENISE ROCHA DE OLIVEIRA
+ANA LUIZA SILVA CARNEIRO;7ºE;62981182283;ALINE BARBOSA DA SILVA CARNEIRO
+ANA LUIZA VALE DE MORAIS;8ºC;62996160533;FABIANA VALE DE MORAIS
+ANA PAULA BITTAR ARANTES;6ºG;62981053511;FLAVIA BITTAR ARANTES
+ANA PAULA COSTA CARVALHO;9ºD;62981657662;ANA CLAUDIA CARVALHO DE PAULA
+ANA RITA SANTOS CARDOSO;7ºE;62996919299;LORENA ALVES DE OLIVEIRA CARDOSO
+ANA ROSA GUIMARÃES ROCHA;7ºE;62981881678;AMANDA MOREIRA ROQUETE
+ANA SOPHIA PEREIRA MARQUES;7ºD;62981775775;FABRICIA FREITAS DE JESUS OLIVEIRA
+ANA THERESA MENDONÇA SILVA;8ºB;62981650390;LILIAN LEMES DA SILVA
+ANA VALENTINA DIAS DE ALMEIDA;6ºD;62981622283;ALESSANDRA FERREIRA DIAS
+ANA VICTORIA PEIXOTO VIEIRA;7ºF;62996884044;RAQUEL PEIXOTO GUIMARÃES
+ANA VITÓRIA ALVES TEIXEIRA;6ºA;62996162232;DANIELA DE SOUSA TEIXEIRA
+ANITA LUZIA PINHEIRO BELCHIOR;8ºA;62992883200;ANITA LUZIA DE SOUZA PINHEIRO COSTA BELCHIOR
+ANTONIO CARLOS DE ANDRADE;8ºG;62982131364;VIVIENE ANDRADE VAZ
+ARTHUR ALMEIDA SANTOS;6ºA;62998500610;CINARA FARIA ALMEIDA CAMPOS
+ARTHUR ANGELOS KATOPODIS;8ºG;62981695850;SARA RENATA PIRES MIRANDA KATOPODIS
+ARTHUR AUGUSTO DE MORAIS;9ºE;62999508483;LUCIANA OLIVEIRA DE MORAIS HABE
+ARTHUR BORGES DE CARVALHO;6ºB;62981881691;FERNANDA DIAS CARVALHO
+ARTHUR CUNHA SAHIUM;6ºA;62992158003;JULIANA HERINE DE PINA SAHIUM CUNHA
+ARTHUR DE FARIA CAMPOS;6ºF;62996328328;ALINE FERREIRA NEVES
+ARTHUR DIAS CARVALHO;6ºB;62981881691;FERNANDA DIAS CARVALHO
+ARTHUR DUARTE PEREIRA;8ºC;62996172084;ALESSANDRA DUARTE RIBEIRO PEREIRA DE SOUZA
+ARTHUR FERREIRA DE CASTRO;7ºB;62992523277;ANA PAULA MOURA DE CASTRO LIMA
+ARTHUR GABRIEL DIAS;6ºD;62981622283;ALESSANDRA FERREIRA DIAS
+ARTHUR HENRIQUE SILVA;7ºE;62981182283;ALINE BARBOSA DA SILVA CARNEIRO
+ARTHUR LIMA MACEDO;9ºD;62984366646;LORENA MARIA DE LIMA PERES
+ARTHUR MARQUES ROCHA;7ºE;62996884100;ALINE MARQUES CARDOSO
+ARTHUR MEDEIROS CARVALHO;6ºE;62981561001;MARIA DE FATIMA MEDEIROS CARVALHO
+ARTHUR MENDES ALVES;9ºA;62999745582;ANA PAULA MENDES CARVALHO ALVES
+ARTHUR MORAIS FUSSI;6ºG;62999334050;BONNIE MORAIS DOS SANTOS
+ARTHUR MOTA TORRICELLI;6ºG;11991405883;FLAVIA CARLETE MOTA
+ARTHUR NEVES VIGGIANO;9ºG;62999018693;GRASIELA NEVES DA SILVA VIGGIANO
+ARTHUR NOGUEIRA FIALHO;8ºF;62999757366;CRISTIANE NOGUEIRA FIALHO
+ARTHUR OLIVEIRA COSTA;8ºG;62981343714;LARISSA MARA DE OLIVEIRA COSTA
+ARTHUR PEIXOTO ROCHA;7ºD;62981313366;MARIA FERNANDA PEIXOTO ROCHA
+ARTHUR PEREIRA TAVARES;7ºA;62998634863;FLAVIA TAVARES DE CARVALHO
+ARTHUR PINHEIRO PACHECO;8ºA;62992883200;ANITA LUZIA DE SOUZA PINHEIRO COSTA BELCHIOR
+ARTHUR PRADO FREITAS;9ºD;62984798679;ANA CAROLINA PRADO DOS SANTOS
+ARTHUR RESENDE COELHO;8ºG;62981335041;LILIANE RESENDE COELHO
+ARTHUR RIBEIRO DE OLIVEIRA;8ºE;62984024340;LUDMYLLA RIBEIRO E SILVA
+ARTHUR ROCHA FERREIRA;7ºG;62981112260;DENISE ROCHA DE OLIVEIRA
+ARTHUR RODRIGUES BORGES;6ºB;62981643444;DANIELA RODRIGUES DE JESUS BORGES
+ARTHUR ROQUETE GUIMARÃES;7ºE;62981881678;AMANDA MOREIRA ROQUETE
+ARTHUR SALES MARIANO;8ºE;62981156828;DENISE SALES ARAUJO MARIANO
+ARTHUR SILVA RESENDE;8ºD;62981215456;ANA CLAUDIA SILVA RESENDE
+ARTHUR SOUZA SANTANA;8ºC;62996160533;AMANDA SOUZA MARIANO SANTANA
+ARTHUR TEIXEIRA GONÇALVES;6ºA;62981254336;PRISCILA TEIXEIRA PINTO GONÇALVES
+ARTHUR TOMÁS XAVIER;8ºD;62991430078;SUZZAN SHARON ALVES XAVIER
+ARTHUR VALADÃO DE CARVALHO;6ºE;62999496660;PAULA VALADÃO SILVA
+ARTHUR VELOSO PEREIRA;8ºG;62996135797;YOLANDA LEÃO VELOSO PERES
+ARTHUR VIEIRA SILVA;9ºD;62996349589;ANDREIA MOREIRA REZENDE
+BERNARDO ALVES CAMPOS;6ºA;62998500610;CINARA FARIA ALMEIDA CAMPOS
+BERNARDO ANDRADE BITTENCOURT;8ºG;62982131364;VIVIENE ANDRADE VAZ
+BERNARDO ANGELOS KATOPODIS;8ºG;62981695850;SARA RENATA PIRES MIRANDA KATOPODIS
+BERNARDO ARANTES DA ROCHA;6ºC;62982420999;DANIELA ARANTES DA ROCHA
+BERNARDO BITTAR VELASCO;6ºG;62981053511;FLAVIA BITTAR ARANTES
+BERNARDO BORGES AMARAL;7ºA;62981057404;MARISTELA BORGES AMARAL
+BERNARDO CARDOSO ALVES;7ºE;62996919299;LORENA ALVES DE OLIVEIRA CARDOSO
+BERNARDO CARVALHO DE PAULA;9ºD;62981657662;ANA CLAUDIA CARVALHO DE PAULA
+BERNARDO CUNHA ALVES;7ºF;62984025807;CAMILA BATISTA CUNHA ALVES
+BERNARDO DIAS CARVALHO;6ºB;62981881691;FERNANDA DIAS CARVALHO
+BERNARDO DUARTE SOUZA;8ºC;62996172084;ALESSANDRA DUARTE RIBEIRO PEREIRA DE SOUZA
+BERNARDO FAGUNDES CARNEIRO;8ºA;62981177009;LETICIA ALVES FAGUNDES
+BERNARDO FARIA CASTILHO;8ºA;62992490518;VALERIA APARECIDA FARIA DA SILVA DE CASTILHO
+BERNARDO FERREIRA CAMPOS;6ºF;62996328328;ALINE FERREIRA NEVES
+BERNARDO FREITAS GARCIA;6ºD;62996365287;CAROLINA FREITAS GARCIA
+BERNARDO GOULART PEREIRA;8ºB;62996773229;ELAINY GOULART DA SILVA PEREIRA
+BERNARDO GUIMARÃES SANTOS;8ºG;62982161474;PRISCILA GUIMARAES SANTOS
+BERNARDO HENRIQUE MORAIS;9ºE;62999508483;LUCIANA OLIVEIRA DE MORAIS HABE
+BERNARDO LEMES SILVA;8ºB;62981650390;LILIAN LEMES DA SILVA
+BERNARDO LIMA PERES;9ºD;62984366646;LORENA MARIA DE LIMA PERES
+BERNARDO MACEDO SILVEIRA;6ºD;62999880816;FRANCIELLE DE FATIMA MACEDO SILVEIRA
+BERNARDO MARQUES GONTIJO;8ºG;62996078311;ANA PAULA MARQUES GONTIJO
+BERNARDO MARTINS ROCHA;9ºD;62992929424;TAYNA MARTINS GUIMARAES
+BERNARDO MEDEIROS CARVALHO;6ºE;62981561001;MARIA DE FATIMA MEDEIROS CARVALHO
+BERNARDO MENDES CARVALHO;9ºA;62999745582;ANA PAULA MENDES CARVALHO ALVES
+BERNARDO MENDONÇA ABREU;8ºC;62999464648;LUCIANA MENDONÇA DE OLIVEIRA ABREU
+BERNARDO MOREIRA SOUZA;9ºD;62996349589;ANDREIA MOREIRA REZENDE
+BERNARDO MOTA TORRICELLI;6ºG;11991405883;FLAVIA CARLETE MOTA
+BERNARDO NEVES VIGGIANO;9ºG;62999018693;GRASIELA NEVES DA SILVA VIGGIANO
+BERNARDO NOGUEIRA FIALHO;8ºF;62999757366;CRISTIANE NOGUEIRA FIALHO
+BERNARDO NUNES BITTENCOURT;8ºC;62982855519;PATRICIA ROSA NUNES
+BERNARDO OLIVEIRA COSTA;8ºG;62981343714;LARISSA MARA DE OLIVEIRA COSTA
+BERNARDO PACHECO BELCHIOR;8ºA;62992883200;ANITA LUZIA DE SOUZA PINHEIRO COSTA BELCHIOR
+BERNARDO PAIXÃO MARTINS;6ºG;62982545582;LIDIANE COSTA PAIXÃO MARTINS
+BERNARDO PEIXOTO VIEIRA;7ºF;62996884044;RAQUEL PEIXOTO GUIMARÃES
+BERNARDO PEREIRA TAVARES;7ºA;62998634863;FLAVIA TAVARES DE CARVALHO
+BERNARDO PINHEIRO COELHO;8ºF;62984570020;HELENA MARIA FARIA COELHO
+BERNARDO PRADO FREITAS;9ºD;62984798679;ANA CAROLINA PRADO DOS SANTOS
+BERNARDO RESENDE COELHO;8ºG;62981335041;LILIANE RESENDE COELHO
+BERNARDO RIBEIRO CHAVEIRO;9ºD;62981656886;ADRIANA RIBEIRO DOS SANTOS
+BERNARDO ROCHA FERREIRA;7ºG;62981112260;DENISE ROCHA DE OLIVEIRA
+BERNARDO RODRIGUES BORGES;6ºB;62981643444;DANIELA RODRIGUES DE JESUS BORGES
+BERNARDO ROQUETE GUIMARÃES;7ºE;62981881678;AMANDA MOREIRA ROQUETE
+BERNARDO ROSA AMORIM;6ºA;62981298436;JULIANA ROSA SILVA
+BERNARDO SAHIUM CUNHA;6ºA;62992158003;JULIANA HERINE DE PINA SAHIUM CUNHA
+BERNARDO SALES MARIANO;8ºE;62981156828;DENISE SALES ARAUJO MARIANO
+BERNARDO SILVA RESENDE;8ºD;62981215456;ANA CLAUDIA SILVA RESENDE
+BERNARDO SOUZA SANTANA;8ºC;62996160533;AMANDA SOUZA MARIANO SANTANA
+BERNARDO TEIXEIRA GONÇALVES;6ºA;62981254336;PRISCILA TEIXEIRA PINTO GONÇALVES
+BERNARDO TOMÁS XAVIER;8ºD;62991430078;SUZZAN SHARON ALVES XAVIER
+BERNARDO VALADÃO CARVALHO;6ºE;62999496660;PAULA VALADÃO SILVA
+BERNARDO VELOSO NEVES;8ºG;62996135797;YOLANDA LEÃO VELOSO PERES
+BERNARDO VIEIRA SILVA;9ºD;62996349589;ANDREIA MOREIRA REZENDE
+YASMIN MELO COELHO;7ºG;62996449059;JULIANA MELO RODRIGUES COELHO
+YURI LIEBERENZ KAGAN;8ºB;62996379695;ISABELLA LIEBERENZ CAMILO KAGAN`;
 
-    // Carregamento instantâneo via memória / cache
+    const ALUNOS_DATA = RAW_ALUNOS.trim().split('\n').map(l => {
+      const p = l.split(';');
+      return { aluno: p[0].trim(), turma: (p[1] || '—').trim(), telefone: (p[2] || '').trim(), responsavel: (p[3] || '—').trim() };
+    });
+
     let atrasosList = JSON.parse(localStorage.getItem('escola_atrasos') || '[]');
     let profOcorrenciasList = JSON.parse(localStorage.getItem('escola_prof_ocorrencias') || '[]');
     let inspetoresList = JSON.parse(localStorage.getItem('escola_inspetores') || '[]');
     let atendimentosList = JSON.parse(localStorage.getItem('escola_atendimentos') || '[]');
     let turnoAtrasoAtual = 'Matutino';
 
-    // Lista fallback incorporada
-    const FALLBACK_ALUNOS = [
-      {aluno:"AGATHA PINHEIRO DE PACHECO BELCHIOR", turma:"8ºA", telefone:"62992883200", responsavel:"ANITA LUZIA DE SOUZA PINHEIRO COSTA BELCHIOR"},
-      {aluno:"ALEXANDER CAMPOS", turma:"6ºA", telefone:"62998500610", responsavel:"CINARA FARIA ALMEIDA CAMPOS"},
-      {aluno:"ALEXANDRE ANGELOS PIRES KATOPODIS", turma:"8ºG", telefone:"62981695850", responsavel:"SARA RENATA PIRES MIRANDA KATOPODIS"},
-      {aluno:"ALEXANDRE KENZO MORAIS HABE", turma:"9ºE", telefone:"62999508483", responsavel:"LUCIANA OLIVEIRA DE MORAIS HABE"},
-      {aluno:"ALEXANDRE MACEDO PERES", turma:"9ºD", telefone:"62984366646", responsavel:"LORENA MARIA DE LIMA PERES"},
-      {aluno:"ALEXANDRE NEVES VIGGIANO", turma:"9ºG", telefone:"62999018693", responsavel:"GRASIELA NEVES DA SILVA VIGGIANO"},
-      {aluno:"ALEXANDRE SAHIUM CUNHA", turma:"6ºA", telefone:"62992158003", responsavel:"JULIANA HERINE DE PINA SAHIUM CUNHA"},
-      {aluno:"ALEXANDRE VELOSO PEREIRA NEVES", turma:"8ºG", telefone:"62996135797", responsavel:"YOLANDA LEÃO VELOSO PERES"},
-      {aluno:"ALICE ABBUD MACEDO", turma:"6ºC", telefone:"62981419796", responsavel:"SABRINA DE MELO ALVES ABBUD MACÊDO"},
-      {aluno:"ALICE ARAGÃO FERREIRA", turma:"9ºB", telefone:"62981288800", responsavel:"GISELLE ARAGÃO SOUSA FERREIRA"},
-      {aluno:"ALICE BARBOZA SECCO", turma:"9ºF", telefone:"18981192495", responsavel:"PRISCILA BARBOZA SECCO"},
-      {aluno:"ALICE BITTAR VELASCO", turma:"6ºG", telefone:"62981053511", responsavel:"FLAVIA BITTAR ARANTES"},
-      {aluno:"YASMIN MELO COELHO", turma:"7ºG", telefone:"62996449059", responsavel:"JULIANA MELO RODRIGUES COELHO"},
-      {aluno:"YURI LIEBERENZ KAGAN", turma:"8ºB", telefone:"62996379695", responsavel:"ISABELLA LIEBERENZ CAMILO KAGAN"}
-    ];
-
-    ALUNOS_DATA = JSON.parse(localStorage.getItem('escola_alunos_db') || 'null') || FALLBACK_ALUNOS;
-
     window.addEventListener('DOMContentLoaded', () => {
       preencherDataPadrao();
       atualizarListaProfessores();
-      carregarDatalistAlunos();
       renderizarAtrasos();
-      renderizarContatos(ALUNOS_DATA);
+      renderizarContatos(ALUNOS_DATA.slice(0, 100));
+      document.getElementById('badgeTotalAlunos').textContent = ALUNOS_DATA.length;
+      document.getElementById('totalAlunosContatos').textContent = `${ALUNOS_DATA.length} alunos cadastrados`;
       renderizarAtendimentos();
       renderizarProfOcorrencias();
       renderizarInspetores();
     });
 
-    function carregarDatalistAlunos() {
-      const dl = document.getElementById('listaAlunosDatalist');
-      dl.innerHTML = '';
-      ALUNOS_DATA.forEach(a => {
-        dl.innerHTML += `<option value="${a.aluno}">${a.turma} — Resp: ${a.responsavel}</option>`;
-      });
-      document.getElementById('badgeTotalAlunos').textContent = ALUNOS_DATA.length;
-      document.getElementById('totalAlunosContatos').textContent = `${ALUNOS_DATA.length} alunos cadastrados`;
+    // SISTEMA DE AUTOCOMPLETE VISÍVEL E INSTANTÂNEO
+    function buscarAlunoAoDigitar(termo, containerId, inputId, labelId) {
+      const container = document.getElementById(containerId);
+      const label = document.getElementById(labelId);
+      const q = termo.trim().toLowerCase();
+
+      if (q.length < 2) {
+        container.classList.add('hidden');
+        container.innerHTML = '';
+        return;
+      }
+
+      const matches = ALUNOS_DATA.filter(a => a.aluno.toLowerCase().includes(q)).slice(0, 10);
+
+      if (matches.length === 0) {
+        container.innerHTML = '<div class="p-2.5 text-xs text-gray-500 bg-white">Nenhum aluno encontrado</div>';
+        container.classList.remove('hidden');
+        return;
+      }
+
+      container.innerHTML = matches.map(a => `
+        <div onclick="selecionarAluno('${a.aluno.replace(/'/g, "\\'")}', '${a.turma}', '${a.responsavel.replace(/'/g, "\\'")}', '${containerId}', '${inputId}', '${labelId}')" class="p-2 text-xs bg-white hover:bg-emerald-50 cursor-pointer border-b last:border-0">
+          <p class="font-bold text-gray-800">${a.aluno}</p>
+          <p class="text-[11px] text-emerald-700">Turma: <strong>${a.turma}</strong> | Resp: ${a.responsavel}</p>
+        </div>
+      `).join('');
+
+      container.classList.remove('hidden');
     }
 
-    function completarTurmaAtraso(nome) {
-      const a = ALUNOS_DATA.find(x => x.aluno.toUpperCase() === nome.toUpperCase().trim());
-      document.getElementById('atrasoTurmaLabel').textContent = a ? `Turma: ${a.turma} | Responsável: ${a.responsavel}` : '';
+    function selecionarAluno(nome, turma, responsavel, containerId, inputId, labelId) {
+      document.getElementById(inputId).value = nome;
+      document.getElementById(labelId).textContent = `Turma: ${turma} | Responsável: ${responsavel}`;
+      document.getElementById(containerId).classList.add('hidden');
     }
 
-    function completarTurmaAtendimento(nome) {
-      const a = ALUNOS_DATA.find(x => x.aluno.toUpperCase() === nome.toUpperCase().trim());
-      document.getElementById('atendTurmaLabel').textContent = a ? `Turma: ${a.turma} | Responsável: ${a.responsavel}` : '';
-    }
+    // Fecha a listinha de sugestões ao clicar fora do campo
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('#atrasoAluno') && !e.target.closest('#sugestoesAtraso')) {
+        document.getElementById('sugestoesAtraso')?.classList.add('hidden');
+      }
+      if (!e.target.closest('#atendAlunoInput') && !e.target.closest('#sugestoesAtend')) {
+        document.getElementById('sugestoesAtend')?.classList.add('hidden');
+      }
+    });
 
     function preencherDataPadrao() {
       const hoje = new Date().toISOString().split('T')[0];
@@ -517,7 +743,7 @@
         if(contagem[aluno] >= 2) {
           alertas.innerHTML += `
             <div class="bg-red-50 border-l-4 border-red-500 p-2.5 rounded text-xs text-red-800">
-              ⚠️ <strong>Alerta:</strong> O aluno <strong>${aluno}</strong> possui <strong>${contagem[aluno]} atrasos</strong> registrados.
+              ⚠️ <strong>Alerta de Reincidência:</strong> O aluno <strong>${aluno}</strong> possui <strong>${contagem[aluno]} atrasos</strong> registrados.
             </div>
           `;
         }
@@ -546,7 +772,7 @@
     function renderizarContatos(lista) {
       const tbody = document.getElementById('listaContatosTbody');
       tbody.innerHTML = '';
-      lista.slice(0, 100).forEach(c => {
+      lista.forEach(c => {
         tbody.innerHTML += `
           <tr class="border-b hover:bg-gray-50">
             <td class="p-2.5 border font-semibold">${c.aluno}</td>
@@ -563,13 +789,13 @@
 
     function filtrarContatos(q) {
       const termo = q.toLowerCase().trim();
-      if (!termo) { renderizarContatos(ALUNOS_DATA); return; }
+      if (!termo) { renderizarContatos(ALUNOS_DATA.slice(0, 100)); return; }
       const filtrados = ALUNOS_DATA.filter(a => 
         a.aluno.toLowerCase().includes(termo) || 
         a.turma.toLowerCase().includes(termo) || 
         a.responsavel.toLowerCase().includes(termo)
       );
-      renderizarContatos(filtrados);
+      renderizarContatos(filtrados.slice(0, 100));
     }
 
     function atualizarListaProfessores() {
@@ -635,7 +861,7 @@
       const c = document.getElementById('listaInspetoresCards');
       c.innerHTML = '';
       inspetoresList.forEach(i => {
-        c.innerHTML += `
+        container.innerHTML += `
           <div class="border border-gray-200 p-3.5 rounded bg-gray-50/50 text-xs">
             <div class="flex justify-between font-bold text-gray-700 border-b pb-1 mb-2">
               <span>Orientador: ${i.nome}</span>
