@@ -7,7 +7,7 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     .aba-conteudo { display: none; }
-    .aba-btn.active { border-bottom: 3px solid #1b4332; color: #1b4332; font-weight: 700; }
+    .aba-btn.active { border-bottom: 3px solid #1b4332; color: #1b4332; font-weight: 700; background-color: #f0fdf4; }
     @media print {
       body * { visibility: hidden; }
       #printableProfArea, #printableProfArea *,
@@ -115,7 +115,7 @@
       <section id="aba-sala-estudos" class="aba-conteudo">
         <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
           <h2 class="text-base font-bold text-[#1b4332] mb-4">Controle Diário — Sala de Estudos e Biblioteca</h2>
-          <p class="text-xs text-gray-600">Ambiente exclusivo de acompanhamento e foco dos alunos.</p>
+          <p class="text-xs text-gray-600">Ambiente de acompanhamento e foco dos alunos.</p>
         </div>
       </section>
 
@@ -182,6 +182,8 @@
       if (salvo) {
         usuarioLogadoAtual = JSON.parse(salvo);
         exibirSistemaPrincipal();
+      } else {
+        entrarComoCoord();
       }
     });
 
