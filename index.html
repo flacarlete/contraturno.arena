@@ -8,8 +8,17 @@
   <style>
     @media print {
       body * { visibility: hidden; }
+      #printableProfArea, #printableProfArea *,
       #printableArea, #printableArea * { visibility: visible; }
-      #printableArea { position: absolute; left: 0; top: 0; width: 100%; }
+      #printableProfArea, #printableArea { 
+        position: absolute; 
+        left: 0; 
+        top: 0; 
+        width: 100%; 
+        background: white !important; 
+        padding: 0 !important;
+        margin: 0 !important;
+      }
       .no-print { display: none !important; }
     }
   </style>
@@ -186,6 +195,7 @@
               </div>
             </div>
 
+            <!-- Indicadores -->
             <div class="space-y-3">
               <h3 class="text-xs font-bold text-gray-700 uppercase tracking-wider mb-3 flex items-center gap-2">
                 <span class="bg-[#1b4332] text-white rounded-full w-5 h-5 flex items-center justify-center text-[10px]">1</span>
@@ -237,6 +247,7 @@
               </div>
             </div>
 
+            <!-- Padrão Ouro -->
             <div>
               <h3 class="text-xs font-bold text-gray-700 uppercase tracking-wider mb-2 flex items-center gap-2">
                 <span class="bg-[#1b4332] text-white rounded-full w-5 h-5 flex items-center justify-center text-[10px]">2</span>
@@ -250,6 +261,7 @@
               </div>
             </div>
 
+            <!-- Ocorrência com Busca Inteligente -->
             <div>
               <h3 class="text-xs font-bold text-gray-700 uppercase tracking-wider mb-2 flex items-center gap-2">
                 <span class="bg-[#1b4332] text-white rounded-full w-5 h-5 flex items-center justify-center text-[10px]">3</span>
@@ -272,10 +284,16 @@
         </div>
       </section>
 
-      <!-- ABA 3: PROFESSORES -->
+      <!-- ABA 3: PROFESSORES COM RELATÓRIO IMPRESSO -->
       <section id="aba-professores" class="aba-conteudo" style="display: none;">
-        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
-          <h2 class="text-base font-bold text-[#1b4332] mb-4">Registro de Ocorrências com Professores</h2>
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6 no-print">
+          <div class="flex justify-between items-center mb-4">
+            <h2 class="text-base font-bold text-[#1b4332]">Registro de Ocorrências com Professores</h2>
+            <button onclick="imprimirRelatorioProfessores()" class="bg-[#1b4332] text-white px-4 py-2 rounded text-xs font-semibold hover:bg-emerald-900 flex items-center gap-1.5 shadow">
+              🖨️ Gerar Relatório de Professores para Impressão
+            </button>
+          </div>
+
           <form id="formProfessores" onsubmit="salvarOcorrenciaProfessor(event)" class="space-y-4">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
@@ -332,21 +350,48 @@
           </form>
         </div>
 
-        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <h3 class="font-bold text-gray-700 text-sm mb-3">Histórico de Ocorrências Docentes</h3>
-          <table class="w-full text-left text-xs border border-gray-200">
-            <thead class="bg-gray-100 font-semibold text-gray-700">
-              <tr>
-                <th class="p-2 border">Data</th>
-                <th class="p-2 border">Professor / Matéria</th>
-                <th class="p-2 border">Chamada Pendente</th>
-                <th class="p-2 border">Atraso Entrada</th>
-                <th class="p-2 border">Atraso Intervalo</th>
-                <th class="p-2 border">Observações</th>
-              </tr>
-            </thead>
-            <tbody id="listaProfessoresTbody"></tbody>
-          </table>
+        <!-- Bloco de Impressão e Tabela de Professores -->
+        <div id="printableProfArea" class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+          <div class="border-b pb-3 mb-4 flex flex-col md:flex-row justify-between items-start md:items-center">
+            <div>
+              <h3 class="font-bold text-gray-800 text-sm md:text-base flex items-center gap-2">
+                <span>📋</span> Relatório de Acompanhamento Docente
+              </h3>
+              <p class="text-xs text-gray-500">Histórico de chamadas pendentes, pontualidade e observações pedagógicas</p>
+            </div>
+            <div class="text-right text-xs text-gray-500 mt-2 md:mt-0">
+              <p><strong>Colégio Arena</strong> — Ensino Fundamental</p>
+              <p id="profPrintDate" class="text-[11px]"></p>
+            </div>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs border border-gray-300">
+              <thead class="bg-gray-100 font-semibold text-gray-700">
+                <tr>
+                  <th class="p-2.5 border">Data</th>
+                  <th class="p-2.5 border">Professor / Matéria</th>
+                  <th class="p-2.5 border text-center">Chamada Pendente</th>
+                  <th class="p-2.5 border text-center">Atraso Entrada</th>
+                  <th class="p-2.5 border text-center">Atraso Intervalo</th>
+                  <th class="p-2.5 border">Observações</th>
+                </tr>
+              </thead>
+              <tbody id="listaProfessoresTbody"></tbody>
+            </table>
+          </div>
+
+          <!-- Assinatura no Relatório de Impressão -->
+          <div class="mt-8 pt-8 border-t border-gray-300 hidden print:flex justify-between items-center text-xs">
+            <div class="text-center w-64 border-t border-gray-600 pt-1">
+              <p class="font-bold">Coordenação Pedagógica</p>
+              <p class="text-[11px] text-gray-600">Colégio Arena</p>
+            </div>
+            <div class="text-center w-64 border-t border-gray-600 pt-1">
+              <p class="font-bold">Direção / Supervisão</p>
+              <p class="text-[11px] text-gray-600">Ensino Fundamental</p>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -769,23 +814,6 @@
       dl.innerHTML = html;
     }
 
-    function mudarAba(nomeAba) {
-      document.querySelectorAll('.aba-conteudo').forEach(el => el.style.display = 'none');
-      document.querySelectorAll('.aba-btn').forEach(btn => {
-        btn.classList.remove('border-[#1b4332]', 'text-[#1b4332]', 'font-bold');
-        btn.classList.add('border-transparent', 'text-gray-600');
-      });
-
-      const aba = document.getElementById('aba-' + nomeAba);
-      if (aba) aba.style.display = 'block';
-
-      const btn = document.getElementById('btn-aba-' + nomeAba);
-      if (btn) {
-        btn.classList.remove('border-transparent', 'text-gray-600');
-        btn.classList.add('border-[#1b4332]', 'text-[#1b4332]', 'font-bold');
-      }
-    }
-
     function cadastrarNovoUsuario(e) {
       e.preventDefault();
       const nome = document.getElementById('novoUserNome').value.trim();
@@ -853,6 +881,23 @@
         usuariosLista = usuariosLista.filter(u => u.id !== id);
         localStorage.setItem('escola_usuarios_db', JSON.stringify(usuariosLista));
         renderizarUsuariosGerenciador();
+      }
+    }
+
+    function mudarAba(nomeAba) {
+      document.querySelectorAll('.aba-conteudo').forEach(el => el.style.display = 'none');
+      document.querySelectorAll('.aba-btn').forEach(btn => {
+        btn.classList.remove('border-[#1b4332]', 'text-[#1b4332]', 'font-bold');
+        btn.classList.add('border-transparent', 'text-gray-600');
+      });
+
+      const aba = document.getElementById('aba-' + nomeAba);
+      if (aba) aba.style.display = 'block';
+
+      const btn = document.getElementById('btn-aba-' + nomeAba);
+      if (btn) {
+        btn.classList.remove('border-transparent', 'text-gray-600');
+        btn.classList.add('border-[#1b4332]', 'text-[#1b4332]', 'font-bold');
       }
     }
 
@@ -1018,18 +1063,34 @@
     function renderizarProfOcorrencias() {
       const tbody = document.getElementById('listaProfessoresTbody');
       tbody.innerHTML = '';
+      
+      if (profOcorrenciasList.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="6" class="p-4 text-center text-gray-500 italic">Nenhuma ocorrência registrada até o momento.</td>
+          </tr>
+        `;
+        return;
+      }
+
       profOcorrenciasList.forEach(p => {
         tbody.innerHTML += `
           <tr class="border-b hover:bg-gray-50">
-            <td class="p-2 border">${p.data}</td>
-            <td class="p-2 border font-medium">${p.professor}</td>
-            <td class="p-2 border text-center">${p.semChamada ? '❌ Sim' : '—'}</td>
-            <td class="p-2 border text-center">${p.atrasoInicio !== 'Não' ? `⚠️ ${p.atrasoInicio}` : '—'}</td>
-            <td class="p-2 border text-center">${p.atrasoIntervalo !== 'Não' ? `⚠️ ${p.atrasoIntervalo}` : '—'}</td>
-            <td class="p-2 border text-gray-600">${p.obs || '—'}</td>
+            <td class="p-2.5 border font-medium">${p.data}</td>
+            <td class="p-2.5 border font-semibold text-gray-800">${p.professor}</td>
+            <td class="p-2.5 border text-center">${p.semChamada ? '<span class="text-red-700 font-bold bg-red-50 px-2 py-0.5 rounded border border-red-200">❌ Sim</span>' : '—'}</td>
+            <td class="p-2.5 border text-center font-medium text-amber-800">${p.atrasoInicio !== 'Não' ? `⚠️ ${p.atrasoInicio}` : '—'}</td>
+            <td class="p-2.5 border text-center font-medium text-amber-800">${p.atrasoIntervalo !== 'Não' ? `⚠️ ${p.atrasoIntervalo}` : '—'}</td>
+            <td class="p-2.5 border text-gray-700">${p.obs || '—'}</td>
           </tr>
         `;
       });
+    }
+
+    function imprimirRelatorioProfessores() {
+      const hora = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      document.getElementById('profPrintDate').textContent = 'Emitido em: ' + new Date().toLocaleDateString('pt-BR') + ' às ' + hora;
+      window.print();
     }
 
     function salvarInspetor(e) {
