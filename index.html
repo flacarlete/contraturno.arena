@@ -3,78 +3,32 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Controle de Gestão Escolar & Contraturno</title>
+  <title>Login - Arena Contraturno</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    @media print {
-      body * { visibility: hidden; }
-      #printableProfArea, #printableProfArea *,
-      #printableArea, #printableArea * { visibility: visible; }
-      #printableProfArea, #printableArea { 
-        position: absolute; left: 0; top: 0; width: 100%; background: white !important; padding: 0 !important; margin: 0 !important;
-      }
-      .no-print { display: none !important; }
-    }
-  </style>
 </head>
-<body class="bg-gray-100 text-gray-800 font-sans min-h-screen flex flex-col">
+<body class="bg-[#1b4332] flex items-center justify-center min-h-screen p-4">
 
   <!-- ==================== TELA DE LOGIN ==================== -->
-  <div id="tela-login" class="fixed inset-0 bg-[#1b4332] z-50 flex items-center justify-center p-4">
-    <div class="bg-white rounded-xl shadow-2xl p-8 max-w-md w-full border border-emerald-900/20">
-      <div class="text-center mb-6">
-        <div class="inline-flex p-3 bg-emerald-100 text-[#1b4332] rounded-full mb-3 text-2xl">📋</div>
-        <h1 class="text-xl font-bold text-gray-800">Arena Contraturno</h1>
-        <p class="text-xs text-gray-500 mt-1">Ensino Fundamental - Sistema de Gestão</p>
-      </div>
-
-      <form id="formLogin" onsubmit="fazerLogin(event)" class="space-y-4">
-        <div>
-          <label class="block text-xs font-semibold text-gray-700 mb-1">Usuário</label>
-          <input type="text" id="loginUsuario" placeholder="Digite seu usuário..." class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-[#1b4332]" required />
-        </div>
-        <div>
-          <label class="block text-xs font-semibold text-gray-700 mb-1">Senha</label>
-          <input type="password" id="loginSenha" placeholder="Digite sua senha..." class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-[#1b4332]" required />
-        </div>
-        <button type="submit" class="w-full bg-[#1b4332] text-white py-2.5 rounded text-sm font-semibold hover:bg-emerald-900 transition flex items-center justify-center gap-2">
-          Entrar no Sistema →
-        </button>
-      </form>
+  <div id="tela-login" class="bg-white rounded-xl shadow-2xl p-8 max-w-sm w-full border border-emerald-900/20">
+    <div class="text-center mb-6">
+      <div class="inline-flex p-3 bg-emerald-100 text-[#1b4332] rounded-full mb-3 text-2xl">📋</div>
+      <h1 class="text-xl font-bold text-gray-800">Arena Contraturno</h1>
+      <p class="text-xs text-gray-500 mt-1">Coordenação e Acompanhamento</p>
     </div>
-  </div>
 
-  <!-- ==================== SISTEMA PRINCIPAL ==================== -->
-  <div id="sistema-principal" class="hidden flex flex-col flex-1 min-h-screen">
-    
-    <header class="bg-[#1b4332] text-white px-6 py-3.5 shadow flex justify-between items-center no-print">
+    <form onsubmit="fazerLogin(event)" class="space-y-4">
       <div>
-        <h1 class="text-lg font-bold">📋 Arena Contraturno</h1>
-        <p id="currentDateDisplay" class="text-xs text-emerald-200"></p>
+        <label class="block text-xs font-semibold text-gray-700 mb-1">Usuário</label>
+        <input type="text" id="loginUsuario" value="coordenacao" class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-[#1b4332]" required />
       </div>
-      <div class="flex items-center gap-3">
-        <div class="text-right">
-          <p id="usuarioLogadoNome" class="text-xs font-bold"></p>
-          <p id="usuarioLogadoCargo" class="text-[11px] text-emerald-200"></p>
-        </div>
-        <button onclick="fazerLogout()" class="bg-red-800 hover:bg-red-700 px-3 py-1.5 rounded text-xs font-semibold">Sair ⎋</button>
+      <div>
+        <label class="block text-xs font-semibold text-gray-700 mb-1">Senha</label>
+        <input type="password" id="loginSenha" value="123" class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-[#1b4332]" required />
       </div>
-    </header>
-
-    <nav class="bg-white border-b border-gray-200 px-6 flex flex-wrap gap-2 text-sm font-medium text-gray-600 no-print">
-      <button onclick="mudarAba('atrasos')" id="btn-aba-atrasos" class="aba-btn py-3 px-4 border-b-2 text-gray-600 hover:text-[#1b4332] flex items-center gap-2">⏰ Atrasos</button>
-      <button onclick="mudarAba('sala-estudos')" id="btn-aba-sala-estudos" class="aba-btn py-3 px-4 border-b-2 text-gray-600 hover:text-[#1b4332] flex items-center gap-2">📚 Sala de Estudos</button>
-      <button onclick="mudarAba('professores')" id="btn-aba-professores" class="aba-btn py-3 px-4 border-b-2 text-gray-600 hover:text-[#1b4332] flex items-center gap-2">👨‍🏫 Professores</button>
-      <button onclick="mudarAba('inspetores')" id="btn-aba-inspetores" class="aba-btn py-3 px-4 border-b-2 text-gray-600 hover:text-[#1b4332] flex items-center gap-2">📋 Inspetores</button>
-      <button onclick="mudarAba('atendimentos')" id="btn-aba-atendimentos" class="aba-btn py-3 px-4 border-b-2 text-gray-600 hover:text-[#1b4332] flex items-center gap-2">📑 Atendimentos</button>
-      <button onclick="mudarAba('contatos')" id="btn-aba-contatos" class="aba-btn py-3 px-4 border-b-2 text-gray-600 hover:text-[#1b4332] flex items-center gap-2">📞 Contatos</button>
-      <button onclick="mudarAba('gerenciador-acessos')" id="btn-aba-gerenciador-acessos" class="aba-btn py-3 px-4 border-b-2 text-gray-600 hover:text-[#1b4332] flex items-center gap-2 bg-emerald-50">🔐 Acessos</button>
-    </nav>
-
-    <main class="p-6 max-w-6xl w-full mx-auto flex-1">
-      <!-- As seções das abas seguem a estrutura já criada -->
-      <!-- [Conteúdo omitido para brevidade, mantenha as seções aba-atrasos, etc.] -->
-    </main>
+      <button type="submit" class="w-full bg-[#1b4332] text-white py-2.5 rounded text-sm font-semibold hover:bg-emerald-900 transition">
+        Entrar no Sistema →
+      </button>
+    </form>
   </div>
 
   <script>
@@ -84,15 +38,25 @@
       { usuario: "inspetor", senha: "123", nome: "Inspetor", perfil: "inspetor", abas: ["sala-estudos"] }
     ];
 
-    // Lógica simplificada de login
-    function exibirSistemaPrincipal() {
-      // ... (código existente) ...
-      const abasPermitidas = usuarioLogadoAtual.abas;
-      document.querySelectorAll('.aba-btn').forEach(btn => {
-        const abaId = btn.id.replace('btn-aba-', '');
-        btn.style.display = abasPermitidas.includes(abaId) ? 'flex' : 'none';
-      });
-      mudarAba(abasPermitidas[0]);
+    function fazerLogin(e) {
+      e.preventDefault();
+      const login = document.getElementById('loginUsuario').value.trim().toLowerCase();
+      const senha = document.getElementById('loginSenha').value.trim();
+
+      // Reset total para garantir que funcione
+      localStorage.setItem('escola_usuarios_db', JSON.stringify(USUARIOS_PADRAO));
+      
+      const user = USUARIOS_PADRAO.find(u => u.usuario === login && u.senha === senha);
+
+      if (user) {
+        localStorage.setItem('usuario_logado_arena', JSON.stringify(user));
+        window.location.href = 'sistema.html'; // Se você estiver usando multiplos arquivos, ou redirecione
+        alert('Login realizado! Redirecionando...');
+        // Como o sistema está em uma página só, você pode trocar a visibilidade aqui:
+        // window.location.reload(); 
+      } else {
+        alert('Usuário ou senha incorretos. Tente: coordenacao / 123');
+      }
     }
   </script>
 </body>
