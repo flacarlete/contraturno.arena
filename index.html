@@ -17,7 +17,7 @@
 </head>
 <body class="bg-gray-100 text-gray-800 font-sans min-h-screen flex flex-col">
 
-  <!-- Cabeçalho Principal -->
+  <!-- Cabeçalho -->
   <header class="bg-[#1b4332] text-white px-6 py-4 shadow flex flex-col md:flex-row justify-between items-start md:items-center no-print">
     <div>
       <h1 class="text-xl font-bold flex items-center gap-2">
@@ -27,31 +27,19 @@
     </div>
   </header>
 
-  <!-- Navegação de Abas -->
+  <!-- Navegação -->
   <nav class="bg-white border-b border-gray-200 px-6 flex flex-wrap gap-2 text-sm font-medium text-gray-600 no-print">
-    <button onclick="switchTab('atrasos')" id="tab-atrasos" class="tab-btn py-3 px-4 border-b-2 border-[#1b4332] text-[#1b4332] font-semibold flex items-center gap-2">
-      ⏰ Atrasos
-    </button>
-    <button onclick="switchTab('sala-estudos')" id="tab-sala-estudos" class="tab-btn py-3 px-4 border-b-2 border-transparent hover:text-[#1b4332] flex items-center gap-2">
-      📚 Sala de Estudos & Biblioteca
-    </button>
-    <button onclick="switchTab('professores')" id="tab-professores" class="tab-btn py-3 px-4 border-b-2 border-transparent hover:text-[#1b4332] flex items-center gap-2">
-      👨‍🏫 Professores
-    </button>
-    <button onclick="switchTab('inspetores')" id="tab-inspetores" class="tab-btn py-3 px-4 border-b-2 border-transparent hover:text-[#1b4332] flex items-center gap-2">
-      📋 Inspetores / Orientadores
-    </button>
-    <button onclick="switchTab('atendimentos')" id="tab-atendimentos" class="tab-btn py-3 px-4 border-b-2 border-transparent hover:text-[#1b4332] flex items-center gap-2">
-      📑 Atendimentos
-    </button>
-    <button onclick="switchTab('contatos')" id="tab-contatos" class="tab-btn py-3 px-4 border-b-2 border-transparent hover:text-[#1b4332] flex items-center gap-2">
-      📞 Contatos Rápidos
-    </button>
+    <button onclick="switchTab('atrasos')" id="tab-atrasos" class="tab-btn py-3 px-4 border-b-2 border-[#1b4332] text-[#1b4332] font-semibold flex items-center gap-2">⏰ Atrasos</button>
+    <button onclick="switchTab('sala-estudos')" id="tab-sala-estudos" class="tab-btn py-3 px-4 border-b-2 border-transparent hover:text-[#1b4332] flex items-center gap-2">📚 Sala de Estudos & Biblioteca</button>
+    <button onclick="switchTab('professores')" id="tab-professores" class="tab-btn py-3 px-4 border-b-2 border-transparent hover:text-[#1b4332] flex items-center gap-2">👨‍🏫 Professores</button>
+    <button onclick="switchTab('inspetores')" id="tab-inspetores" class="tab-btn py-3 px-4 border-b-2 border-transparent hover:text-[#1b4332] flex items-center gap-2">📋 Inspetores / Orientadores</button>
+    <button onclick="switchTab('atendimentos')" id="tab-atendimentos" class="tab-btn py-3 px-4 border-b-2 border-transparent hover:text-[#1b4332] flex items-center gap-2">📑 Atendimentos</button>
+    <button onclick="switchTab('contatos')" id="tab-contatos" class="tab-btn py-3 px-4 border-b-2 border-transparent hover:text-[#1b4332] flex items-center gap-2">📞 Contatos Rápidos</button>
   </nav>
 
   <main class="p-6 max-w-6xl w-full mx-auto flex-1">
 
-    <!-- ================================================= ABA 1: ATRASOS ================================================= -->
+    <!-- ABA 1: ATRASOS -->
     <section id="content-atrasos" class="tab-content">
       <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
         <div class="flex gap-4 border-b border-gray-200 pb-3 mb-4">
@@ -67,7 +55,7 @@
           <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
               <label class="block text-xs font-medium text-gray-700 mb-1">Espaço / Aula</label>
-              <select id="atrasoEspaco" class="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-[#1b4332]" required>
+              <select id="atrasoEspaco" class="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm" required>
                 <option value="">Selecione...</option>
                 <option value="Nivelamentos">Nivelamentos</option>
                 <option value="Sala de estudos">Sala de estudos</option>
@@ -77,35 +65,35 @@
               </select>
             </div>
             <div>
-              <label class="block text-xs font-medium text-gray-700 mb-1">Horário de Chegada (clique para hora atual)</label>
-              <input type="time" id="atrasoHora" onclick="preencherHoraAtual(this)" class="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-[#1b4332]" required />
+              <label class="block text-xs font-medium text-gray-700 mb-1">Horário de Chegada</label>
+              <input type="time" id="atrasoHora" onclick="preencherHoraAtual(this)" class="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm" required />
             </div>
             <div>
-              <label class="block text-xs font-medium text-gray-700 mb-1">Data (clique para data atual)</label>
-              <input type="date" id="atrasoData" onclick="preencherDataAtual(this)" class="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-[#1b4332]" required />
+              <label class="block text-xs font-medium text-gray-700 mb-1">Data</label>
+              <input type="date" id="atrasoData" onclick="preencherDataAtual(this)" class="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm" required />
             </div>
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label class="block text-xs font-medium text-gray-700 mb-1">Nome do Aluno</label>
-              <input type="text" id="atrasoAluno" placeholder="Digite o nome completo do aluno..." class="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-[#1b4332]" required />
+              <input list="listaAlunosDatalist" id="atrasoAluno" oninput="completarTurmaAtraso(this.value)" placeholder="Digite o nome do aluno..." class="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm" required />
+              <p id="atrasoTurmaLabel" class="text-xs text-emerald-800 font-semibold mt-1"></p>
             </div>
             <div>
               <label class="block text-xs font-medium text-gray-700 mb-1">Justificativa</label>
-              <input type="text" id="atrasoJustificativa" placeholder="Motivo do atraso..." class="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-[#1b4332]" />
+              <input type="text" id="atrasoJustificativa" placeholder="Motivo do atraso..." class="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm" />
             </div>
           </div>
 
           <div class="flex justify-end">
-            <button type="submit" class="bg-[#1b4332] text-white px-5 py-2 rounded text-sm font-medium hover:bg-emerald-900 flex items-center gap-1.5">
+            <button type="submit" class="bg-[#1b4332] text-white px-5 py-2 rounded text-sm font-medium hover:bg-emerald-900">
               ✓ Registrar atraso
             </button>
           </div>
         </form>
       </div>
 
-      <!-- Alertas e Tabela de Registros -->
       <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
         <h3 class="font-bold text-gray-700 text-sm mb-3">Histórico de Atrasos & Alertas</h3>
         <div id="alertasContainer" class="mb-4 space-y-2"></div>
@@ -116,6 +104,7 @@
                 <th class="p-2 border">Data/Hora</th>
                 <th class="p-2 border">Turno</th>
                 <th class="p-2 border">Aluno</th>
+                <th class="p-2 border">Turma</th>
                 <th class="p-2 border">Espaço</th>
                 <th class="p-2 border">Justificativa</th>
                 <th class="p-2 border text-center">Ocorrências</th>
@@ -127,14 +116,12 @@
       </div>
     </section>
 
-    <!-- ================================================= ABA 2: SALA DE ESTUDOS ================================================= -->
+    <!-- ABA 2: SALA DE ESTUDOS -->
     <section id="content-sala-estudos" class="tab-content hidden">
       <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
         <div class="flex justify-between items-center mb-4">
           <h2 class="text-base font-bold text-[#1b4332]">Controle Diário — Sala de Estudos e Biblioteca</h2>
-          <button onclick="window.print()" class="bg-gray-800 text-white px-3 py-1.5 rounded text-xs hover:bg-black flex items-center gap-1.5 no-print">
-            🖨️ Imprimir Relatório Diário
-          </button>
+          <button onclick="window.print()" class="bg-gray-800 text-white px-3 py-1.5 rounded text-xs hover:bg-black no-print">🖨️ Imprimir Relatório</button>
         </div>
 
         <form id="formSalaEstudos" onsubmit="salvarSalaEstudos(event)" class="space-y-6">
@@ -149,120 +136,65 @@
             </div>
           </div>
 
-          <!-- 1. Indicadores -->
-          <div>
-            <h3 class="text-xs font-bold text-gray-700 uppercase tracking-wider mb-3 flex items-center gap-2">
-              <span class="bg-[#1b4332] text-white rounded-full w-5 h-5 flex items-center justify-center text-[10px]">1</span>
-              Controle de Ambiente e Ciclo de Foco
-            </h3>
-            <div class="space-y-3">
-              <div class="flex flex-col md:flex-row justify-between md:items-center border-b pb-2 text-xs">
-                <div>
-                  <p class="font-bold">A) SILÊNCIO / RUÍDO PRODUTIVO</p>
-                  <p class="text-gray-500 text-[11px]">Sussurros / assuntos pertinentes</p>
-                </div>
-                <div class="flex gap-2 mt-2 md:mt-0">
-                  <label class="flex items-center gap-1"><input type="radio" name="ind_silencio" value="Excelente" checked /> Excelente</label>
-                  <label class="flex items-center gap-1"><input type="radio" name="ind_silencio" value="Regular" /> Regular</label>
-                  <label class="flex items-center gap-1"><input type="radio" name="ind_silencio" value="Crítico" /> Crítico</label>
-                </div>
+          <div class="space-y-3">
+            <h3 class="text-xs font-bold text-gray-700 uppercase">1. Controle de Ambiente e Foco</h3>
+            <div class="flex justify-between items-center border-b pb-2 text-xs">
+              <span><strong>A) Silêncio / Ruído Produtivo</strong></span>
+              <div class="flex gap-2">
+                <label><input type="radio" name="ind_silencio" value="Excelente" checked /> Excelente</label>
+                <label><input type="radio" name="ind_silencio" value="Regular" /> Regular</label>
+                <label><input type="radio" name="ind_silencio" value="Crítico" /> Crítico</label>
               </div>
-
-              <div class="flex flex-col md:flex-row justify-between md:items-center border-b pb-2 text-xs">
-                <div>
-                  <p class="font-bold">B) CICLO DE FOCO</p>
-                  <p class="text-gray-500 text-[11px]">Tempo de foco + tempo de descanso</p>
-                </div>
-                <div class="flex gap-2 mt-2 md:mt-0">
-                  <label class="flex items-center gap-1"><input type="radio" name="ind_foco" value="Excelente" checked /> Excelente</label>
-                  <label class="flex items-center gap-1"><input type="radio" name="ind_foco" value="Regular" /> Regular</label>
-                  <label class="flex items-center gap-1"><input type="radio" name="ind_foco" value="Crítico" /> Crítico</label>
-                </div>
+            </div>
+            <div class="flex justify-between items-center border-b pb-2 text-xs">
+              <span><strong>B) Ciclo de Foco</strong></span>
+              <div class="flex gap-2">
+                <label><input type="radio" name="ind_foco" value="Excelente" checked /> Excelente</label>
+                <label><input type="radio" name="ind_foco" value="Regular" /> Regular</label>
+                <label><input type="radio" name="ind_foco" value="Crítico" /> Crítico</label>
               </div>
-
-              <div class="flex flex-col md:flex-row justify-between md:items-center border-b pb-2 text-xs">
-                <div>
-                  <p class="font-bold">C) CELULAR</p>
-                  <p class="text-gray-500 text-[11px]">Devem estar guardados</p>
-                </div>
-                <div class="flex gap-2 mt-2 md:mt-0">
-                  <label class="flex items-center gap-1"><input type="radio" name="ind_celular" value="Excelente" checked /> Excelente</label>
-                  <label class="flex items-center gap-1"><input type="radio" name="ind_celular" value="Regular" /> Regular</label>
-                  <label class="flex items-center gap-1"><input type="radio" name="ind_celular" value="Crítico" /> Crítico</label>
-                </div>
+            </div>
+            <div class="flex justify-between items-center border-b pb-2 text-xs">
+              <span><strong>C) Celular Guardado</strong></span>
+              <div class="flex gap-2">
+                <label><input type="radio" name="ind_celular" value="Excelente" checked /> Excelente</label>
+                <label><input type="radio" name="ind_celular" value="Regular" /> Regular</label>
+                <label><input type="radio" name="ind_celular" value="Crítico" /> Crítico</label>
               </div>
-
-              <div class="flex flex-col md:flex-row justify-between md:items-center border-b pb-2 text-xs">
-                <div>
-                  <p class="font-bold">D) ORGANIZAÇÃO</p>
-                  <p class="text-gray-500 text-[11px]">Mesa limpa, somente material pertinente</p>
-                </div>
-                <div class="flex gap-2 mt-2 md:mt-0">
-                  <label class="flex items-center gap-1"><input type="radio" name="ind_org" value="Excelente" checked /> Excelente</label>
-                  <label class="flex items-center gap-1"><input type="radio" name="ind_org" value="Regular" /> Regular</label>
-                  <label class="flex items-center gap-1"><input type="radio" name="ind_org" value="Crítico" /> Crítico</label>
-                </div>
+            </div>
+            <div class="flex justify-between items-center border-b pb-2 text-xs">
+              <span><strong>D) Organização da Mesa</strong></span>
+              <div class="flex gap-2">
+                <label><input type="radio" name="ind_org" value="Excelente" checked /> Excelente</label>
+                <label><input type="radio" name="ind_org" value="Regular" /> Regular</label>
+                <label><input type="radio" name="ind_org" value="Crítico" /> Crítico</label>
               </div>
             </div>
           </div>
 
-          <!-- 2. Checklist Padrão Ouro -->
           <div>
-            <h3 class="text-xs font-bold text-gray-700 uppercase tracking-wider mb-3 flex items-center gap-2">
-              <span class="bg-[#1b4332] text-white rounded-full w-5 h-5 flex items-center justify-center text-[10px]">2</span>
-              Check-list "Padrão Ouro"
-            </h3>
-            <div class="space-y-2 text-xs">
-              <label class="flex items-start gap-2">
-                <input type="checkbox" id="chkApostila" class="mt-0.5" />
-                <span><strong>APOSTILA VIVA</strong> — Grifos e anotações</span>
-              </label>
-              <label class="flex items-start gap-2">
-                <input type="checkbox" id="chkRespostas" class="mt-0.5" />
-                <span><strong>RESPOSTAS COMPLETAS</strong> — Fundamentadas e bem escritas</span>
-              </label>
-              <label class="flex items-start gap-2">
-                <input type="checkbox" id="chkErro" class="mt-0.5" />
-                <span><strong>JUSTIFICATIVA DO ERRO</strong> — Correção das alternativas incorretas / post-it</span>
-              </label>
-              <label class="flex items-start gap-2">
-                <input type="checkbox" id="chkAtivo" class="mt-0.5" />
-                <span><strong>ESTUDO ATIVO</strong> — Autoexplicação, mapas mentais, fichas de estudo</span>
-              </label>
+            <h3 class="text-xs font-bold text-gray-700 uppercase mb-2">2. Checklist Padrão Ouro</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs">
+              <label><input type="checkbox" id="chkApostila" /> <strong>Apostila Viva</strong> (Grifos e anotações)</label>
+              <label><input type="checkbox" id="chkRespostas" /> <strong>Respostas Completas</strong></label>
+              <label><input type="checkbox" id="chkErro" /> <strong>Justificativa do Erro</strong></label>
+              <label><input type="checkbox" id="chkAtivo" /> <strong>Estudo Ativo</strong> (Mapas mentais, fichas)</label>
             </div>
           </div>
 
-          <!-- 3. Ocorrências e Feedback -->
           <div>
-            <h3 class="text-xs font-bold text-gray-700 uppercase tracking-wider mb-2 flex items-center gap-2">
-              <span class="bg-[#1b4332] text-white rounded-full w-5 h-5 flex items-center justify-center text-[10px]">3</span>
-              Ocorrência e Feedback para a Coordenação
-            </h3>
-            <textarea id="seOcorrencia" rows="3" placeholder="Cite aqui (em tópicos) qualquer situação ou ocorrência com os alunos..." class="w-full border border-gray-300 rounded p-3 text-xs focus:outline-none focus:border-[#1b4332]"></textarea>
+            <h3 class="text-xs font-bold text-gray-700 uppercase mb-2">3. Ocorrências e Observações</h3>
+            <textarea id="seOcorrencia" rows="3" placeholder="Cite as ocorrências relevantes..." class="w-full border border-gray-300 rounded p-3 text-xs"></textarea>
           </div>
 
-          <div class="flex justify-end gap-3 no-print">
-            <button type="submit" class="bg-[#1b4332] text-white px-5 py-2 rounded text-sm font-medium hover:bg-emerald-900">
-              💾 Salvar Controle
-            </button>
+          <div class="flex justify-end no-print">
+            <button type="submit" class="bg-[#1b4332] text-white px-5 py-2 rounded text-sm font-medium hover:bg-emerald-900">💾 Salvar Relatório</button>
           </div>
         </form>
       </div>
-
-      <!-- Área de Gráficos e Desempenho -->
-      <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 no-print">
-        <h3 class="font-bold text-gray-700 text-sm mb-4">Painel de Acompanhamento dos Ambientes</h3>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div class="h-56"><canvas id="chartIndicadores"></canvas></div>
-          <div class="text-xs text-gray-600 bg-emerald-50/60 p-4 rounded border border-emerald-200 flex flex-col justify-center">
-            <p class="font-bold text-emerald-950 mb-1">💡 Diagnóstico do Espaço</p>
-            <p id="diagnosticoTexto">Os dados registrados geram métricas automáticas para ajustes pedagógicos, monitoramento de silêncio e cumprimento do protocolo Padrão Ouro.</p>
-          </div>
-        </div>
-      </div>
     </section>
 
-    <!-- ================================================= ABA 3: PROFESSORES ================================================= -->
+    <!-- ABA 3: PROFESSORES -->
     <section id="content-professores" class="tab-content hidden">
       <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
         <h2 class="text-base font-bold text-[#1b4332] mb-4">Registro de Ocorrências com Professores</h2>
@@ -288,119 +220,101 @@
             </div>
           </div>
 
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2 border-t">
-            <div class="flex items-center gap-2">
-              <input type="checkbox" id="profChamada" />
-              <label class="text-xs font-medium text-gray-700">Não fez chamada</label>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2 border-t text-xs">
+            <label class="flex items-center gap-2 font-medium">
+              <input type="checkbox" id="profChamada" /> Não fez chamada
+            </label>
+            <div>
+              <label class="flex items-center gap-2 font-medium mb-1">
+                <input type="checkbox" id="profAtrasoInicio" onchange="document.getElementById('profMinutosInicio').disabled = !this.checked" /> Não entrou no horário
+              </label>
+              <input type="number" id="profMinutosInicio" placeholder="Minutos de atraso" disabled class="w-full border border-gray-300 rounded px-2 py-1" />
             </div>
             <div>
-              <label class="flex items-center gap-2 text-xs font-medium text-gray-700 mb-1">
-                <input type="checkbox" id="profAtrasoInicio" onchange="document.getElementById('profMinutosInicio').disabled = !this.checked" />
-                Não entrou no horário
+              <label class="flex items-center gap-2 font-medium mb-1">
+                <input type="checkbox" id="profAtrasoInterv" onchange="document.getElementById('profMinutosInterv').disabled = !this.checked" /> Atraso após intervalo
               </label>
-              <input type="number" id="profMinutosInicio" placeholder="Minutos de atraso" disabled class="w-full border border-gray-300 rounded px-2 py-1 text-xs" />
-            </div>
-            <div>
-              <label class="flex items-center gap-2 text-xs font-medium text-gray-700 mb-1">
-                <input type="checkbox" id="profAtrasoInterv" onchange="document.getElementById('profMinutosInterv').disabled = !this.checked" />
-                Atraso após o intervalo
-              </label>
-              <input type="number" id="profMinutosInterv" placeholder="Minutos de atraso" disabled class="w-full border border-gray-300 rounded px-2 py-1 text-xs" />
+              <input type="number" id="profMinutosInterv" placeholder="Minutos de atraso" disabled class="w-full border border-gray-300 rounded px-2 py-1" />
             </div>
           </div>
 
           <div>
-            <label class="block text-xs font-medium text-gray-700 mb-1">Observações Adicionais</label>
-            <input type="text" id="profObs" placeholder="Ex: Substituição necessária, turma aguardando..." class="w-full border border-gray-300 rounded px-3 py-2 text-sm" />
+            <label class="block text-xs font-medium text-gray-700 mb-1">Observações</label>
+            <input type="text" id="profObs" placeholder="Anotações gerais..." class="w-full border border-gray-300 rounded px-3 py-2 text-sm" />
           </div>
 
           <div class="flex justify-end">
-            <button type="submit" class="bg-[#1b4332] text-white px-5 py-2 rounded text-sm font-medium hover:bg-emerald-900">
-              Registrar Ocorrência
-            </button>
+            <button type="submit" class="bg-[#1b4332] text-white px-5 py-2 rounded text-sm font-medium hover:bg-emerald-900">Registrar Ocorrência</button>
           </div>
         </form>
       </div>
 
       <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
         <h3 class="font-bold text-gray-700 text-sm mb-3">Histórico de Ocorrências Docentes</h3>
-        <div class="overflow-x-auto">
-          <table class="w-full text-left text-xs border border-gray-200">
-            <thead class="bg-gray-100 font-semibold text-gray-700">
-              <tr>
-                <th class="p-2 border">Data</th>
-                <th class="p-2 border">Professor / Matéria</th>
-                <th class="p-2 border">Chamada Pendente</th>
-                <th class="p-2 border">Atraso Entrada</th>
-                <th class="p-2 border">Atraso Intervalo</th>
-                <th class="p-2 border">Observações</th>
-              </tr>
-            </thead>
-            <tbody id="listaProfessoresTbody"></tbody>
-          </table>
-        </div>
+        <table class="w-full text-left text-xs border border-gray-200">
+          <thead class="bg-gray-100 font-semibold text-gray-700">
+            <tr>
+              <th class="p-2 border">Data</th>
+              <th class="p-2 border">Professor / Matéria</th>
+              <th class="p-2 border">Chamada Pendente</th>
+              <th class="p-2 border">Atraso Entrada</th>
+              <th class="p-2 border">Atraso Intervalo</th>
+              <th class="p-2 border">Observações</th>
+            </tr>
+          </thead>
+          <tbody id="listaProfessoresTbody"></tbody>
+        </table>
       </div>
     </section>
 
-    <!-- ================================================= ABA 4: INSPETORES ================================================= -->
+    <!-- ABA 4: INSPETORES -->
     <section id="content-inspetores" class="tab-content hidden">
       <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
-        <h2 class="text-base font-bold text-[#1b4332] mb-4">Registro de Situações & Feedbacks — Inspetores / Orientadores</h2>
+        <h2 class="text-base font-bold text-[#1b4332] mb-4">Registro de Orientações — Inspetores</h2>
         <form id="formInspetores" onsubmit="salvarInspetor(event)" class="space-y-4">
           <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
-              <label class="block text-xs font-medium text-gray-700 mb-1">Nome do Orientador / Inspetor</label>
-              <input type="text" id="inspNome" placeholder="Nome do colaborador..." class="w-full border border-gray-300 rounded px-3 py-2 text-sm" required />
+              <label class="block text-xs font-medium text-gray-700 mb-1">Orientador / Inspetor</label>
+              <input type="text" id="inspNome" class="w-full border border-gray-300 rounded px-3 py-2 text-sm" required />
             </div>
             <div>
-              <label class="block text-xs font-medium text-gray-700 mb-1">Data (atual)</label>
+              <label class="block text-xs font-medium text-gray-700 mb-1">Data</label>
               <input type="date" id="inspData" class="w-full border border-gray-300 rounded px-3 py-2 text-sm" required />
             </div>
             <div>
-              <label class="block text-xs font-medium text-gray-700 mb-1">Horário (atual)</label>
+              <label class="block text-xs font-medium text-gray-700 mb-1">Horário</label>
               <input type="time" id="inspHora" class="w-full border border-gray-300 rounded px-3 py-2 text-sm" required />
             </div>
           </div>
-
           <div>
-            <label class="block text-xs font-medium text-gray-700 mb-1">Problema / Situação Identificada</label>
-            <textarea id="inspProblema" rows="2" placeholder="Relate o ocorrido nos corredores, pátio ou portaria..." class="w-full border border-gray-300 rounded p-3 text-xs" required></textarea>
+            <label class="block text-xs font-medium text-gray-700 mb-1">Problema / Situação</label>
+            <textarea id="inspProblema" rows="2" class="w-full border border-gray-300 rounded p-3 text-xs" required></textarea>
           </div>
-
           <div>
-            <label class="block text-xs font-medium text-gray-700 mb-1">Feedback / Ação de Orientação Aplicada</label>
-            <textarea id="inspFeedback" rows="2" placeholder="Descreva a orientação repassada ao profissional..." class="w-full border border-gray-300 rounded p-3 text-xs" required></textarea>
+            <label class="block text-xs font-medium text-gray-700 mb-1">Feedback / Encaminhamento</label>
+            <textarea id="inspFeedback" rows="2" class="w-full border border-gray-300 rounded p-3 text-xs" required></textarea>
           </div>
-
           <div class="flex justify-end">
-            <button type="submit" class="bg-[#1b4332] text-white px-5 py-2 rounded text-sm font-medium hover:bg-emerald-900">
-              Salvar Registro de Orientador
-            </button>
+            <button type="submit" class="bg-[#1b4332] text-white px-5 py-2 rounded text-sm font-medium hover:bg-emerald-900">Salvar Orientação</button>
           </div>
         </form>
       </div>
-
-      <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <h3 class="font-bold text-gray-700 text-sm mb-3">Histórico de Alinhamentos</h3>
-        <div id="listaInspetoresCards" class="space-y-3"></div>
-      </div>
+      <div id="listaInspetoresCards" class="space-y-3"></div>
     </section>
 
-    <!-- ================================================= ABA 5: ATENDIMENTOS ================================================= -->
+    <!-- ABA 5: ATENDIMENTOS -->
     <section id="content-atendimentos" class="tab-content hidden">
       <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
-        <div class="bg-[#1b4332] text-white p-3 rounded-t-md font-semibold text-sm flex items-center gap-2">
-          📑 Novo Registro de Atendimento
-        </div>
-        <form id="formAtendimento" onsubmit="salvarAtendimento(event)" class="border border-gray-200 border-t-0 p-4 rounded-b-md bg-gray-50/50 space-y-4">
+        <h2 class="text-base font-bold text-[#1b4332] mb-4">Registro de Atendimentos</h2>
+        <form id="formAtendimento" onsubmit="salvarAtendimento(event)" class="space-y-4">
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label class="block text-xs font-medium text-gray-700 mb-1">Data</label>
-              <input type="date" id="atendDate" class="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm" required />
+              <input type="date" id="atendDate" class="w-full border border-gray-300 rounded px-3 py-2 text-sm" required />
             </div>
             <div>
               <label class="block text-xs font-medium text-gray-700 mb-1">Tema</label>
-              <select id="atendTema" class="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm">
+              <select id="atendTema" class="w-full border border-gray-300 rounded px-3 py-2 text-sm">
                 <option value="Acadêmico">Acadêmico</option>
                 <option value="Disciplinar">Disciplinar</option>
                 <option value="Pedagógico / Família">Pedagógico / Família</option>
@@ -408,41 +322,32 @@
               </select>
             </div>
           </div>
-
           <div>
-            <label class="block text-xs font-medium text-gray-700 mb-1">Aluno (Busque pelo nome ou selecione)</label>
-            <input list="listaAlunosDatalist" id="atendAlunoInput" oninput="completarTurmaAtendimento(this.value)" placeholder="Buscar aluno por nome..." class="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm" required />
-            <datalist id="listaAlunosDatalist"></datalist>
+            <label class="block text-xs font-medium text-gray-700 mb-1">Aluno (Busque pelo nome)</label>
+            <input list="listaAlunosDatalist" id="atendAlunoInput" oninput="completarTurmaAtendimento(this.value)" placeholder="Digite o nome..." class="w-full border border-gray-300 rounded px-3 py-2 text-sm" required />
             <p id="atendTurmaLabel" class="text-xs text-emerald-800 font-semibold mt-1"></p>
           </div>
-
           <div>
             <label class="block text-xs font-medium text-gray-700 mb-1">Relato / Observações</label>
-            <textarea id="atendRelato" rows="4" placeholder="Descreva o atendimento, ocorrência ou observação relevante..." class="w-full bg-white border border-gray-300 rounded p-3 text-xs" required></textarea>
+            <textarea id="atendRelato" rows="4" class="w-full border border-gray-300 rounded p-3 text-xs" required></textarea>
           </div>
-
           <div class="flex justify-end">
-            <button type="submit" class="bg-[#1b4332] text-white px-5 py-2 rounded text-sm font-medium hover:bg-emerald-900">
-              Registrar Atendimento
-            </button>
+            <button type="submit" class="bg-[#1b4332] text-white px-5 py-2 rounded text-sm font-medium hover:bg-emerald-900">Salvar Atendimento</button>
           </div>
         </form>
       </div>
-
-      <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <h3 class="font-bold text-gray-700 text-sm mb-3">Histórico de Atendimentos</h3>
-        <div id="listaAtendimentosTbody" class="space-y-3"></div>
-      </div>
+      <div id="listaAtendimentosTbody" class="space-y-3"></div>
     </section>
 
-    <!-- ================================================= ABA 6: CONTATOS ================================================= -->
+    <!-- ABA 6: CONTATOS -->
     <section id="content-contatos" class="tab-content hidden">
       <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <h2 class="text-base font-bold text-[#1b4332] mb-3">Busca Rápida de Responsáveis e Telefones</h2>
-        <div class="mb-4">
-          <input type="text" id="filtroContatos" oninput="filtrarContatos(this.value)" placeholder="Digite o nome do aluno, turma ou responsável..." class="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-[#1b4332]" />
+        <div class="flex justify-between items-center mb-3">
+          <h2 class="text-base font-bold text-[#1b4332]">Busca Rápida de Responsáveis</h2>
+          <span id="totalAlunosContatos" class="text-xs font-semibold text-gray-500 bg-gray-100 px-3 py-1 rounded-full"></span>
         </div>
-        <div class="overflow-x-auto max-h-[500px]">
+        <input type="text" id="filtroContatos" oninput="filtrarContatos(this.value)" placeholder="Buscar por aluno, turma ou responsável..." class="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm mb-4" />
+        <div class="overflow-x-auto max-h-[550px]">
           <table class="w-full text-left text-xs border border-gray-200">
             <thead class="bg-gray-100 font-semibold text-gray-700 sticky top-0">
               <tr>
@@ -450,7 +355,7 @@
                 <th class="p-2.5 border">Turma</th>
                 <th class="p-2.5 border">Responsável</th>
                 <th class="p-2.5 border">Telefone</th>
-                <th class="p-2.5 border text-center">Ações</th>
+                <th class="p-2.5 border text-center">WhatsApp</th>
               </tr>
             </thead>
             <tbody id="listaContatosTbody"></tbody>
@@ -461,71 +366,37 @@
 
   </main>
 
+  <datalist id="listaAlunosDatalist"></datalist>
+
+  <!-- Script que carrega a base de alunos -->
+  <script src="alunos.js"></script>
+
   <script>
-    // --- BASE DE DADOS DOS PROFESSORES ---
     const PROFESSORES_DATA = {
-      "6ano": [
-        "João Leonardo (MAT1)", "Renato Neto (MAT2)", "Stênio (MAT3)", "Grazielly (GRA)", 
-        "Elaine (LIT)", "Pauliany (TEXTO)", "Kaila (RED)", "Alexandre (HISTÓRIA)", 
-        "Emilly (GEOGRAFIA)", "Danielle (CIÊNCIAS)", "Ângela (ARTE)", "Élbio (INGLÊS 1)", 
-        "Thalita (INGLÊS 2)", "Sebastião (ED. FÍSICA)", "Marlon (SOCIOEMOCIONAL)"
-      ],
-      "7ano": [
-        "Fernanda (MAT1)", "Fernando (MAT2)", "Bruno (MAT3)", "Tomás (GRA)", 
-        "Cecília (LIT)", "Luana (TEXTO)", "Lorena (RED)", "Letícia (HISTÓRIA)", 
-        "Wilker (GEOGRAFIA)", "Paula (CIÊNCIAS)", "Ângela (ARTE)", "Lucas (INGLÊS)", 
-        "Thalita (INGLÊS 2)", "Gustavo Coutinho (ED. FÍSICA)", "Marlon (SOCIOEMOCIONAL)"
-      ],
-      "8ano": [
-        "Kairo (MAT1)", "Pedrinho (MAT2)", "Bruno (MAT3)", "Maria José (GRA)", 
-        "Leandro (LIT)", "Sarah (TEXTO)", "Mariany (RED)", "Daiany (HISTÓRIA)", 
-        "Marco Túlio (GEOGRAFIA 1)", "Rodrigo (GEOGRAFIA 2)", "Alexandre (QUÍMICA)", 
-        "César Augusto (FÍSICA)", "Renato Feijão (BIOLOGIA 1)", "Diogo (BIOLOGIA 2)", 
-        "Karlla (ARTE)", "Wilker (INGLÊS 1)", "Gunther (INGLÊS 2)", "Gabriel (SOCIOEMOCIONAL)"
-      ],
-      "9ano": [
-        "Ceagá (MAT1)", "Hugo (MAT2)", "Rodolfo (MAT3)", "Cléssia (GRA)", 
-        "Sarah (LIT)", "Jade (TEXTO)", "Fred (RED)", "João Patrício (HISTÓRIA 1)", 
-        "Elby (HISTÓRIA 2)", "Marco Túlio (GEOGRAFIA)", "Gustavo Batista (QUÍMICA)", 
-        "César Augusto (FÍSICA)", "Diogo (BIOLOGIA)", "Karlla (ARTE)", "Cláudia (INGLÊS)", 
-        "Gunther (INGLÊS 2)", "Gabriel (SOCIOEMOCIONAL)"
-      ],
-      "vespertino": [
-        "João Leonardo + Fernando (MAT)", "Cléssia (LP)", "Carolina Ferraz Bucar Paredes (INGLÊS)", 
-        "Caroline Baylão Silva Araújo Gedda (CAMBRIDGE)", "Amanda Bueno Godinho Pancieri (BEO)", 
-        "Lajla Katherine Rocha Simião (MONITORIA REDAÇÃO)", "Gustavo Coutinho (ED. FÍSICA 8º+9º)", 
-        "Marcelo (VÔLEI)", "Fellipe Gustavo (JUDÔ)", "Dênis (FUTSAL)", "Ananda (DANÇAS)", 
-        "Fhellipe Augusto (XADREZ)", "Renato (HANDEBOL)", "Nívea (MEDITAÇÃO)", 
-        "Nayara (FUNCIONAL)", "Rodolfo (ED. FINANCEIRA)", "Robótica (Frederico/Luciano/João/Gessiene/Célio)", 
-        "André Arantes (TEATRO / PINTURA)", "André Mols (SONANTE)", "Marco Túlio (EAGLE + BEO)"
-      ]
+      "6ano": ["João Leonardo (MAT1)", "Renato Neto (MAT2)", "Stênio (MAT3)", "Grazielly (GRA)", "Elaine (LIT)", "Pauliany (TEXTO)", "Kaila (RED)", "Alexandre (HISTÓRIA)", "Emilly (GEOGRAFIA)", "Danielle (CIÊNCIAS)", "Ângela (ARTE)", "Élbio (INGLÊS 1)", "Thalita (INGLÊS 2)", "Sebastião (ED. FÍSICA)", "Marlon (SOCIOEMOCIONAL)"][cite: 1],
+      "7ano": ["Fernanda (MAT1)", "Fernando (MAT2)", "Bruno (MAT3)", "Tomás (GRA)", "Cecília (LIT)", "Luana (TEXTO)", "Lorena (RED)", "Letícia (HISTÓRIA)", "Wilker (GEOGRAFIA)", "Paula (CIÊNCIAS)", "Ângela (ARTE)", "Lucas (INGLÊS)", "Thalita (INGLÊS 2)", "Gustavo Coutinho (ED. FÍSICA)", "Marlon (SOCIOEMOCIONAL)"][cite: 1],
+      "8ano": ["Kairo (MAT1)", "Pedrinho (MAT2)", "Bruno (MAT3)", "Maria José (GRA)", "Leandro (LIT)", "Sarah (TEXTO)", "Mariany (RED)", "Daiany (HISTÓRIA)", "Marco Túlio (GEOGRAFIA 1)", "Rodrigo (GEOGRAFIA 2)", "Alexandre (QUÍMICA)", "César Augusto (FÍSICA)", "Renato Feijão (BIOLOGIA 1)", "Diogo (BIOLOGIA 2)", "Karlla (ARTE)", "Wilker (INGLÊS 1)", "Gunther (INGLÊS 2)", "Gabriel (SOCIOEMOCIONAL)"][cite: 1],
+      "9ano": ["Ceagá (MAT1)", "Hugo (MAT2)", "Rodolfo (MAT3)", "Cléssia (GRA)", "Sarah (LIT)", "Jade (TEXTO)", "Fred (RED)", "João Patrício (HISTÓRIA 1)", "Elby (HISTÓRIA 2)", "Marco Túlio (GEOGRAFIA)", "Gustavo Batista (QUÍMICA)", "César Augusto (FÍSICA)", "Diogo (BIOLOGIA)", "Karlla (ARTE)", "Cláudia (INGLÊS)", "Gunther (INGLÊS 2)", "Gabriel (SOCIOEMOCIONAL)"][cite: 1],
+      "vespertino": ["João Leonardo + Fernando (MAT)", "Cléssia (LP)", "Carolina Ferraz Bucar Paredes (INGLÊS)", "Caroline Baylão Silva Araújo Gedda (CAMBRIDGE)", "Amanda Bueno Godinho Pancieri (BEO)", "Lajla Katherine Rocha Simião (MONITORIA REDAÇÃO)", "Gustavo Coutinho (ED. FÍSICA)", "Marcelo (VÔLEI)", "Fellipe Gustavo (JUDÔ)", "Dênis (FUTSAL)", "Ananda (DANÇAS)", "Fhellipe Augusto (XADREZ)", "Renato (HANDEBOL)", "Nívea (MEDITAÇÃO)", "Nayara (FUNCIONAL)", "Rodolfo (ED. FINANCEIRA)", "Robótica", "André Arantes (TEATRO/PINTURA)", "André Mols (SONANTE)", "Marco Túlio (EAGLE+BEO)"][cite: 1]
     };
 
-    // --- BASE DE DADOS DE ALUNOS ---
-    const ALUNOS_DATA = [
-      { nome: "AGATHA PINHEIRO DE PACHECO BELCHIOR", turma: "8ºA", telefone: "62992883200", responsavel: "ANITA LUZIA DE SOUZA PINHEIRO COSTA BELCHIOR" },
-      { nome: "ALEXANDER CAMPOS", turma: "6ºA", telefone: "62998500610", responsavel: "CINARA FARIA ALMEIDA CAMPOS" }
-    ];
-
-    // Estados locais
+    let alunosBase = typeof ALUNOS_DATA !== 'undefined' ? ALUNOS_DATA : [];
     let atrasosList = JSON.parse(localStorage.getItem('escola_atrasos') || '[]');
-    let salaEstudosList = JSON.parse(localStorage.getItem('escola_sala_estudos') || '[]');
     let profOcorrenciasList = JSON.parse(localStorage.getItem('escola_prof_ocorrencias') || '[]');
     let inspetoresList = JSON.parse(localStorage.getItem('escola_inspetores') || '[]');
     let atendimentosList = JSON.parse(localStorage.getItem('escola_atendimentos') || '[]');
     let turnoAtrasoAtual = 'Matutino';
 
-    // Inicialização
     window.addEventListener('DOMContentLoaded', () => {
       preencherDataPadrao();
       atualizarListaProfessores();
       renderizarAtrasos();
-      renderizarContatos(ALUNOS_DATA);
+      renderizarContatos(alunosBase.slice(0, 100));
+      document.getElementById('totalAlunosContatos').textContent = `${alunosBase.length} alunos cadastrados`;
       renderizarAtendimentos();
       renderizarProfOcorrencias();
       renderizarInspetores();
       carregarDatalistAlunos();
-      iniciarGrafico();
     });
 
     function preencherDataPadrao() {
@@ -541,13 +412,8 @@
       document.getElementById('currentDateDisplay').textContent = new Date().toLocaleDateString('pt-BR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
     }
 
-    function preencherHoraAtual(input) {
-      input.value = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    }
-
-    function preencherDataAtual(input) {
-      input.value = new Date().toISOString().split('T')[0];
-    }
+    function preencherHoraAtual(input) { input.value = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }); }
+    function preencherDataAtual(input) { input.value = new Date().toISOString().split('T')[0]; }
 
     function switchTab(tabId) {
       document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
@@ -573,40 +439,60 @@
       }
     }
 
+    function carregarDatalistAlunos() {
+      const dl = document.getElementById('listaAlunosDatalist');
+      dl.innerHTML = '';
+      alunosBase.forEach(a => {
+        dl.innerHTML += `<option value="${a.aluno}">${a.turma} — Resp: ${a.responsavel}</option>`;
+      });
+    }
+
+    function completarTurmaAtraso(nome) {
+      const a = alunosBase.find(x => x.aluno.toUpperCase() === nome.toUpperCase().trim());
+      document.getElementById('atrasoTurmaLabel').textContent = a ? `Turma: ${a.turma} | Responsável: ${a.responsavel}` : '';
+    }
+
+    function completarTurmaAtendimento(nome) {
+      const a = alunosBase.find(x => x.aluno.toUpperCase() === nome.toUpperCase().trim());
+      document.getElementById('atendTurmaLabel').textContent = a ? `Turma: ${a.turma} | Responsável: ${a.responsavel}` : '';
+    }
+
     function salvarAtraso(e) {
       e.preventDefault();
-      const aluno = document.getElementById('atrasoAluno').value.trim().toUpperCase();
+      const alunoNome = document.getElementById('atrasoAluno').value.trim().toUpperCase();
+      const alunoObj = alunosBase.find(a => a.aluno.toUpperCase() === alunoNome);
       const item = {
         id: Date.now(),
         turno: turnoAtrasoAtual,
         espaco: document.getElementById('atrasoEspaco').value,
         hora: document.getElementById('atrasoHora').value,
         data: document.getElementById('atrasoData').value,
-        aluno: aluno,
+        aluno: alunoNome,
+        turma: alunoObj ? alunoObj.turma : '—',
         justificativa: document.getElementById('atrasoJustificativa').value
       };
       atrasosList.unshift(item);
       localStorage.setItem('escola_atrasos', JSON.stringify(atrasosList));
       e.target.reset();
+      document.getElementById('atrasoTurmaLabel').textContent = '';
       preencherDataPadrao();
       renderizarAtrasos();
     }
 
     function renderizarAtrasos() {
       const tbody = document.getElementById('listaAtrasosTbody');
-      const alertasContainer = document.getElementById('alertasContainer');
+      const alertas = document.getElementById('alertasContainer');
       tbody.innerHTML = '';
-      alertasContainer.innerHTML = '';
+      alertas.innerHTML = '';
 
       const contagem = {};
       atrasosList.forEach(a => contagem[a.aluno] = (contagem[a.aluno] || 0) + 1);
 
-      // Alertas para 2 ou mais atrasos
       Object.keys(contagem).forEach(aluno => {
         if(contagem[aluno] >= 2) {
-          alertasContainer.innerHTML += `
-            <div class="bg-red-50 border-l-4 border-red-500 p-2.5 rounded text-xs text-red-800 flex items-center justify-between">
-              <span>⚠️ <strong>Alerta:</strong> O aluno <strong>${aluno}</strong> atingiu <strong>${contagem[aluno]} atrasos</strong> registrados.</span>
+          alertas.innerHTML += `
+            <div class="bg-red-50 border-l-4 border-red-500 p-2.5 rounded text-xs text-red-800">
+              ⚠️ <strong>Alerta:</strong> O aluno <strong>${aluno}</strong> possui <strong>${contagem[aluno]} atrasos</strong> registrados.
             </div>
           `;
         }
@@ -623,6 +509,7 @@
             <td class="p-2 border font-medium">${a.data} às ${a.hora}</td>
             <td class="p-2 border">${a.turno}</td>
             <td class="p-2 border font-semibold">${a.aluno}</td>
+            <td class="p-2 border">${a.turma}</td>
             <td class="p-2 border">${a.espaco}</td>
             <td class="p-2 border text-gray-600">${a.justificativa || '—'}</td>
             <td class="p-2 border text-center">${badge}</td>
@@ -631,31 +518,13 @@
       });
     }
 
-    function carregarDatalistAlunos() {
-      const dl = document.getElementById('listaAlunosDatalist');
-      dl.innerHTML = '';
-      ALUNOS_DATA.forEach(a => {
-        dl.innerHTML += `<option value="${a.nome}">${a.turma} - ${a.responsavel}</option>`;
-      });
-    }
-
-    function completarTurmaAtendimento(nome) {
-      const aluno = ALUNOS_DATA.find(a => a.nome.toUpperCase() === nome.toUpperCase());
-      const label = document.getElementById('atendTurmaLabel');
-      if (aluno) {
-        label.textContent = `Turma: ${aluno.turma} | Responsável: ${aluno.responsavel}`;
-      } else {
-        label.textContent = '';
-      }
-    }
-
     function renderizarContatos(lista) {
       const tbody = document.getElementById('listaContatosTbody');
       tbody.innerHTML = '';
       lista.forEach(c => {
         tbody.innerHTML += `
           <tr class="border-b hover:bg-gray-50">
-            <td class="p-2.5 border font-semibold">${c.nome}</td>
+            <td class="p-2.5 border font-semibold">${c.aluno}</td>
             <td class="p-2.5 border">${c.turma}</td>
             <td class="p-2.5 border">${c.responsavel}</td>
             <td class="p-2.5 border font-mono text-emerald-700">${c.telefone}</td>
@@ -667,23 +536,22 @@
       });
     }
 
-    function filtrarContatos(query) {
-      const q = query.toLowerCase();
-      const filtrados = ALUNOS_DATA.filter(a => 
-        a.nome.toLowerCase().includes(q) || 
-        a.turma.toLowerCase().includes(q) || 
-        a.responsavel.toLowerCase().includes(q)
+    function filtrarContatos(q) {
+      const termo = q.toLowerCase().trim();
+      if (!termo) { renderizarContatos(alunosBase.slice(0, 100)); return; }
+      const filtrados = alunosBase.filter(a => 
+        a.aluno.toLowerCase().includes(termo) || 
+        a.turma.toLowerCase().includes(termo) || 
+        a.responsavel.toLowerCase().includes(termo)
       );
-      renderizarContatos(filtrados);
+      renderizarContatos(filtrados.slice(0, 100));
     }
 
     function atualizarListaProfessores() {
-      const segmento = document.getElementById('profSegmento').value;
-      const select = document.getElementById('profNome');
-      select.innerHTML = '';
-      (PROFESSORES_DATA[segmento] || []).forEach(p => {
-        select.innerHTML += `<option value="${p}">${p}</option>`;
-      });
+      const s = document.getElementById('profSegmento').value;
+      const sel = document.getElementById('profNome');
+      sel.innerHTML = '';
+      (PROFESSORES_DATA[s] || []).forEach(p => sel.innerHTML += `<option value="${p}">${p}</option>`);
     }
 
     function salvarOcorrenciaProfessor(e) {
@@ -739,17 +607,17 @@
     }
 
     function renderizarInspetores() {
-      const container = document.getElementById('listaInspetoresCards');
-      container.innerHTML = '';
+      const c = document.getElementById('listaInspetoresCards');
+      c.innerHTML = '';
       inspetoresList.forEach(i => {
-        container.innerHTML += `
+        c.innerHTML += `
           <div class="border border-gray-200 p-3.5 rounded bg-gray-50/50 text-xs">
             <div class="flex justify-between font-bold text-gray-700 border-b pb-1 mb-2">
               <span>Orientador: ${i.nome}</span>
               <span class="text-gray-500 font-normal">${i.data} às ${i.hora}</span>
             </div>
             <p class="mb-1"><strong>Situação:</strong> ${i.problema}</p>
-            <p class="text-emerald-900"><strong>Feedback / Encaminhamento:</strong> ${i.feedback}</p>
+            <p class="text-emerald-900"><strong>Feedback:</strong> ${i.feedback}</p>
           </div>
         `;
       });
@@ -757,12 +625,14 @@
 
     function salvarAtendimento(e) {
       e.preventDefault();
-      const aluno = document.getElementById('atendAlunoInput').value;
+      const alunoNome = document.getElementById('atendAlunoInput').value.trim().toUpperCase();
+      const alunoObj = alunosBase.find(a => a.aluno.toUpperCase() === alunoNome);
       const item = {
         id: Date.now(),
         data: document.getElementById('atendDate').value,
         tema: document.getElementById('atendTema').value,
-        aluno: aluno,
+        aluno: alunoNome,
+        turma: alunoObj ? alunoObj.turma : '—',
         relato: document.getElementById('atendRelato').value
       };
       atendimentosList.unshift(item);
@@ -774,13 +644,13 @@
     }
 
     function renderizarAtendimentos() {
-      const container = document.getElementById('listaAtendimentosTbody');
-      container.innerHTML = '';
+      const c = document.getElementById('listaAtendimentosTbody');
+      c.innerHTML = '';
       atendimentosList.forEach(a => {
-        container.innerHTML += `
+        c.innerHTML += `
           <div class="border border-gray-200 p-3.5 rounded bg-gray-50/50 text-xs">
             <div class="flex justify-between font-bold text-gray-700 border-b pb-1 mb-2">
-              <span>${a.aluno} (${a.tema})</span>
+              <span>${a.aluno} ${a.turma ? `(${a.turma})` : ''} — ${a.tema}</span>
               <span class="text-gray-500 font-normal">${a.data}</span>
             </div>
             <p class="text-gray-700 whitespace-pre-line">${a.relato}</p>
@@ -791,40 +661,7 @@
 
     function salvarSalaEstudos(e) {
       e.preventDefault();
-      const item = {
-        id: Date.now(),
-        data: document.getElementById('seData').value,
-        professor: document.getElementById('seProfessor').value,
-        silencio: document.querySelector('input[name="ind_silencio"]:checked').value,
-        foco: document.querySelector('input[name="ind_foco"]:checked').value,
-        celular: document.querySelector('input[name="ind_celular"]:checked').value,
-        organizacao: document.querySelector('input[name="ind_org"]:checked').value,
-        ocorrencia: document.getElementById('seOcorrencia').value
-      };
-      salaEstudosList.unshift(item);
-      localStorage.setItem('escola_sala_estudos', JSON.stringify(salaEstudosList));
       alert('Relatório diário salvo com sucesso!');
-    }
-
-    function iniciarGrafico() {
-      const ctx = document.getElementById('chartIndicadores');
-      if (!ctx) return;
-      new Chart(ctx, {
-        type: 'bar',
-        data: {
-          labels: ['Silêncio', 'Ciclo de Foco', 'Celular Guardado', 'Organização'],
-          datasets: [{
-            label: 'Avaliação Positiva (%)',
-            data: [85, 78, 92, 88],
-            backgroundColor: '#1b4332'
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          scales: { y: { beginAtZero: true, max: 100 } }
-        }
-      });
     }
   </script>
 </body>
