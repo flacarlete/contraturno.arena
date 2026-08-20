@@ -3,18 +3,22 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Arena Contraturno - Sistema</title>
+  <title>Arena Contraturno - Sistema de Gestão</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     .aba-conteudo { display: none; }
-    .aba-btn.active { border-bottom: 2px solid #1b4332; color: #1b4332; font-weight: 700; }
+    .aba-btn.active { border-bottom: 3px solid #1b4332; color: #1b4332; font-weight: 700; }
+    @media print {
+      .no-print { display: none !important; }
+      #printableProfArea { display: block !important; }
+    }
   </style>
 </head>
 <body class="bg-gray-100 min-h-screen">
 
-  <!-- TELA DE LOGIN -->
-  <div id="tela-login" class="fixed inset-0 bg-[#1b4332] flex items-center justify-center z-50 p-4">
-    <div class="bg-white p-8 rounded-lg shadow-2xl w-full max-w-sm">
+  <!-- ==================== TELA DE LOGIN ==================== -->
+  <div id="tela-login" class="fixed inset-0 bg-[#1b4332] z-50 flex items-center justify-center p-4">
+    <div class="bg-white p-8 rounded-xl shadow-2xl w-full max-w-sm">
       <h2 class="text-xl font-bold mb-6 text-center text-gray-800">Login Arena</h2>
       <select id="loginPerfil" class="w-full border p-2 mb-4 rounded text-sm">
         <option value="coordenacao">Coordenação</option>
@@ -26,32 +30,46 @@
     </div>
   </div>
 
-  <!-- SISTEMA -->
+  <!-- ==================== SISTEMA ==================== -->
   <div id="sistema-principal" class="hidden">
-    <header class="bg-[#1b4332] text-white p-4 flex justify-between items-center">
+    <header class="bg-[#1b4332] text-white p-4 flex justify-between items-center no-print">
       <h1 class="font-bold">Arena Contraturno</h1>
       <button onclick="fazerLogout()" class="text-xs bg-red-700 px-3 py-1 rounded">Sair</button>
     </header>
     
-    <nav class="bg-white border-b p-2 flex gap-4 overflow-x-auto">
+    <nav class="bg-white border-b p-2 flex gap-4 overflow-x-auto no-print">
       <button onclick="mudarAba('atrasos')" class="aba-btn active" id="btn-atrasos">Atrasos</button>
       <button onclick="mudarAba('sala-estudos')" class="aba-btn" id="btn-sala-estudos">Sala de Estudos</button>
       <button onclick="mudarAba('professores')" class="aba-btn" id="btn-professores">Professores</button>
       <button onclick="mudarAba('inspetores')" class="aba-btn" id="btn-inspetores">Inspetores</button>
+      <button onclick="mudarAba('atendimentos')" class="aba-btn" id="btn-atendimentos">Atendimentos</button>
+      <button onclick="mudarAba('contatos')" class="aba-btn" id="btn-contatos">Contatos</button>
+      <button onclick="mudarAba('gerenciador')" class="aba-btn" id="btn-gerenciador">🔐 Acessos</button>
     </nav>
 
     <div class="p-6">
       <section id="aba-atrasos" class="aba-conteudo" style="display:block;">
-        <h2 class="text-lg font-bold mb-4">Atrasos</h2>
+        <h2 class="text-lg font-bold mb-4">Registro de Atrasos</h2>
+        <!-- Conteúdo Atrasos aqui -->
       </section>
       <section id="aba-sala-estudos" class="aba-conteudo">
         <h2 class="text-lg font-bold mb-4">Sala de Estudos</h2>
       </section>
       <section id="aba-professores" class="aba-conteudo">
         <h2 class="text-lg font-bold mb-4">Professores</h2>
+        <button onclick="window.print()" class="no-print bg-emerald-800 text-white px-4 py-2 rounded text-xs">Imprimir Relatório</button>
       </section>
       <section id="aba-inspetores" class="aba-conteudo">
         <h2 class="text-lg font-bold mb-4">Inspetores</h2>
+      </section>
+      <section id="aba-atendimentos" class="aba-conteudo">
+        <h2 class="text-lg font-bold mb-4">Atendimentos</h2>
+      </section>
+      <section id="aba-contatos" class="aba-conteudo">
+        <h2 class="text-lg font-bold mb-4">Contatos</h2>
+      </section>
+      <section id="aba-gerenciador" class="aba-conteudo">
+        <h2 class="text-lg font-bold mb-4">Gerenciador de Acessos</h2>
       </section>
     </div>
   </div>
