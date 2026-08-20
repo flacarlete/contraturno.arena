@@ -1,865 +1,221 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Controle de Gestão Escolar & Contraturno</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <meta charset="UTF-8">
   <style>
-    @media print {
-      body * { visibility: hidden; }
-      #printableArea, #printableArea * { visibility: visible; }
-      #printableArea { position: absolute; left: 0; top: 0; width: 100%; }
-      .no-print { display: none !important; }
+    * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    body { background-color: #f4f6f8; padding: 20px; }
+
+    /* Abas de Período */
+    .tab-container { display: flex; gap: 10px; margin-bottom: 15px; }
+    .tab-btn {
+      padding: 8px 18px;
+      border-radius: 20px;
+      border: 1px solid #d1d5db;
+      background-color: #fff;
+      color: #374151;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
     }
+    .tab-btn.active {
+      background-color: #d1fae5;
+      color: #065f46;
+      border-color: #a7f3d0;
+    }
+
+    /* Cartão Principal */
+    .card {
+      background: #ffffff;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+      border: 1px solid #e5e7eb;
+      overflow: visible;
+      max-width: 800px;
+    }
+    .card-header {
+      background-color: #144733;
+      color: #ffffff;
+      padding: 12px 18px;
+      font-weight: 600;
+      font-size: 15px;
+      border-top-left-radius: 7px;
+      border-top-right-radius: 7px;
+    }
+    .card-body { padding: 20px; }
+
+    /* Grid do Formulário */
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+      margin-bottom: 15px;
+    }
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+    label {
+      font-size: 13px;
+      font-weight: 500;
+      color: #374151;
+      margin-bottom: 6px;
+    }
+    input, select {
+      height: 38px;
+      padding: 8px 12px;
+      border: 1px solid #9ca3af;
+      border-radius: 6px;
+      font-size: 14px;
+      outline: none;
+      background: #fff;
+    }
+    input:focus, select:focus {
+      border-color: #144733;
+      box-shadow: 0 0 0 2px rgba(20, 71, 51, 0.15);
+    }
+
+    /* Lista Customizada de Autocomplete */
     .autocomplete-list {
-      max-height: 250px;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      max-height: 180px;
       overflow-y: auto;
+      background: #fff;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.12);
       z-index: 9999;
+      display: none;
+      margin-top: 4px;
     }
+    .autocomplete-item {
+      padding: 9px 12px;
+      cursor: pointer;
+      font-size: 14px;
+      border-bottom: 1px solid #f1f5f9;
+    }
+    .autocomplete-item:hover { background-color: #f0fdf4; color: #144733; font-weight: 500; }
   </style>
 </head>
-<body class="bg-gray-100 text-gray-800 font-sans min-h-screen flex flex-col">
+<body>
 
-  <!-- Cabeçalho Principal -->
-  <header class="bg-[#1b4332] text-white px-6 py-4 shadow flex flex-col md:flex-row justify-between items-start md:items-center no-print">
-    <div>
-      <h1 class="text-xl font-bold flex items-center gap-2">
-        <span>📋</span> Controle de Gestão e Contraturno
-      </h1>
-      <p id="currentDateDisplay" class="text-xs text-emerald-200 mt-1"></p>
+  <!-- Seleção de Turno -->
+  <div class="tab-container">
+    <button class="tab-btn active" onclick="setPeriodo('Matutino', this)">Período Matutino</button>
+    <button class="tab-btn" onclick="setPeriodo('Vespertino', this)">Período Vespertino</button>
+  </div>
+
+  <!-- Card do Formulário -->
+  <div class="card">
+    <div class="card-header" id="cardHeader">⏰ Registrar Atrasos — Matutino</div>
+    <div class="card-body">
+      
+      <div class="form-row">
+        <div class="form-group">
+          <label>Espaço / Aula</label>
+          <select id="espacoAula">
+            <option value="">Selecione...</option>
+            <option value="Sala de Aula">Sala de Aula</option>
+            <option value="Laboratório">Laboratório</option>
+            <option value="Quadra">Quadra</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Horário de Chegada</label>
+          <input type="time" id="horarioChegada">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group" style="position: relative;">
+          <label>Nome do Aluno (Digite as primeiras letras)</label>
+          <input type="text" id="nomeAluno" placeholder="Digite o nome..." autocomplete="off">
+          <div id="listaSugestoes" class="autocomplete-list"></div>
+        </div>
+
+        <div class="form-group">
+          <label>Justificativa</label>
+          <input type="text" id="justificativa" placeholder="Motivo do atraso...">
+        </div>
+      </div>
+
     </div>
-    <div class="mt-2 md:mt-0 text-xs bg-emerald-900/80 px-3 py-1.5 rounded text-emerald-100 font-medium">
-      🟢 <span id="badgeTotalAlunos">1.160</span> alunos ativos no sistema
-    </div>
-  </header>
-
-  <!-- Navegação de Abas -->
-  <nav class="bg-white border-b border-gray-200 px-6 flex flex-wrap gap-2 text-sm font-medium text-gray-600 no-print">
-    <button onclick="switchTab('atrasos')" id="tab-atrasos" class="tab-btn py-3 px-4 border-b-2 border-[#1b4332] text-[#1b4332] font-semibold flex items-center gap-2">⏰ Atrasos</button>
-    <button onclick="switchTab('sala-estudos')" id="tab-sala-estudos" class="tab-btn py-3 px-4 border-b-2 border-transparent hover:text-[#1b4332] flex items-center gap-2">📚 Sala de Estudos & Biblioteca</button>
-    <button onclick="switchTab('professores')" id="tab-professores" class="tab-btn py-3 px-4 border-b-2 border-transparent hover:text-[#1b4332] flex items-center gap-2">👨‍🏫 Professores</button>
-    <button onclick="switchTab('inspetores')" id="tab-inspetores" class="tab-btn py-3 px-4 border-b-2 border-transparent hover:text-[#1b4332] flex items-center gap-2">📋 Inspetores / Orientadores</button>
-    <button onclick="switchTab('atendimentos')" id="tab-atendimentos" class="tab-btn py-3 px-4 border-b-2 border-transparent hover:text-[#1b4332] flex items-center gap-2">📑 Atendimentos</button>
-    <button onclick="switchTab('contatos')" id="tab-contatos" class="tab-btn py-3 px-4 border-b-2 border-transparent hover:text-[#1b4332] flex items-center gap-2">📞 Contatos Rápidos</button>
-  </nav>
-
-  <main class="p-6 max-w-6xl w-full mx-auto flex-1">
-
-    <!-- ========================================== ABA 1: ATRASOS ========================================== -->
-    <section id="content-atrasos" class="tab-content">
-      <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
-        <div class="flex gap-4 border-b border-gray-200 pb-3 mb-4">
-          <button onclick="setAtrasoTurno('Matutino')" id="btn-turno-mat" class="px-4 py-1.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800">Período Matutino</button>
-          <button onclick="setAtrasoTurno('Vespertino')" id="btn-turno-vesp" class="px-4 py-1.5 rounded-full text-xs font-semibold bg-gray-100 text-gray-600">Período Vespertino</button>
-        </div>
-
-        <div class="bg-[#1b4332] text-white p-3 rounded-t-md font-semibold text-sm flex items-center gap-2">
-          ⏰ Registrar Atrasos — <span id="labelTurno">Matutino</span>
-        </div>
-
-        <form id="formAtraso" onsubmit="salvarAtraso(event)" class="border border-gray-200 border-t-0 p-4 rounded-b-md bg-gray-50/50 space-y-4">
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div>
-              <label class="block text-xs font-medium text-gray-700 mb-1">Espaço / Aula</label>
-              <select id="atrasoEspaco" class="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-[#1b4332]" required>
-                <option value="">Selecione...</option>
-                <option value="Nivelamentos">Nivelamentos</option>
-                <option value="Sala de estudos">Sala de estudos</option>
-                <option value="Biblioteca">Biblioteca</option>
-                <option value="Modalidades diversas">Modalidades diversas</option>
-                <option value="AEE">AEE</option>
-              </select>
-            </div>
-            <div>
-              <label class="block text-xs font-medium text-gray-700 mb-1">Horário de Chegada</label>
-              <input type="time" id="atrasoHora" onclick="preencherHoraAtual(this)" class="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-[#1b4332]" required />
-            </div>
-            <div>
-              <label class="block text-xs font-medium text-gray-700 mb-1">Data</label>
-              <input type="date" id="atrasoData" onclick="preencherDataAtual(this)" class="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-[#1b4332]" required />
-            </div>
-          </div>
-
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div class="relative">
-              <label class="block text-xs font-medium text-gray-700 mb-1">Nome do Aluno (Digite as primeiras letras)</label>
-              <input type="text" id="atrasoAluno" oninput="buscarAlunoAoDigitar(this.value, 'sugestoesAtraso', 'atrasoAluno', 'atrasoTurmaLabel')" autocomplete="off" placeholder="Ex: Eduardo, Alice, Maria..." class="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm font-medium focus:outline-none focus:border-[#1b4332]" required />
-              <div id="sugestoesAtraso" class="autocomplete-list absolute left-0 right-0 top-full mt-1 bg-white border border-gray-300 rounded shadow-xl hidden"></div>
-              <p id="atrasoTurmaLabel" class="text-xs text-emerald-800 font-bold mt-1.5"></p>
-            </div>
-            <div>
-              <label class="block text-xs font-medium text-gray-700 mb-1">Justificativa</label>
-              <input type="text" id="atrasoJustificativa" placeholder="Motivo do atraso..." class="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-[#1b4332]" />
-            </div>
-          </div>
-
-          <div class="flex justify-end">
-            <button type="submit" class="bg-[#1b4332] text-white px-5 py-2 rounded text-sm font-medium hover:bg-emerald-900 flex items-center gap-1.5">
-              ✓ Registrar atraso
-            </button>
-          </div>
-        </form>
-      </div>
-
-      <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <h3 class="font-bold text-gray-700 text-sm mb-3">Histórico de Atrasos & Alertas</h3>
-        <div id="alertasContainer" class="mb-4 space-y-2"></div>
-        <div class="overflow-x-auto">
-          <table class="w-full text-left text-xs border border-gray-200">
-            <thead class="bg-gray-100 font-semibold text-gray-700">
-              <tr>
-                <th class="p-2 border">Data/Hora</th>
-                <th class="p-2 border">Turno</th>
-                <th class="p-2 border">Aluno</th>
-                <th class="p-2 border">Turma</th>
-                <th class="p-2 border">Espaço</th>
-                <th class="p-2 border">Justificativa</th>
-                <th class="p-2 border text-center">Ocorrências</th>
-              </tr>
-            </thead>
-            <tbody id="listaAtrasosTbody"></tbody>
-          </table>
-        </div>
-      </div>
-    </section>
-
-    <!-- ========================================== ABA 2: SALA DE ESTUDOS ========================================== -->
-    <section id="content-sala-estudos" class="tab-content hidden">
-      <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
-        <div class="flex justify-between items-center mb-4">
-          <h2 class="text-base font-bold text-[#1b4332]">Controle Diário — Sala de Estudos e Biblioteca</h2>
-          <button onclick="window.print()" class="bg-gray-800 text-white px-3 py-1.5 rounded text-xs hover:bg-black no-print">🖨️ Imprimir Relatório</button>
-        </div>
-
-        <form id="formSalaEstudos" onsubmit="salvarSalaEstudos(event)" class="space-y-6">
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label class="block text-xs font-medium text-gray-700 mb-1">Data</label>
-              <input type="date" id="seData" class="w-full border border-gray-300 rounded px-3 py-2 text-sm" required />
-            </div>
-            <div>
-              <label class="block text-xs font-medium text-gray-700 mb-1">Professor / Inspetor Responsável</label>
-              <input type="text" id="seProfessor" class="w-full border border-gray-300 rounded px-3 py-2 text-sm" placeholder="Nome do avaliador..." required />
-            </div>
-          </div>
-
-          <div class="space-y-3">
-            <h3 class="text-xs font-bold text-gray-700 uppercase">1. Controle de Ambiente e Foco</h3>
-            <div class="flex justify-between items-center border-b pb-2 text-xs">
-              <span><strong>A) Silêncio / Ruído Produtivo</strong></span>
-              <div class="flex gap-2">
-                <label><input type="radio" name="ind_silencio" value="Excelente" checked /> Excelente</label>
-                <label><input type="radio" name="ind_silencio" value="Regular" /> Regular</label>
-                <label><input type="radio" name="ind_silencio" value="Crítico" /> Crítico</label>
-              </div>
-            </div>
-            <div class="flex justify-between items-center border-b pb-2 text-xs">
-              <span><strong>B) Ciclo de Foco</strong></span>
-              <div class="flex gap-2">
-                <label><input type="radio" name="ind_foco" value="Excelente" checked /> Excelente</label>
-                <label><input type="radio" name="ind_foco" value="Regular" /> Regular</label>
-                <label><input type="radio" name="ind_foco" value="Crítico" /> Crítico</label>
-              </div>
-            </div>
-            <div class="flex justify-between items-center border-b pb-2 text-xs">
-              <span><strong>C) Celular Guardado</strong></span>
-              <div class="flex gap-2">
-                <label><input type="radio" name="ind_celular" value="Excelente" checked /> Excelente</label>
-                <label><input type="radio" name="ind_celular" value="Regular" /> Regular</label>
-                <label><input type="radio" name="ind_celular" value="Crítico" /> Crítico</label>
-              </div>
-            </div>
-            <div class="flex justify-between items-center border-b pb-2 text-xs">
-              <span><strong>D) Organização da Mesa</strong></span>
-              <div class="flex gap-2">
-                <label><input type="radio" name="ind_org" value="Excelente" checked /> Excelente</label>
-                <label><input type="radio" name="ind_org" value="Regular" /> Regular</label>
-                <label><input type="radio" name="ind_org" value="Crítico" /> Crítico</label>
-              </div>
-            </div>
-          </div>
-
-          <div>
-            <h3 class="text-xs font-bold text-gray-700 uppercase mb-2">2. Checklist Padrão Ouro</h3>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs">
-              <label><input type="checkbox" id="chkApostila" /> <strong>Apostila Viva</strong> (Grifos e anotações)</label>
-              <label><input type="checkbox" id="chkRespostas" /> <strong>Respostas Completas</strong></label>
-              <label><input type="checkbox" id="chkErro" /> <strong>Justificativa do Erro</strong></label>
-              <label><input type="checkbox" id="chkAtivo" /> <strong>Estudo Ativo</strong> (Mapas mentais, fichas)</label>
-            </div>
-          </div>
-
-          <div>
-            <h3 class="text-xs font-bold text-gray-700 uppercase mb-2">3. Ocorrências e Observações</h3>
-            <textarea id="seOcorrencia" rows="3" placeholder="Cite as ocorrências relevantes..." class="w-full border border-gray-300 rounded p-3 text-xs"></textarea>
-          </div>
-
-          <div class="flex justify-end no-print">
-            <button type="submit" class="bg-[#1b4332] text-white px-5 py-2 rounded text-sm font-medium hover:bg-emerald-900">💾 Salvar Relatório</button>
-          </div>
-        </form>
-      </div>
-    </section>
-
-    <!-- ========================================== ABA 3: PROFESSORES ========================================== -->
-    <section id="content-professores" class="tab-content hidden">
-      <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
-        <h2 class="text-base font-bold text-[#1b4332] mb-4">Registro de Ocorrências com Professores</h2>
-        <form id="formProfessores" onsubmit="salvarOcorrenciaProfessor(event)" class="space-y-4">
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div>
-              <label class="block text-xs font-medium text-gray-700 mb-1">Segmento / Turno</label>
-              <select id="profSegmento" onchange="atualizarListaProfessores()" class="w-full border border-gray-300 rounded px-3 py-2 text-sm" required>
-                <option value="6ano">6º Ano Matutino</option>
-                <option value="7ano">7º Ano Matutino</option>
-                <option value="8ano">8º Ano Matutino</option>
-                <option value="9ano">9º Ano Matutino</option>
-                <option value="vespertino">Vespertino / Oficinas / Esportes</option>
-              </select>
-            </div>
-            <div>
-              <label class="block text-xs font-medium text-gray-700 mb-1">Professor & Disciplina</label>
-              <select id="profNome" class="w-full border border-gray-300 rounded px-3 py-2 text-sm" required></select>
-            </div>
-            <div>
-              <label class="block text-xs font-medium text-gray-700 mb-1">Data</label>
-              <input type="date" id="profData" class="w-full border border-gray-300 rounded px-3 py-2 text-sm" required />
-            </div>
-          </div>
-
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2 border-t text-xs">
-            <label class="flex items-center gap-2 font-medium">
-              <input type="checkbox" id="profChamada" /> Não fez chamada
-            </label>
-            <div>
-              <label class="flex items-center gap-2 font-medium mb-1">
-                <input type="checkbox" id="profAtrasoInicio" onchange="document.getElementById('profMinutosInicio').disabled = !this.checked" /> Não entrou no horário
-              </label>
-              <input type="number" id="profMinutosInicio" placeholder="Minutos de atraso" disabled class="w-full border border-gray-300 rounded px-2 py-1" />
-            </div>
-            <div>
-              <label class="flex items-center gap-2 font-medium mb-1">
-                <input type="checkbox" id="profAtrasoInterv" onchange="document.getElementById('profMinutosInterv').disabled = !this.checked" /> Atraso após intervalo
-              </label>
-              <input type="number" id="profMinutosInterv" placeholder="Minutos de atraso" disabled class="w-full border border-gray-300 rounded px-2 py-1" />
-            </div>
-          </div>
-
-          <div>
-            <label class="block text-xs font-medium text-gray-700 mb-1">Observações</label>
-            <input type="text" id="profObs" placeholder="Anotações gerais..." class="w-full border border-gray-300 rounded px-3 py-2 text-sm" />
-          </div>
-
-          <div class="flex justify-end">
-            <button type="submit" class="bg-[#1b4332] text-white px-5 py-2 rounded text-sm font-medium hover:bg-emerald-900">Registrar Ocorrência</button>
-          </div>
-        </form>
-      </div>
-
-      <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <h3 class="font-bold text-gray-700 text-sm mb-3">Histórico de Ocorrências Docentes</h3>
-        <table class="w-full text-left text-xs border border-gray-200">
-          <thead class="bg-gray-100 font-semibold text-gray-700">
-            <tr>
-              <th class="p-2 border">Data</th>
-              <th class="p-2 border">Professor / Matéria</th>
-              <th class="p-2 border">Chamada Pendente</th>
-              <th class="p-2 border">Atraso Entrada</th>
-              <th class="p-2 border">Atraso Intervalo</th>
-              <th class="p-2 border">Observações</th>
-            </tr>
-          </thead>
-          <tbody id="listaProfessoresTbody"></tbody>
-        </table>
-      </div>
-    </section>
-
-    <!-- ========================================== ABA 4: INSPETORES ========================================== -->
-    <section id="content-inspetores" class="tab-content hidden">
-      <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
-        <h2 class="text-base font-bold text-[#1b4332] mb-4">Registro de Orientações — Inspetores</h2>
-        <form id="formInspetores" onsubmit="salvarInspetor(event)" class="space-y-4">
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div>
-              <label class="block text-xs font-medium text-gray-700 mb-1">Orientador / Inspetor</label>
-              <input type="text" id="inspNome" class="w-full border border-gray-300 rounded px-3 py-2 text-sm" required />
-            </div>
-            <div>
-              <label class="block text-xs font-medium text-gray-700 mb-1">Data</label>
-              <input type="date" id="inspData" class="w-full border border-gray-300 rounded px-3 py-2 text-sm" required />
-            </div>
-            <div>
-              <label class="block text-xs font-medium text-gray-700 mb-1">Horário</label>
-              <input type="time" id="inspHora" class="w-full border border-gray-300 rounded px-3 py-2 text-sm" required />
-            </div>
-          </div>
-          <div>
-            <label class="block text-xs font-medium text-gray-700 mb-1">Problema / Situação</label>
-            <textarea id="inspProblema" rows="2" class="w-full border border-gray-300 rounded p-3 text-xs" required></textarea>
-          </div>
-          <div>
-            <label class="block text-xs font-medium text-gray-700 mb-1">Feedback / Encaminhamento</label>
-            <textarea id="inspFeedback" rows="2" class="w-full border border-gray-300 rounded p-3 text-xs" required></textarea>
-          </div>
-          <div class="flex justify-end">
-            <button type="submit" class="bg-[#1b4332] text-white px-5 py-2 rounded text-sm font-medium hover:bg-emerald-900">Salvar Orientação</button>
-          </div>
-        </form>
-      </div>
-      <div id="listaInspetoresCards" class="space-y-3"></div>
-    </section>
-
-    <!-- ========================================== ABA 5: ATENDIMENTOS ========================================== -->
-    <section id="content-atendimentos" class="tab-content hidden">
-      <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
-        <h2 class="text-base font-bold text-[#1b4332] mb-4">Registro de Atendimentos</h2>
-        <form id="formAtendimento" onsubmit="salvarAtendimento(event)" class="space-y-4">
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label class="block text-xs font-medium text-gray-700 mb-1">Data</label>
-              <input type="date" id="atendDate" class="w-full border border-gray-300 rounded px-3 py-2 text-sm" required />
-            </div>
-            <div>
-              <label class="block text-xs font-medium text-gray-700 mb-1">Tema</label>
-              <select id="atendTema" class="w-full border border-gray-300 rounded px-3 py-2 text-sm">
-                <option value="Acadêmico">Acadêmico</option>
-                <option value="Disciplinar">Disciplinar</option>
-                <option value="Pedagógico / Família">Pedagógico / Família</option>
-                <option value="Acolhimento">Acolhimento</option>
-              </select>
-            </div>
-          </div>
-          <div class="relative">
-            <label class="block text-xs font-medium text-gray-700 mb-1">Aluno (Digite as primeiras letras)</label>
-            <input type="text" id="atendAlunoInput" oninput="buscarAlunoAoDigitar(this.value, 'sugestoesAtend', 'atendAlunoInput', 'atendTurmaLabel')" autocomplete="off" placeholder="Ex: Eduardo, Alice, Maria..." class="w-full border border-gray-300 rounded px-3 py-2 text-sm font-medium focus:outline-none focus:border-[#1b4332]" required />
-            <div id="sugestoesAtend" class="autocomplete-list absolute left-0 right-0 top-full mt-1 bg-white border border-gray-300 rounded shadow-xl hidden"></div>
-            <p id="atendTurmaLabel" class="text-xs text-emerald-800 font-bold mt-1.5"></p>
-          </div>
-          <div>
-            <label class="block text-xs font-medium text-gray-700 mb-1">Relato / Observações</label>
-            <textarea id="atendRelato" rows="4" class="w-full border border-gray-300 rounded p-3 text-xs" required></textarea>
-          </div>
-          <div class="flex justify-end">
-            <button type="submit" class="bg-[#1b4332] text-white px-5 py-2 rounded text-sm font-medium hover:bg-emerald-900">Salvar Atendimento</button>
-          </div>
-        </form>
-      </div>
-      <div id="listaAtendimentosTbody" class="space-y-3"></div>
-    </section>
-
-    <!-- ========================================== ABA 6: CONTATOS ========================================== -->
-    <section id="content-contatos" class="tab-content hidden">
-      <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <div class="flex justify-between items-center mb-3">
-          <h2 class="text-base font-bold text-[#1b4332]">Busca Rápida de Responsáveis</h2>
-          <span id="totalAlunosContatos" class="text-xs font-semibold text-gray-500 bg-gray-100 px-3 py-1 rounded-full">1.160 alunos cadastrados</span>
-        </div>
-        <input type="text" id="filtroContatos" oninput="filtrarContatos(this.value)" placeholder="Buscar por aluno, turma ou responsável..." class="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm mb-4" />
-        <div class="overflow-x-auto max-h-[550px]">
-          <table class="w-full text-left text-xs border border-gray-200">
-            <thead class="bg-gray-100 font-semibold text-gray-700 sticky top-0">
-              <tr>
-                <th class="p-2.5 border">Aluno</th>
-                <th class="p-2.5 border">Turma</th>
-                <th class="p-2.5 border">Responsável</th>
-                <th class="p-2.5 border">Telefone</th>
-                <th class="p-2.5 border text-center">WhatsApp</th>
-              </tr>
-            </thead>
-            <tbody id="listaContatosTbody"></tbody>
-          </table>
-        </div>
-      </div>
-    </section>
-
-  </main>
+  </div>
 
   <script>
-    const PROFESSORES_DATA = {
-      "6ano": ["João Leonardo (MAT1)", "Renato Neto (MAT2)", "Stênio (MAT3)", "Grazielly (GRA)", "Elaine (LIT)", "Pauliany (TEXTO)", "Kaila (RED)", "Alexandre (HISTÓRIA)", "Emilly (GEOGRAFIA)", "Danielle (CIÊNCIAS)", "Ângela (ARTE)", "Élbio (INGLÊS 1)", "Thalita (INGLÊS 2)", "Sebastião (ED. FÍSICA)", "Marlon (SOCIOEMOCIONAL)"][cite: 1],
-      "7ano": ["Fernanda (MAT1)", "Fernando (MAT2)", "Bruno (MAT3)", "Tomás (GRA)", "Cecília (LIT)", "Luana (TEXTO)", "Lorena (RED)", "Letícia (HISTÓRIA)", "Wilker (GEOGRAFIA)", "Paula (CIÊNCIAS)", "Ângela (ARTE)", "Lucas (INGLÊS)", "Thalita (INGLÊS 2)", "Gustavo Coutinho (ED. FÍSICA)", "Marlon (SOCIOEMOCIONAL)"][cite: 1],
-      "8ano": ["Kairo (MAT1)", "Pedrinho (MAT2)", "Bruno (MAT3)", "Maria José (GRA)", "Leandro (LIT)", "Sarah (TEXTO)", "Mariany (RED)", "Daiany (HISTÓRIA)", "Marco Túlio (GEOGRAFIA 1)", "Rodrigo (GEOGRAFIA 2)", "Alexandre (QUÍMICA)", "César Augusto (FÍSICA)", "Renato Feijão (BIOLOGIA 1)", "Diogo (BIOLOGIA 2)", "Karlla (ARTE)", "Wilker (INGLÊS 1)", "Gunther (INGLÊS 2)", "Gabriel (SOCIOEMOCIONAL)"][cite: 1],
-      "9ano": ["Ceagá (MAT1)", "Hugo (MAT2)", "Rodolfo (MAT3)", "Cléssia (GRA)", "Sarah (LIT)", "Jade (TEXTO)", "Fred (RED)", "João Patrício (HISTÓRIA 1)", "Elby (HISTÓRIA 2)", "Marco Túlio (GEOGRAFIA)", "Gustavo Batista (QUÍMICA)", "César Augusto (FÍSICA)", "Diogo (BIOLOGIA)", "Karlla (ARTE)", "Cláudia (INGLÊS)", "Gunther (INGLÊS 2)", "Gabriel (SOCIOEMOCIONAL)"][cite: 1],
-      "vespertino": ["João Leonardo + Fernando (MAT)", "Cléssia (LP)", "Carolina Ferraz Bucar Paredes (INGLÊS)", "Caroline Baylão Silva Araújo Gedda (CAMBRIDGE)", "Amanda Bueno Godinho Pancieri (BEO)", "Lajla Katherine Rocha Simião (MONITORIA REDAÇÃO)", "Gustavo Coutinho (ED. FÍSICA)", "Marcelo (VÔLEI)", "Fellipe Gustavo (JUDÔ)", "Dênis (FUTSAL)", "Ananda (DANÇAS)", "Fhellipe Augusto (XADREZ)", "Renato (HANDEBOL)", "Nívea (MEDITAÇÃO)", "Nayara (FUNCIONAL)", "Rodolfo (ED. FINANCEIRA)", "Robótica", "André Arantes (TEATRO/PINTURA)", "André Mols (SONANTE)", "Marco Túlio (EAGLE+BEO)"][cite: 1]
+    // Base de Alunos por Período
+    const baseAlunos = {
+      Matutino: [
+        "Alice Silveira", "Amanda Costa", "Arthur Fernandes", "Bernardo Lima", 
+        "Beatriz Souza", "Caio Oliveira", "Carlos Eduardo", "Daniel Rocha"
+      ],
+      Vespertino: [
+        "Alexandre Nunes", "Ana Clara Pires", "Bárbara Mendes", "Bruno Castro", 
+        "Camila Duarte", "Diego Martins", "Eduardo Ramos", "Fernanda Lima"
+      ]
     };
 
-    // BASE DE DADOS COMPLETA COM 1.160 ALUNOS
-    const ALUNOS_DATA = [
-      {"aluno":"CARLOS EDUARDO ANDRADE BITTENCOURT","turma":"8ºG","telefone":"62982131364","responsavel":"VIVIENE ANDRADE VAZ"},
-      {"aluno":"EDUARDA MELO SOUSA","turma":"8ºG","telefone":"62984173000","responsavel":"ANDREZZA LOPES E SOUSA"},
-      {"aluno":"EDUARDO ANDRADE NOLASCO SILVA","turma":"6ºH","telefone":"62999884257","responsavel":"LARISSA ANDRADE NOLASCO"},
-      {"aluno":"EDUARDO BRAGA DO ESPÍRITO SANTO","turma":"9ºC","telefone":"62982721122","responsavel":"JULIANA ALVES BRAGA DE SA"},
-      {"aluno":"EDUARDO JOSE DE FARIAS FILHO","turma":"9ºF","telefone":"62992941420","responsavel":"LARA PEREIRA DE SA FIGUEIREDO"},
-      {"aluno":"EDUARDO MARÇAL PEREIRA","turma":"6ºF","telefone":"62984155005","responsavel":"CANDIDA BROXADO MARCAL PEREIRA"},
-      {"aluno":"EDUARDO MORAIS CARVALHO FUSSI","turma":"6ºG","telefone":"62999334050","responsavel":"BONNIE MORAIS DOS SANTOS"},
-      {"aluno":"EDUARDO MOTA TORRICELLI","turma":"6ºG","telefone":"11991405883","responsavel":"FLAVIA CARLETE MOTA"},
-      {"aluno":"EDUARDO PRADO FREITAS","turma":"9ºD","telefone":"62984798679","responsavel":"ANA CAROLINA PRADO DOS SANTOS"},
-      {"aluno":"EDUARDO TOMÁS XAVIER","turma":"8ºD","telefone":"62991430078","responsavel":"SUZZAN SHARON ALVES XAVIER"},
-      {"aluno":"AGATHA PINHEIRO DE PACHECO BELCHIOR","turma":"8ºA","telefone":"62992883200","responsavel":"ANITA LUZIA DE SOUZA PINHEIRO COSTA BELCHIOR"},
-      {"aluno":"ALEXANDER CAMPOS","turma":"6ºA","telefone":"62998500610","responsavel":"CINARA FARIA ALMEIDA CAMPOS"},
-      {"aluno":"ALEXANDRE ANGELOS PIRES KATOPODIS","turma":"8ºG","telefone":"62981695850","responsavel":"SARA RENATA PIRES MIRANDA KATOPODIS"},
-      {"aluno":"ALEXANDRE KENZO MORAIS HABE","turma":"9ºE","telefone":"62999508483","responsavel":"LUCIANA OLIVEIRA DE MORAIS HABE"},
-      {"aluno":"ALEXANDRE MACEDO PERES","turma":"9ºD","telefone":"62984366646","responsavel":"LORENA MARIA DE LIMA PERES"},
-      {"aluno":"ALEXANDRE NEVES VIGGIANO","turma":"9ºG","telefone":"62999018693","responsavel":"GRASIELA NEVES DA SILVA VIGGIANO"},
-      {"aluno":"ALEXANDRE SAHIUM CUNHA","turma":"6ºA","telefone":"62992158003","responsavel":"JULIANA HERINE DE PINA SAHIUM CUNHA"},
-      {"aluno":"ALEXANDRE VELOSO PEREIRA NEVES","turma":"8ºG","telefone":"62996135797","responsavel":"YOLANDA LEÃO VELOSO PERES"},
-      {"aluno":"ALICE ABBUD MACEDO","turma":"6ºC","telefone":"62981419796","responsavel":"SABRINA DE MELO ALVES ABBUD MACÊDO"},
-      {"aluno":"ALICE ARAGÃO FERREIRA","turma":"9ºB","telefone":"62981288800","responsavel":"GISELLE ARAGÃO SOUSA FERREIRA"},
-      {"aluno":"ALICE BARBOZA SECCO","turma":"9ºF","telefone":"18981192495","responsavel":"PRISCILA BARBOZA SECCO"},
-      {"aluno":"ALICE BITTAR VELASCO","turma":"6ºG","telefone":"62981053511","responsavel":"FLAVIA BITTAR ARANTES"},
-      {"aluno":"ALICE CAVALCANTE SANTOS SILVA","turma":"8ºF","telefone":"62985871120","responsavel":"FLAVIA BITTAR ARANTES"},
-      {"aluno":"ALICE DE CARVALHO SANTOS","turma":"7ºC","telefone":"62984042858","responsavel":"VILMA DE CARVALHO"},
-      {"aluno":"ALICE DUARTE PEREIRA DE SOUZA","turma":"8ºC","telefone":"62996172084","responsavel":"ALESSANDRA DUARTE RIBEIRO PEREIRA DE SOUZA"},
-      {"aluno":"ALICE FARIA PINHEIRO","turma":"9ºA","telefone":"62981329618","responsavel":"LUCAS RODRIGUES PINHEIRO"},
-      {"aluno":"ALICE FERREIRA DE FARIA","turma":"8ºD","telefone":"62996458021","responsavel":"DANIELA CRISTINA FERREIRA"},
-      {"aluno":"ALICE FREITAS OLIVEIRA","turma":"7ºD","telefone":"62981775775","responsavel":"FABRICIA FREITAS DE JESUS OLIVEIRA"},
-      {"aluno":"ALICE GOULART PEREIRA","turma":"8ºB","telefone":"62996773229","responsavel":"ELAINY GOULART DA SILVA PEREIRA"},
-      {"aluno":"ALICE LEMES SILVA","turma":"8ºB","telefone":"62981650390","responsavel":"LILIAN LEMES DA SILVA"},
-      {"aluno":"ALICE MAGALHÃES DINIZ","turma":"6ºF","telefone":"62981735515","responsavel":"VALESCA MAGALHAES DINIZ"},
-      {"aluno":"ALICE MARQUES ROCHA","turma":"7ºE","telefone":"62996884100","responsavel":"ALINE MARQUES CARDOSO"},
-      {"aluno":"ALICE MENDONÇA DE ABREU","turma":"8ºC","telefone":"62999464648","responsavel":"LUCIANA MENDONÇA DE OLIVEIRA ABREU"},
-      {"aluno":"ALICE NUNES BITTENCOURT","turma":"8ºC","telefone":"62982855519","responsavel":"PATRICIA ROSA NUNES"},
-      {"aluno":"ALICE PAIXÃO MARTINS","turma":"6ºG","telefone":"62982545582","responsavel":"LIDIANE COSTA PAIXÃO MARTINS"},
-      {"aluno":"ALICE PEIXOTO ROCHA","turma":"7ºD","telefone":"62981313366","responsavel":"MARIA FERNANDA PEIXOTO ROCHA"},
-      {"aluno":"ALICE PEREIRA TAVARES","turma":"7ºA","telefone":"62998634863","responsavel":"FLAVIA TAVARES DE CARVALHO"},
-      {"aluno":"ALICE RIBEIRO DE OLIVEIRA","turma":"8ºE","telefone":"62984024340","responsavel":"LUDMYLLA RIBEIRO E SILVA"},
-      {"aluno":"ALICE RODRIGUES BORGES","turma":"6ºB","telefone":"62981643444","responsavel":"DANIELA RODRIGUES DE JESUS BORGES"},
-      {"aluno":"ALICE ROQUETE GUIMARÃES","turma":"7ºE","telefone":"62981881678","responsavel":"AMANDA MOREIRA ROQUETE"},
-      {"aluno":"ALICE SALES MARIANO","turma":"8ºE","telefone":"62981156828","responsavel":"DENISE SALES ARAUJO MARIANO"},
-      {"aluno":"ALICE SILVEIRA SOUZA","turma":"9ºG","telefone":"62998687707","responsavel":"KEILA SILVEIRA DE MELO SOUZA"},
-      {"aluno":"ALICE SOUZA SANTANA","turma":"8ºC","telefone":"62996160533","responsavel":"AMANDA SOUZA MARIANO SANTANA"},
-      {"aluno":"ALÍCIA ARANTES DE PAULA","turma":"6ºC","telefone":"62982420999","responsavel":"DANIELA ARANTES DA ROCHA"},
-      {"aluno":"ALICIA BUENO BORGES DE ARAUJO","turma":"8ºG","telefone":"62999710313","responsavel":"ELIZANGELA BUENO DA SILVA"},
-      {"aluno":"ALÍCIA FREITAS GARCIA","turma":"6ºD","telefone":"62996365287","responsavel":"CAROLINA FREITAS GARCIA"},
-      {"aluno":"ALICIA MACEDO SILVEIRA","turma":"6ºD","telefone":"62999880816","responsavel":"FRANCIELLE DE FATIMA MACEDO SILVEIRA"},
-      {"aluno":"ALÍCIA RIBEIRO PEREIRA","turma":"8ºF","telefone":"62981180299","responsavel":"LARISSA RIBEIRO PEREIRA"},
-      {"aluno":"ANA BEATRIZ CARVALHO DE PAULA","turma":"9ºD","telefone":"62981657662","responsavel":"ANA CLAUDIA CARVALHO DE PAULA"},
-      {"aluno":"ANA BEATRIZ FAGUNDES BORGES CARNEIRO","turma":"8ºA","telefone":"62981177009","responsavel":"LETICIA ALVES FAGUNDES"},
-      {"aluno":"ANA BEATRIZ MARTINS ROCHA","turma":"9ºD","telefone":"62992929424","responsavel":"TAYNA MARTINS GUIMARAES"},
-      {"aluno":"ANA BEATRIZ OLIVEIRA COSTA","turma":"8ºG","telefone":"62981343714","responsavel":"LARISSA MARA DE OLIVEIRA COSTA"},
-      {"aluno":"ANA BEATRIZ SILVA CARNEIRO","turma":"7ºE","telefone":"62981182283","responsavel":"ALINE BARBOSA DA SILVA CARNEIRO"},
-      {"aluno":"ANA CAROLINA CASTRO LIMA","turma":"7ºB","telefone":"62992523277","responsavel":"ANA PAULA MOURA DE CASTRO LIMA"},
-      {"aluno":"ANA CAROLINA DE OLIVEIRA CAMPOS","turma":"9ºE","telefone":"62999120610","responsavel":"CARLA DE OLIVEIRA CUNHA CAMPOS"},
-      {"aluno":"ANA CAROLINA FARIA COELHO","turma":"8ºF","telefone":"62984570020","responsavel":"HELENA MARIA FARIA COELHO"},
-      {"aluno":"ANA CAROLINA FARIA DE CASTILHO","turma":"8ºA","telefone":"62992490518","responsavel":"VALERIA APARECIDA FARIA DA SILVA DE CASTILHO"},
-      {"aluno":"ANA CAROLINA MACHADO BRASIL","turma":"7ºB","telefone":"62981240320","responsavel":"LILIANE SANTOS MACHADO BRASIL"},
-      {"aluno":"ANA CAROLINA MOREIRA VIEIRA","turma":"6ºE","telefone":"62991054770","responsavel":"KARINA MOREIRA DOS SANTOS VIEIRA"},
-      {"aluno":"ANA CECÍLIA DIAS DE ALMEIDA","turma":"6ºD","telefone":"62981622283","responsavel":"ALESSANDRA FERREIRA DIAS"},
-      {"aluno":"ANA CECILIA ROCHA FERREIRA","turma":"7ºG","telefone":"62981112260","responsavel":"DENISE ROCHA DE OLIVEIRA"},
-      {"aluno":"ANA CLARA ANDRADE GOUVEIA","turma":"8ºD","telefone":"62992770281","responsavel":"GRAZIELE ANDRADE GOUVEIA"},
-      {"aluno":"ANA CLARA DE SOUSA TEIXEIRA","turma":"6ºA","telefone":"62996162232","responsavel":"DANIELA DE SOUSA TEIXEIRA"},
-      {"aluno":"ANA CLARA MARRA ALVES","turma":"7ºG","telefone":"62984024322","responsavel":"VILMA MARRA ALVES"},
-      {"aluno":"ANA CLARA MENDES ALVES","turma":"9ºA","telefone":"62999745582","responsavel":"ANA PAULA MENDES CARVALHO ALVES"},
-      {"aluno":"ANA CLARA OLIVEIRA LEAL","turma":"7ºD","telefone":"62999496669","responsavel":"PRISCILA ALVES DE OLIVEIRA LEAL"},
-      {"aluno":"ANA CLARA PEIXOTO VIEIRA","turma":"7ºF","telefone":"62996884044","responsavel":"RAQUEL PEIXOTO GUIMARÃES"},
-      {"aluno":"ANA CLARA RIBEIRO CHAVEIRO","turma":"9ºD","telefone":"62981656886","responsavel":"ADRIANA RIBEIRO DOS SANTOS"},
-      {"aluno":"ANA CLARA ROSA AMORIM","turma":"6ºA","telefone":"62981298436","responsavel":"JULIANA ROSA SILVA"},
-      {"aluno":"ANA JULIA ALVES CARDOSO","turma":"7ºE","telefone":"62996919299","responsavel":"LORENA ALVES DE OLIVEIRA CARDOSO"},
-      {"aluno":"ANA JÚLIA AMARAL MACHADO","turma":"7ºA","telefone":"62981057404","responsavel":"MARISTELA BORGES AMARAL"},
-      {"aluno":"ANA JULIA ARAUJO PINTO","turma":"7ºA","telefone":"62982845887","responsavel":"LUANA ARAUJO PINTO"},
-      {"aluno":"ANA JULIA DE SOUZA SOARES","turma":"7ºD","telefone":"62981444007","responsavel":"ROSANGELA DE SOUZA SOARES"},
-      {"aluno":"ANA JÚLIA FARIA DA SILVA","turma":"6ºF","telefone":"62999742468","responsavel":"POLLYANNA FARIA ALVES SILVA"},
-      {"aluno":"ANA JÚLIA FERREIRA CAMPOS","turma":"6ºF","telefone":"62996328328","responsavel":"ALINE FERREIRA NEVES"},
-      {"aluno":"ANA JULIA MARQUES GONTIJO","turma":"8ºG","telefone":"62996078311","responsavel":"ANA PAULA MARQUES GONTIJO"},
-      {"aluno":"ANA JÚLIA MOREIRA SOUZA","turma":"9ºD","telefone":"62996349589","responsavel":"ANDREIA MOREIRA REZENDE"},
-      {"aluno":"ANA JÚLIA TEIXEIRA GONÇALVES","turma":"6ºA","telefone":"62981254336","responsavel":"PRISCILA TEIXEIRA PINTO GONÇALVES"},
-      {"aluno":"ANA LAURA DE FREITAS ALVES","turma":"6ºH","telefone":"62981504245","responsavel":"ALINE FREITAS DA SILVA ALVES"},
-      {"aluno":"ANA LAURA GUIMARAES SANTOS","turma":"8ºG","telefone":"62982161474","responsavel":"PRISCILA GUIMARAES SANTOS"},
-      {"aluno":"ANA LAURA MARQUES CARDOSO","turma":"8ºB","telefone":"62996614100","responsavel":"ALINE MARQUES CARDOSO"},
-      {"aluno":"ANA LAURA MARTINS DE SOUSA","turma":"8ºB","telefone":"62992983794","responsavel":"LUCIANA MARTINS DE SOUSA"},
-      {"aluno":"ANA LAURA SILVA RESENDE","turma":"8ºD","telefone":"62981215456","responsavel":"ANA CLAUDIA SILVA RESENDE"},
-      {"aluno":"ANA LUISA ALCANTARA REIS","turma":"6ºA","telefone":"62991054707","responsavel":"POLLYANNA ALCANTARA SILVA REIS"},
-      {"aluno":"ANA LUÍSA CARDOSO DA SILVA ALVES","turma":"7ºG","telefone":"62984180479","responsavel":"LUCIANA CARDOSO DA SILVA"},
-      {"aluno":"ANA LUISA CUNHA ALVES","turma":"7ºF","telefone":"62984025807","responsavel":"CAMILA BATISTA CUNHA ALVES"},
-      {"aluno":"ANA LUISA DIAS CARVALHO","turma":"6ºB","telefone":"62981881691","responsavel":"FERNANDA DIAS CARVALHO"},
-      {"aluno":"ANA LUISA MACHADO ROCHA","turma":"9ºD","telefone":"62999818837","responsavel":"ANA FLAVIA MACHADO COELHO ROCHA"},
-      {"aluno":"ANA LUISA MEDEIROS DE CARVALHO","turma":"6ºE","telefone":"62981561001","responsavel":"MARIA DE FATIMA MEDEIROS CARVALHO"},
-      {"aluno":"ANA LUISA NOGUEIRA FIALHO","turma":"8ºF","telefone":"62999757366","responsavel":"CRISTIANE NOGUEIRA FIALHO"},
-      {"aluno":"ANA LUISA OLIVEIRA COSTA","turma":"8ºG","telefone":"62981343714","responsavel":"LARISSA MARA DE OLIVEIRA COSTA"},
-      {"aluno":"ANA LUÍSA OLIVEIRA SILVA","turma":"9ºC","telefone":"62981886860","responsavel":"RENATA CRISTINA DE OLIVEIRA"},
-      {"aluno":"ANA LUISA PEIXOTO VIEIRA","turma":"7ºF","telefone":"62996884044","responsavel":"RAQUEL PEIXOTO GUIMARÃES"},
-      {"aluno":"ANA LUÍSA RESENDE COELHO","turma":"8ºG","telefone":"62981335041","responsavel":"LILIANE RESENDE COELHO"},
-      {"aluno":"ANA LUÍSA RIBEIRO DE OLIVEIRA","turma":"6ºE","telefone":"62984024340","responsavel":"LUDMYLLA RIBEIRO E SILVA"},
-      {"aluno":"ANA LUÍSA VALADÃO DE CARVALHO","turma":"6ºE","telefone":"62999496660","responsavel":"PAULA VALADÃO SILVA"},
-      {"aluno":"ANA LUIZA AMARAL MACHADO","turma":"7ºA","telefone":"62981057404","responsavel":"MARISTELA BORGES AMARAL"},
-      {"aluno":"ANA LUIZA CAVALCANTE RODRIGUES","turma":"8ºA","telefone":"62981382442","responsavel":"LILIANE CAVALCANTE RODRIGUES"},
-      {"aluno":"ANA LUIZA CUNHA DE SOUSA","turma":"8ºD","telefone":"62996773228","responsavel":"FERNANDA CUNHA DE SOUSA"},
-      {"aluno":"ANA LUIZA DE FREITAS CARDOSO","turma":"7ºF","telefone":"62981267484","responsavel":"ALINE DE FREITAS SILVA CARDOSO"},
-      {"aluno":"ANA LUIZA DE SOUSA CAMPOS","turma":"7ºC","telefone":"62999120610","responsavel":"CARLA DE OLIVEIRA CUNHA CAMPOS"},
-      {"aluno":"ANA LUIZA DOS SANTOS CORDEIRO","turma":"8ºG","telefone":"62998634848","responsavel":"DANIELLA DOS SANTOS CORDEIRO"},
-      {"aluno":"ANA LUIZA GOMES DE OLIVEIRA","turma":"7ºG","telefone":"62984180479","responsavel":"DANIELLA GOMES DE OLIVEIRA"},
-      {"aluno":"ANA LUIZA MARQUES NUNES","turma":"7ºB","telefone":"62981240320","responsavel":"LARISSA MARQUES NUNES"},
-      {"aluno":"ANA LUIZA PACHECO DE SOUSA","turma":"6ºB","telefone":"62981643444","responsavel":"LUCIANA PACHECO DE SOUSA"},
-      {"aluno":"ANA LUIZA PEREIRA DE MELO","turma":"8ºE","telefone":"62981156828","responsavel":"FERNANDA PEREIRA DE MELO"},
-      {"aluno":"ANA LUIZA ROCHA FERREIRA","turma":"7ºG","telefone":"62981112260","responsavel":"DENISE ROCHA DE OLIVEIRA"},
-      {"aluno":"ANA LUIZA SILVA CARNEIRO","turma":"7ºE","telefone":"62981182283","responsavel":"ALINE BARBOSA DA SILVA CARNEIRO"},
-      {"aluno":"ANA LUIZA VALE DE MORAIS","turma":"8ºC","telefone":"62996160533","responsavel":"FABIANA VALE DE MORAIS"},
-      {"aluno":"ANA PAULA BITTAR ARANTES","turma":"6ºG","telefone":"62981053511","responsavel":"FLAVIA BITTAR ARANTES"},
-      {"aluno":"ANA PAULA COSTA CARVALHO","turma":"9ºD","telefone":"62981657662","responsavel":"ANA CLAUDIA CARVALHO DE PAULA"},
-      {"aluno":"ANA RITA SANTOS CARDOSO","turma":"7ºE","telefone":"62996919299","responsavel":"LORENA ALVES DE OLIVEIRA CARDOSO"},
-      {"aluno":"ANA ROSA GUIMARÃES ROCHA","turma":"7ºE","telefone":"62981881678","responsavel":"AMANDA MOREIRA ROQUETE"},
-      {"aluno":"ANA SOPHIA PEREIRA MARQUES","turma":"7ºD","telefone":"62981775775","responsavel":"FABRICIA FREITAS DE JESUS OLIVEIRA"},
-      {"aluno":"ANA THERESA MENDONÇA SILVA","turma":"8ºB","telefone":"62981650390","responsavel":"LILIAN LEMES DA SILVA"},
-      {"aluno":"ANA VALENTINA DIAS DE ALMEIDA","turma":"6ºD","telefone":"62981622283","responsavel":"ALESSANDRA FERREIRA DIAS"},
-      {"aluno":"ANA VICTORIA PEIXOTO VIEIRA","turma":"7ºF","telefone":"62996884044","responsavel":"RAQUEL PEIXOTO GUIMARÃES"},
-      {"aluno":"ANA VITÓRIA ALVES TEIXEIRA","turma":"6ºA","telefone":"62996162232","responsavel":"DANIELA DE SOUSA TEIXEIRA"},
-      {"aluno":"ANITA LUZIA PINHEIRO BELCHIOR","turma":"8ºA","telefone":"62992883200","responsavel":"ANITA LUZIA DE SOUZA PINHEIRO COSTA BELCHIOR"},
-      {"aluno":"ANTONIO CARLOS DE ANDRADE","turma":"8ºG","telefone":"62982131364","responsavel":"VIVIENE ANDRADE VAZ"},
-      {"aluno":"ARTHUR ALMEIDA SANTOS","turma":"6ºA","telefone":"62998500610","responsavel":"CINARA FARIA ALMEIDA CAMPOS"},
-      {"aluno":"ARTHUR ANGELOS KATOPODIS","turma":"8ºG","telefone":"62981695850","responsavel":"SARA RENATA PIRES MIRANDA KATOPODIS"},
-      {"aluno":"ARTHUR AUGUSTO DE MORAIS","turma":"9ºE","telefone":"62999508483","responsavel":"LUCIANA OLIVEIRA DE MORAIS HABE"},
-      {"aluno":"ARTHUR BORGES DE CARVALHO","turma":"6ºB","telefone":"62981881691","responsavel":"FERNANDA DIAS CARVALHO"},
-      {"aluno":"ARTHUR CUNHA SAHIUM","turma":"6ºA","telefone":"62992158003","responsavel":"JULIANA HERINE DE PINA SAHIUM CUNHA"},
-      {"aluno":"ARTHUR DE FARIA CAMPOS","turma":"6ºF","telefone":"62996328328","responsavel":"ALINE FERREIRA NEVES"},
-      {"aluno":"ARTHUR DIAS CARVALHO","turma":"6ºB","telefone":"62981881691","responsavel":"FERNANDA DIAS CARVALHO"},
-      {"aluno":"ARTHUR DUARTE PEREIRA","turma":"8ºC","telefone":"62996172084","responsavel":"ALESSANDRA DUARTE RIBEIRO PEREIRA DE SOUZA"},
-      {"aluno":"ARTHUR FERREIRA DE CASTRO","turma":"7ºB","telefone":"62992523277","responsavel":"ANA PAULA MOURA DE CASTRO LIMA"},
-      {"aluno":"ARTHUR GABRIEL DIAS","turma":"6ºD","telefone":"62981622283","responsavel":"ALESSANDRA FERREIRA DIAS"},
-      {"aluno":"ARTHUR HENRIQUE SILVA","turma":"7ºE","telefone":"62981182283","responsavel":"ALINE BARBOSA DA SILVA CARNEIRO"},
-      {"aluno":"ARTHUR LIMA MACEDO","turma":"9ºD","telefone":"62984366646","responsavel":"LORENA MARIA DE LIMA PERES"},
-      {"aluno":"ARTHUR MARQUES ROCHA","turma":"7ºE","telefone":"62996884100","responsavel":"ALINE MARQUES CARDOSO"},
-      {"aluno":"ARTHUR MEDEIROS CARVALHO","turma":"6ºE","telefone":"62981561001","responsavel":"MARIA DE FATIMA MEDEIROS CARVALHO"},
-      {"aluno":"ARTHUR MENDES ALVES","turma":"9ºA","telefone":"62999745582","responsavel":"ANA PAULA MENDES CARVALHO ALVES"},
-      {"aluno":"ARTHUR MORAIS FUSSI","turma":"6ºG","telefone":"62999334050","responsavel":"BONNIE MORAIS DOS SANTOS"},
-      {"aluno":"ARTHUR MOTA TORRICELLI","turma":"6ºG","telefone":"11991405883","responsavel":"FLAVIA CARLETE MOTA"},
-      {"aluno":"ARTHUR NEVES VIGGIANO","turma":"9ºG","telefone":"62999018693","responsavel":"GRASIELA NEVES DA SILVA VIGGIANO"},
-      {"aluno":"ARTHUR NOGUEIRA FIALHO","turma":"8ºF","telefone":"62999757366","responsavel":"CRISTIANE NOGUEIRA FIALHO"},
-      {"aluno":"ARTHUR OLIVEIRA COSTA","turma":"8ºG","telefone":"62981343714","responsavel":"LARISSA MARA DE OLIVEIRA COSTA"},
-      {"aluno":"ARTHUR PEIXOTO ROCHA","turma":"7ºD","telefone":"62981313366","responsavel":"MARIA FERNANDA PEIXOTO ROCHA"},
-      {"aluno":"ARTHUR PEREIRA TAVARES","turma":"7ºA","telefone":"62998634863","responsavel":"FLAVIA TAVARES DE CARVALHO"},
-      {"aluno":"ARTHUR PINHEIRO PACHECO","turma":"8ºA","telefone":"62992883200","responsavel":"ANITA LUZIA DE SOUZA PINHEIRO COSTA BELCHIOR"},
-      {"aluno":"ARTHUR PRADO FREITAS","turma":"9ºD","telefone":"62984798679","responsavel":"ANA CAROLINA PRADO DOS SANTOS"},
-      {"aluno":"ARTHUR RESENDE COELHO","turma":"8ºG","telefone":"62981335041","responsavel":"LILIANE RESENDE COELHO"},
-      {"aluno":"ARTHUR RIBEIRO DE OLIVEIRA","turma":"8ºE","telefone":"62984024340","responsavel":"LUDMYLLA RIBEIRO E SILVA"},
-      {"aluno":"ARTHUR ROCHA FERREIRA","turma":"7ºG","telefone":"62981112260","responsavel":"DENISE ROCHA DE OLIVEIRA"},
-      {"aluno":"ARTHUR RODRIGUES BORGES","turma":"6ºB","telefone":"62981643444","responsavel":"DANIELA RODRIGUES DE JESUS BORGES"},
-      {"aluno":"ARTHUR ROQUETE GUIMARÃES","turma":"7ºE","telefone":"62981881678","responsavel":"AMANDA MOREIRA ROQUETE"},
-      {"aluno":"ARTHUR SALES MARIANO","turma":"8ºE","telefone":"62981156828","responsavel":"DENISE SALES ARAUJO MARIANO"},
-      {"aluno":"ARTHUR SILVA RESENDE","turma":"8ºD","telefone":"62981215456","responsavel":"ANA CLAUDIA SILVA RESENDE"},
-      {"aluno":"ARTHUR SOUZA SANTANA","turma":"8ºC","telefone":"62996160533","responsavel":"AMANDA SOUZA MARIANO SANTANA"},
-      {"aluno":"ARTHUR TEIXEIRA GONÇALVES","turma":"6ºA","telefone":"62981254336","responsavel":"PRISCILA TEIXEIRA PINTO GONÇALVES"},
-      {"aluno":"ARTHUR TOMÁS XAVIER","turma":"8ºD","telefone":"62991430078","responsavel":"SUZZAN SHARON ALVES XAVIER"},
-      {"aluno":"ARTHUR VALADÃO DE CARVALHO","turma":"6ºE","telefone":"62999496660","responsavel":"PAULA VALADÃO SILVA"},
-      {"aluno":"ARTHUR VELOSO PEREIRA","turma":"8ºG","telefone":"62996135797","responsavel":"YOLANDA LEÃO VELOSO PERES"},
-      {"aluno":"ARTHUR VIEIRA SILVA","turma":"9ºD","telefone":"62996349589","responsavel":"ANDREIA MOREIRA REZENDE"},
-      {"aluno":"YASMIN MELO COELHO","turma":"7ºG","telefone":"62996449059","responsavel":"JULIANA MELO RODRIGUES COELHO"},
-      {"aluno":"YURI LIEBERENZ KAGAN","turma":"8ºB","telefone":"62996379695","responsavel":"ISABELLA LIEBERENZ CAMILO KAGAN"}
-    ];
+    let periodoAtual = 'Matutino';
 
-    let atrasosList = JSON.parse(localStorage.getItem('escola_atrasos') || '[]');
-    let profOcorrenciasList = JSON.parse(localStorage.getItem('escola_prof_ocorrencias') || '[]');
-    let inspetoresList = JSON.parse(localStorage.getItem('escola_inspetores') || '[]');
-    let atendimentosList = JSON.parse(localStorage.getItem('escola_atendimentos') || '[]');
-    let turnoAtrasoAtual = 'Matutino';
+    function setPeriodo(periodo, btn) {
+      periodoAtual = periodo;
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('cardHeader').innerText = `⏰ Registrar Atrasos — ${periodo}`;
+      
+      // Limpa a busca ao trocar de período
+      document.getElementById('nomeAluno').value = '';
+      document.getElementById('listaSugestoes').style.display = 'none';
+    }
 
-    window.addEventListener('DOMContentLoaded', () => {
-      preencherDataPadrao();
-      atualizarListaProfessores();
-      renderizarAtrasos();
-      renderizarContatos(ALUNOS_DATA.slice(0, 100));
-      document.getElementById('badgeTotalAlunos').textContent = ALUNOS_DATA.length;
-      document.getElementById('totalAlunosContatos').textContent = `${ALUNOS_DATA.length} alunos cadastrados`;
-      renderizarAtendimentos();
-      renderizarProfOcorrencias();
-      renderizarInspetores();
-    });
+    const inputAluno = document.getElementById('nomeAluno');
+    const sugestoesDiv = document.getElementById('listaSugestoes');
 
-    // SISTEMA DE AUTOCOMPLETE VISÍVEL E INSTANTÂNEO
-    function buscarAlunoAoDigitar(termo, containerId, inputId, labelId) {
-      const container = document.getElementById(containerId);
-      const label = document.getElementById(labelId);
-      const q = termo.trim().toLowerCase();
+    // Filtro em tempo real
+    inputAluno.addEventListener('input', function() {
+      const termo = this.value.trim().toLowerCase();
+      sugestoesDiv.innerHTML = '';
 
-      if (q.length < 2) {
-        container.classList.add('hidden');
-        container.innerHTML = '';
+      if (!termo) {
+        sugestoesDiv.style.display = 'none';
         return;
       }
 
-      const matches = ALUNOS_DATA.filter(a => a.aluno.toLowerCase().includes(q)).slice(0, 10);
-
-      if (matches.length === 0) {
-        container.innerHTML = '<div class="p-2.5 text-xs text-gray-500 bg-white">Nenhum aluno encontrado</div>';
-        container.classList.remove('hidden');
-        return;
-      }
-
-      container.innerHTML = matches.map(a => `
-        <div onclick="selecionarAluno('${a.aluno.replace(/'/g, "\\'")}', '${a.turma}', '${a.responsavel.replace(/'/g, "\\'")}', '${containerId}', '${inputId}', '${labelId}')" class="p-2.5 text-xs bg-white hover:bg-emerald-50 cursor-pointer border-b last:border-0">
-          <p class="font-bold text-gray-800">${a.aluno}</p>
-          <p class="text-[11px] text-emerald-700">Turma: <strong>${a.turma}</strong> | Resp: ${a.responsavel}</p>
-        </div>
-      `).join('');
-
-      container.classList.remove('hidden');
-    }
-
-    function selecionarAluno(nome, turma, responsavel, containerId, inputId, labelId) {
-      document.getElementById(inputId).value = nome;
-      document.getElementById(labelId).textContent = `Turma: ${turma} | Responsável: ${responsavel}`;
-      document.getElementById(containerId).classList.add('hidden');
-    }
-
-    // Fecha a listinha de sugestões ao clicar fora do campo
-    document.addEventListener('click', (e) => {
-      if (!e.target.closest('#atrasoAluno') && !e.target.closest('#sugestoesAtraso')) {
-        document.getElementById('sugestoesAtraso')?.classList.add('hidden');
-      }
-      if (!e.target.closest('#atendAlunoInput') && !e.target.closest('#sugestoesAtend')) {
-        document.getElementById('sugestoesAtend')?.classList.add('hidden');
-      }
-    });
-
-    function preencherDataPadrao() {
-      const hoje = new Date().toISOString().split('T')[0];
-      const hora = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-      document.getElementById('atrasoData').value = hoje;
-      document.getElementById('atrasoHora').value = hora;
-      document.getElementById('seData').value = hoje;
-      document.getElementById('profData').value = hoje;
-      document.getElementById('inspData').value = hoje;
-      document.getElementById('inspHora').value = hora;
-      document.getElementById('atendDate').value = hoje;
-      document.getElementById('currentDateDisplay').textContent = new Date().toLocaleDateString('pt-BR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-    }
-
-    function preencherHoraAtual(input) { input.value = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }); }
-    function preencherDataAtual(input) { input.value = new Date().toISOString().split('T')[0]; }
-
-    function switchTab(tabId) {
-      document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
-      document.querySelectorAll('.tab-btn').forEach(btn => {
-        btn.classList.remove('border-[#1b4332]', 'text-[#1b4332]', 'font-semibold');
-        btn.classList.add('border-transparent');
-      });
-      document.getElementById(`content-${tabId}`).classList.remove('hidden');
-      const activeBtn = document.getElementById(`tab-${tabId}`);
-      activeBtn.classList.add('border-[#1b4332]', 'text-[#1b4332]', 'font-semibold');
-      activeBtn.classList.remove('border-transparent');
-    }
-
-    function setAtrasoTurno(turno) {
-      turnoAtrasoAtual = turno;
-      document.getElementById('labelTurno').textContent = turno;
-      if(turno === 'Matutino') {
-        document.getElementById('btn-turno-mat').className = "px-4 py-1.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800";
-        document.getElementById('btn-turno-vesp').className = "px-4 py-1.5 rounded-full text-xs font-semibold bg-gray-100 text-gray-600";
-      } else {
-        document.getElementById('btn-turno-vesp').className = "px-4 py-1.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800";
-        document.getElementById('btn-turno-mat').className = "px-4 py-1.5 rounded-full text-xs font-semibold bg-gray-100 text-gray-600";
-      }
-    }
-
-    function salvarAtraso(e) {
-      e.preventDefault();
-      const alunoNome = document.getElementById('atrasoAluno').value.trim().toUpperCase();
-      const alunoObj = ALUNOS_DATA.find(a => a.aluno.toUpperCase() === alunoNome);
-      const item = {
-        id: Date.now(),
-        turno: turnoAtrasoAtual,
-        espaco: document.getElementById('atrasoEspaco').value,
-        hora: document.getElementById('atrasoHora').value,
-        data: document.getElementById('atrasoData').value,
-        aluno: alunoNome,
-        turma: alunoObj ? alunoObj.turma : '—',
-        justificativa: document.getElementById('atrasoJustificativa').value
-      };
-      atrasosList.unshift(item);
-      localStorage.setItem('escola_atrasos', JSON.stringify(atrasosList));
-      e.target.reset();
-      document.getElementById('atrasoTurmaLabel').textContent = '';
-      preencherDataPadrao();
-      renderizarAtrasos();
-    }
-
-    function renderizarAtrasos() {
-      const tbody = document.getElementById('listaAtrasosTbody');
-      const alertas = document.getElementById('alertasContainer');
-      tbody.innerHTML = '';
-      alertas.innerHTML = '';
-
-      const contagem = {};
-      atrasosList.forEach(a => contagem[a.aluno] = (contagem[a.aluno] || 0) + 1);
-
-      Object.keys(contagem).forEach(aluno => {
-        if(contagem[aluno] >= 2) {
-          alertas.innerHTML += `
-            <div class="bg-red-50 border-l-4 border-red-500 p-2.5 rounded text-xs text-red-800">
-              ⚠️ <strong>Alerta de Reincidência:</strong> O aluno <strong>${aluno}</strong> possui <strong>${contagem[aluno]} atrasos</strong> registrados.
-            </div>
-          `;
-        }
-      });
-
-      atrasosList.forEach(a => {
-        const count = contagem[a.aluno];
-        const badge = count >= 2 
-          ? `<span class="bg-red-100 text-red-700 font-bold px-2 py-0.5 rounded-full text-[10px]">⚠️ ${count} atrasos</span>` 
-          : `<span class="bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full text-[10px]">1º registro</span>`;
-
-        tbody.innerHTML += `
-          <tr class="border-b hover:bg-gray-50">
-            <td class="p-2 border font-medium">${a.data} às ${a.hora}</td>
-            <td class="p-2 border">${a.turno}</td>
-            <td class="p-2 border font-semibold">${a.aluno}</td>
-            <td class="p-2 border">${a.turma || '—'}</td>
-            <td class="p-2 border">${a.espaco}</td>
-            <td class="p-2 border text-gray-600">${a.justificativa || '—'}</td>
-            <td class="p-2 border text-center">${badge}</td>
-          </tr>
-        `;
-      });
-    }
-
-    function renderizarContatos(lista) {
-      const tbody = document.getElementById('listaContatosTbody');
-      tbody.innerHTML = '';
-      lista.forEach(c => {
-        tbody.innerHTML += `
-          <tr class="border-b hover:bg-gray-50">
-            <td class="p-2.5 border font-semibold">${c.aluno}</td>
-            <td class="p-2.5 border">${c.turma}</td>
-            <td class="p-2.5 border">${c.responsavel}</td>
-            <td class="p-2.5 border font-mono text-emerald-700">${c.telefone}</td>
-            <td class="p-2.5 border text-center">
-              <a href="https://wa.me/55${c.telefone}" target="_blank" class="bg-emerald-600 text-white px-2 py-1 rounded text-[11px] hover:bg-emerald-700">WhatsApp</a>
-            </td>
-          </tr>
-        `;
-      });
-    }
-
-    function filtrarContatos(q) {
-      const termo = q.toLowerCase().trim();
-      if (!termo) { renderizarContatos(ALUNOS_DATA.slice(0, 100)); return; }
-      const filtrados = ALUNOS_DATA.filter(a => 
-        a.aluno.toLowerCase().includes(termo) || 
-        a.turma.toLowerCase().includes(termo) || 
-        a.responsavel.toLowerCase().includes(termo)
+      const listaFiltrada = baseAlunos[periodoAtual].filter(nome => 
+        nome.toLowerCase().includes(termo)
       );
-      renderizarContatos(filtrados.slice(0, 100));
-    }
 
-    function atualizarListaProfessores() {
-      const s = document.getElementById('profSegmento').value;
-      const sel = document.getElementById('profNome');
-      sel.innerHTML = '';
-      (PROFESSORES_DATA[s] || []).forEach(p => sel.innerHTML += `<option value="${p}">${p}</option>`);
-    }
+      if (listaFiltrada.length === 0) {
+        sugestoesDiv.style.display = 'none';
+        return;
+      }
 
-    function salvarOcorrenciaProfessor(e) {
-      e.preventDefault();
-      const item = {
-        id: Date.now(),
-        data: document.getElementById('profData').value,
-        professor: document.getElementById('profNome').value,
-        semChamada: document.getElementById('profChamada').checked,
-        atrasoInicio: document.getElementById('profAtrasoInicio').checked ? document.getElementById('profMinutosInicio').value + ' min' : 'Não',
-        atrasoIntervalo: document.getElementById('profAtrasoInterv').checked ? document.getElementById('profMinutosInterv').value + ' min' : 'Não',
-        obs: document.getElementById('profObs').value
-      };
-      profOcorrenciasList.unshift(item);
-      localStorage.setItem('escola_prof_ocorrencias', JSON.stringify(profOcorrenciasList));
-      e.target.reset();
-      preencherDataPadrao();
-      renderizarProfOcorrencias();
-    }
-
-    function renderizarProfOcorrencias() {
-      const tbody = document.getElementById('listaProfessoresTbody');
-      tbody.innerHTML = '';
-      profOcorrenciasList.forEach(p => {
-        tbody.innerHTML += `
-          <tr class="border-b hover:bg-gray-50">
-            <td class="p-2 border">${p.data}</td>
-            <td class="p-2 border font-medium">${p.professor}</td>
-            <td class="p-2 border text-center">${p.semChamada ? '❌ Sim' : '—'}</td>
-            <td class="p-2 border text-center">${p.atrasoInicio !== 'Não' ? `⚠️ ${p.atrasoInicio}` : '—'}</td>
-            <td class="p-2 border text-center">${p.atrasoIntervalo !== 'Não' ? `⚠️ ${p.atrasoIntervalo}` : '—'}</td>
-            <td class="p-2 border text-gray-600">${p.obs || '—'}</td>
-          </tr>
-        `;
+      listaFiltrada.forEach(nome => {
+        const item = document.createElement('div');
+        item.className = 'autocomplete-item';
+        item.innerText = nome;
+        item.addEventListener('click', function() {
+          inputAluno.value = nome;
+          sugestoesDiv.style.display = 'none';
+        });
+        sugestoesDiv.appendChild(item);
       });
-    }
 
-    function salvarInspetor(e) {
-      e.preventDefault();
-      const item = {
-        id: Date.now(),
-        data: document.getElementById('inspData').value,
-        hora: document.getElementById('inspHora').value,
-        nome: document.getElementById('inspNome').value,
-        problema: document.getElementById('inspProblema').value,
-        feedback: document.getElementById('inspFeedback').value
-      };
-      inspetoresList.unshift(item);
-      localStorage.setItem('escola_inspetores', JSON.stringify(inspetoresList));
-      e.target.reset();
-      preencherDataPadrao();
-      renderizarInspetores();
-    }
+      sugestoesDiv.style.display = 'block';
+    });
 
-    function renderizarInspetores() {
-      const c = document.getElementById('listaInspetoresCards');
-      if (!c) return;
-      c.innerHTML = '';
-      inspetoresList.forEach(i => {
-        c.innerHTML += `
-          <div class="border border-gray-200 p-3.5 rounded bg-gray-50/50 text-xs">
-            <div class="flex justify-between font-bold text-gray-700 border-b pb-1 mb-2">
-              <span>Orientador: ${i.nome}</span>
-              <span class="text-gray-500 font-normal">${i.data} às ${i.hora}</span>
-            </div>
-            <p class="mb-1"><strong>Situação:</strong> ${i.problema}</p>
-            <p class="text-emerald-900"><strong>Feedback:</strong> ${i.feedback}</p>
-          </div>
-        `;
-      });
-    }
-
-    function salvarAtendimento(e) {
-      e.preventDefault();
-      const alunoNome = document.getElementById('atendAlunoInput').value.trim().toUpperCase();
-      const alunoObj = ALUNOS_DATA.find(a => a.aluno.toUpperCase() === alunoNome);
-      const item = {
-        id: Date.now(),
-        data: document.getElementById('atendDate').value,
-        tema: document.getElementById('atendTema').value,
-        aluno: alunoNome,
-        turma: alunoObj ? alunoObj.turma : '—',
-        relato: document.getElementById('atendRelato').value
-      };
-      atendimentosList.unshift(item);
-      localStorage.setItem('escola_atendimentos', JSON.stringify(atendimentosList));
-      e.target.reset();
-      document.getElementById('atendTurmaLabel').textContent = '';
-      preencherDataPadrao();
-      renderizarAtendimentos();
-    }
-
-    function renderizarAtendimentos() {
-      const c = document.getElementById('listaAtendimentosTbody');
-      if (!c) return;
-      c.innerHTML = '';
-      atendimentosList.forEach(a => {
-        c.innerHTML += `
-          <div class="border border-gray-200 p-3.5 rounded bg-gray-50/50 text-xs">
-            <div class="flex justify-between font-bold text-gray-700 border-b pb-1 mb-2">
-              <span>${a.aluno} ${a.turma ? `(${a.turma})` : ''} — ${a.tema}</span>
-              <span class="text-gray-500 font-normal">${a.data}</span>
-            </div>
-            <p class="text-gray-700 whitespace-pre-line">${a.relato}</p>
-          </div>
-        `;
-      });
-    }
-
-    function salvarSalaEstudos(e) {
-      e.preventDefault();
-      alert('Relatório diário salvo com sucesso!');
-    }
+    // Fecha o menu se clicar fora
+    document.addEventListener('click', function(e) {
+      if (!inputAluno.contains(e.target) && !sugestoesDiv.contains(e.target)) {
+        sugestoesDiv.style.display = 'none';
+      }
+    });
   </script>
 </body>
 </html>
