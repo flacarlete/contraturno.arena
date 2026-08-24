@@ -441,15 +441,15 @@
         <div id="listaAtendimentosTbody" class="space-y-3"></div>
       </section>
 
-      <!-- ABA 6: CONTATOS -->
+      <!-- ABA 6: CONTATOS (COM PAGINAÇÃO INTELIGENTE DE 1.160 ALUNOS) -->
       <section id="aba-contatos" class="aba-conteudo">
         <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
           <div class="flex justify-between items-center mb-3">
             <h2 class="text-base font-bold text-[#1b4332]">Busca Rápida de Responsáveis</h2>
-            <span class="text-xs font-semibold text-gray-500 bg-gray-100 px-3 py-1 rounded-full">1.160 alunos</span>
+            <span class="text-xs font-semibold text-gray-500 bg-gray-100 px-3 py-1 rounded-full">1.160 alunos cadastrados</span>
           </div>
-          <input type="text" id="filtroContatos" oninput="filtrarContatos(this.value)" placeholder="Buscar por aluno, turma ou responsável..." class="w-full border rounded-lg px-4 py-2.5 text-sm mb-4" />
-          <div class="overflow-x-auto max-h-[550px]">
+          <input type="text" id="filtroContatos" oninput="mudarPaginaContatos(1); filtrarContatos(this.value)" placeholder="Buscar por aluno, turma ou responsável..." class="w-full border rounded-lg px-4 py-2.5 text-sm mb-4" />
+          <div class="overflow-x-auto min-h-[400px]">
             <table class="w-full text-left text-xs border border-gray-200">
               <thead class="bg-gray-100 font-semibold text-gray-700 sticky top-0">
                 <tr>
@@ -462,6 +462,13 @@
               </thead>
               <tbody id="listaContatosTbody"></tbody>
             </table>
+          </div>
+          <div class="flex justify-between items-center mt-4 text-xs text-gray-600 no-print">
+            <span id="contatosPaginacaoInfo">Mostrando página 1</span>
+            <div class="flex gap-2">
+              <button type="button" onclick="mudarPaginaContatos(paginaContatosAtual - 1)" class="px-3 py-1 bg-gray-200 hover:bg-gray-300 rounded font-semibold">← Anterior</button>
+              <button type="button" onclick="mudarPaginaContatos(paginaContatosAtual + 1)" class="px-3 py-1 bg-gray-200 hover:bg-gray-300 rounded font-semibold">Próxima →</button>
+            </div>
           </div>
         </div>
       </section>
@@ -508,7 +515,7 @@
 
   <datalist id="listaAlunosDatalist"></datalist>
 
-  <!-- BANCO DE DADOS COMPLETO DOS 1.160 ALUNOS EMBUTIDO DIRETAMENTE (SEM CORTES) -->
+  <!-- BANCO DE DADOS JSON COMPLETO COM TODOS OS 1.160 ALUNOS -->
   <script type="application/json" id="alunos-db">
   [
     {"a": "CARLOS EDUARDO ANDRADE BITTENCOURT", "t": "8ºG", "p": "62982131364", "r": "VIVIENE ANDRADE VAZ"},
@@ -636,6 +643,9 @@
 
     let ALUNOS_DATA = [];
     const MAPA_ALUNOS = {};
+    let paginaContatosAtual = 1;
+    const itensPorPagina = 50;
+    let contatosFiltradosCache = [];
 
     try {
       const dbElement = document.getElementById('alunos-db');
@@ -753,6 +763,9 @@
       if (abaId === 'professores') {
         atualizarListaProfessores();
       }
+      if (abaId === 'contatos') {
+        filtrarContatos(document.getElementById('filtroContatos').value);
+      }
     }
 
     function completarInfoAluno(nome, labelId) {
@@ -819,13 +832,38 @@
       });
     }
 
-    function renderizarContatos(filtro = '') {
+    function filtrarContatos(filtro = '') {
+      const q = filtro.toLowerCase().trim();
+      contatosFiltradosCache = q ? ALUNOS_DATA.filter(a => a.aluno.toLowerCase().includes(q) || a.turma.toLowerCase().includes(q) || a.responsavel.toLowerCase().includes(q)) : ALUNOS_DATA;
+      renderizarTabelaContatosPagina();
+    }
+
+    function mudarPaginaContatos(novaPagina) {
+      const totalPaginas = Math.ceil(contatosFiltradosCache.length / itensPorPagina) || 1;
+      if (novaPagina < 1 || novaPagina > totalPaginas) return;
+      paginaContatosAtual = novaPagina;
+      renderizarTabelaContatosPagina();
+    }
+
+    function renderizarTabelaContatosPagina() {
       const tbody = document.getElementById('listaContatosTbody');
+      const infoSpan = document.getElementById('contatosPaginacaoInfo');
       if (!tbody) return;
       tbody.innerHTML = '';
-      const q = filtro.toLowerCase().trim();
-      const lista = q ? ALUNOS_DATA.filter(a => a.aluno.toLowerCase().includes(q) || a.turma.toLowerCase().includes(q) || a.responsavel.toLowerCase().includes(q)) : ALUNOS_DATA;
-      lista.forEach(c => {
+
+      if (contatosFiltradosCache.length === 0) {
+        contatosFiltradosCache = ALUNOS_DATA;
+      }
+
+      const totalItens = contatosFiltradosCache.length;
+      const totalPaginas = Math.ceil(totalItens / itensPorPagina) || 1;
+      if (paginaContatosAtual > totalPaginas) paginaContatosAtual = totalPaginas;
+
+      const inicio = (paginaContatosAtual - 1) * itensPorPagina;
+      const fim = inicio + itensPorPagina;
+      const paginaItens = contatosFiltradosCache.slice(inicio, fim);
+
+      paginaItens.forEach(c => {
         tbody.innerHTML += `
           <tr class="border-b hover:bg-gray-50">
             <td class="p-2.5 border font-semibold">${c.aluno}</td>
@@ -836,9 +874,11 @@
           </tr>
         `;
       });
-    }
 
-    function filtrarContatos(q) { renderizarContatos(q); }
+      if (infoSpan) {
+        infoSpan.textContent = `Mostrando ${inicio + 1} a ${Math.min(fim, totalItens)} de ${totalItens} alunos (Página ${paginaContatosAtual} de ${totalPaginas})`;
+      }
+    }
 
     function atualizarListaProfessores() {
       const selectSegmento = document.getElementById('profSegmento');
