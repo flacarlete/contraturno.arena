@@ -436,7 +436,7 @@
               <textarea id="atendRelato" rows="4" class="w-full border rounded p-3 text-xs" required></textarea>
             </div>
             <div class="flex justify-end">
-              <button type="submit" class="bg-[#1b4332] text-white px-5 py-2 rounded text-sm font-semibold">Salvar Atendimento</button>
+              <button type="submit" class="bg-[#1b4332] text-white px-5 py-2 rounded text-xs font-semibold">Salvar Atendimento</button>
             </div>
           </form>
         </div>
@@ -521,7 +521,7 @@
   <script>
     // Suas credenciais do Supabase
     const SUPABASE_URL = 'https://elimvidualutiifnolxy.supabase.co';
-    const SUPABASE_ANON_KEY = 'sb_publishable_uV0tg-BfWVR5_IDSWqbJNA_x3zqA...'; // Coloque aqui sua chave completa do Supabase se necessário, ou use a padrão
+    const SUPABASE_ANON_KEY = 'sb_publishable_uV0tg-BfWVR5_IDSWqbJNA_x3zqA...';
 
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -549,7 +549,6 @@
 
         if (error) {
           console.error("Erro ao carregar alunos do Supabase:", error);
-          alert("Erro ao conectar com a tabela 'alunos' do Supabase. Verifique a tabela.");
           return;
         }
 
@@ -562,9 +561,8 @@
           }));
 
           const badge = document.getElementById('contadorAlunosBadge');
-          if (badge) badge.textContent = `${ALUNOS_DATA.length} alunos carregados`;
+          if (badge) badge.textContent = `${ALUNOS_DATA.length} alunos carregados do Supabase`;
 
-          // Popula o datalist para buscas rápidas
           const dl = document.getElementById('listaAlunosDatalist');
           let html = '';
           ALUNOS_DATA.forEach(a => {
@@ -575,11 +573,10 @@
           });
           if (dl) dl.innerHTML = html;
 
-          // Atualiza tabela de contatos se estiver aberta
           filtrarContatos(document.getElementById('filtroContatos').value);
         }
       } catch (err) {
-        console.error("Erro inesperado:", err);
+        console.error("Erro inesperado ao buscar no Supabase:", err);
       }
     }
 
