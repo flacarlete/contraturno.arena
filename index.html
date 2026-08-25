@@ -8,9 +8,6 @@
   <style>
     .aba-conteudo { display: none; }
     .aba-btn.active { border-bottom: 3px solid #1b4332; color: #1b4332; font-weight: 700; background-color: #f0fdf4; }
-    .sugestoes-box { position: absolute; z-index: 50; max-height: 220px; overflow-y: auto; background: white; border: 1px solid #d1d5db; border-radius: 0.375rem; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); width: 100%; }
-    .sugestao-item { padding: 8px 12px; font-size: 12px; cursor: pointer; border-bottom: 1px solid #f3f4f6; }
-    .sugestao-item:hover { background-color: #f0fdf4; color: #1b4332; font-weight: 600; }
     @media print {
       body * { visibility: hidden; }
       #printableProfArea, #printableProfArea * { visibility: visible; }
@@ -125,10 +122,9 @@
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div class="relative">
-                <label class="block text-xs font-medium text-gray-700 mb-1">Nome do Aluno (Busca Rápida Inteligente)</label>
-                <input type="text" id="atrasoAluno" oninput="buscarAlunoInput(this.value, 'atrasoSugestoes', 'atrasoTurmaLabel')" autocomplete="off" placeholder="Digite o nome do aluno..." class="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm font-medium focus:outline-none focus:border-[#1b4332]" required />
-                <div id="atrasoSugestoes" class="sugestoes-box hidden"></div>
+              <div>
+                <label class="block text-xs font-medium text-gray-700 mb-1">Nome do Aluno (Digite para buscar na lista)</label>
+                <input list="listaAlunosDatalist" id="atrasoAluno" oninput="completarInfoAluno(this.value, 'atrasoTurmaLabel')" autocomplete="off" placeholder="Digite o nome do aluno..." class="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm font-medium focus:outline-none focus:border-[#1b4332]" required />
                 <p id="atrasoTurmaLabel" class="text-xs text-emerald-800 font-bold mt-1.5"></p>
               </div>
               <div>
@@ -258,10 +254,9 @@
                 <span class="bg-[#1b4332] text-white rounded-full w-5 h-5 flex items-center justify-center text-[10px]">3</span>
                 Ocorrência de Aluno & Feedback para Coordenação
               </h3>
-              <div class="mb-3 relative">
+              <div class="mb-3">
                 <label class="block text-xs font-medium text-gray-700 mb-1">Aluno Específico (Opcional - Busca Rápida)</label>
-                <input type="text" id="seAlunoInput" oninput="buscarAlunoInput(this.value, 'seSugestoes', 'seTurmaLabel')" autocomplete="off" placeholder="Digite o nome do aluno da ocorrência..." class="w-full border border-gray-300 rounded px-3 py-2 text-xs focus:outline-none focus:border-[#1b4332]" />
-                <div id="seSugestoes" class="sugestoes-box hidden"></div>
+                <input list="listaAlunosDatalist" id="seAlunoInput" oninput="completarInfoAluno(this.value, 'seTurmaLabel')" autocomplete="off" placeholder="Digite o nome do aluno..." class="w-full border border-gray-300 rounded px-3 py-2 text-xs focus:outline-none focus:border-[#1b4332]" />
                 <p id="seTurmaLabel" class="text-xs text-emerald-800 font-bold mt-1"></p>
               </div>
               <textarea id="seOcorrencia" rows="3" placeholder="Descreva os tópicos ou acontecimentos observados..." class="w-full border border-gray-300 rounded p-3 text-xs focus:outline-none focus:border-[#1b4332]"></textarea>
@@ -429,10 +424,9 @@
                 </select>
               </div>
             </div>
-            <div class="relative">
+            <div>
               <label class="block text-xs font-medium text-gray-700 mb-1">Aluno (Busca Rápida)</label>
-              <input type="text" id="atendAlunoInput" oninput="buscarAlunoInput(this.value, 'atendSugestoes', 'atendTurmaLabel')" autocomplete="off" placeholder="Digite o nome do aluno..." class="w-full border rounded px-3 py-2 text-sm font-medium" required />
-              <div id="atendSugestoes" class="sugestoes-box hidden"></div>
+              <input list="listaAlunosDatalist" id="atendAlunoInput" oninput="completarInfoAluno(this.value, 'atendTurmaLabel')" autocomplete="off" placeholder="Digite o nome do aluno..." class="w-full border rounded px-3 py-2 text-sm font-medium" required />
               <p id="atendTurmaLabel" class="text-xs text-emerald-800 font-bold mt-1.5"></p>
             </div>
             <div>
@@ -519,7 +513,10 @@
     </main>
   </div>
 
-  <!-- ARRAY NATIVO DIRETO COM TODOS OS 1.160 ALUNOS (SEM FALHAS DE PARSE) -->
+  <!-- ELEMENTO DATALIST NATIVO PARA BUSCA RÁPIDA -->
+  <datalist id="listaAlunosDatalist"></datalist>
+
+  <!-- ARRAY NATIVO DIRETO COM TODOS OS 1.160 ALUNOS -->
   <script>
     const ALUNOS_MATRIZ = [
       {"a": "CARLOS EDUARDO ANDRADE BITTENCOURT", "t": "8ºG", "p": "62982131364", "r": "VIVIENE ANDRADE VAZ"},
@@ -649,7 +646,6 @@
     const itensPorPagina = 50;
     let contatosFiltradosCache = [];
 
-    // INICIALIZAÇÃO IMEDIATA DOS ALUNOS
     function carregarAlunos() {
       ALUNOS_DATA = ALUNOS_MATRIZ.map(item => ({
         aluno: item.a,
@@ -663,55 +659,17 @@
       const badge = document.getElementById('contadorAlunosBadge');
       if (badge) badge.textContent = `${ALUNOS_DATA.length} alunos carregados`;
 
+      const dl = document.getElementById('listaAlunosDatalist');
+      let html = '';
       ALUNOS_DATA.forEach(a => {
         if (a.aluno) {
           MAPA_ALUNOS[a.aluno.toUpperCase()] = a;
+          html += `<option value="${a.aluno}">${a.turma} — Resp: ${a.responsavel}</option>`;
         }
       });
+      if (dl) dl.innerHTML = html;
+
       filtrarContatos(document.getElementById('filtroContatos')?.value || '');
-    }
-
-    function buscarAlunoInput(texto, boxId, labelId) {
-      const box = document.getElementById(boxId);
-      const q = texto.toLowerCase().trim();
-      
-      completarInfoAluno(texto, labelId);
-
-      if (!q || q.length < 2) {
-        box.classList.add('hidden');
-        box.innerHTML = '';
-        return;
-      }
-
-      const filtrados = ALUNOS_DATA.filter(a => a.aluno.toLowerCase().includes(q) || a.turma.toLowerCase().includes(q)).slice(0, 40);
-      
-      if (filtrados.length === 0) {
-        box.classList.add('hidden');
-        box.innerHTML = '';
-        return;
-      }
-
-      let html = '';
-      filtrados.forEach(f => {
-        html += `<div class="sugestao-item" onclick="selecionarAlunoSugestao('${f.aluno.replace(/'/g, "\\'")}', '${boxId}', '${labelId}')"><strong>${f.aluno}</strong> <span class="text-gray-500">(${f.turma})</span></div>`;
-      });
-
-      box.innerHTML = html;
-      box.classList.remove('hidden');
-    }
-
-    function selecionarAlunoSugestao(nomeAluno, boxId, labelId) {
-      const campoId = boxId === 'atrasoSugestoes' ? 'atrasoAluno' : (boxId === 'seSugestoes' ? 'seAlunoInput' : 'atendAlunoInput');
-      const inputEl = document.getElementById(campoId);
-      if (inputEl) {
-        inputEl.value = nomeAluno;
-        completarInfoAluno(nomeAluno, labelId);
-      }
-      const box = document.getElementById(boxId);
-      if (box) {
-        box.classList.add('hidden');
-        box.innerHTML = '';
-      }
     }
 
     const USUARIOS_PADRAO = [
