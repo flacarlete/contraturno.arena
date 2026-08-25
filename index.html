@@ -757,7 +757,6 @@
           }
         } catch(e) {}
       }
-      // Se não houver sessão válida salva, mantém na tela de login
     });
 
     function entrarComoCoord() {
@@ -773,12 +772,10 @@
 
       const encontrado = usuariosLista.find(u => u.usuario.toLowerCase() === user && u.senha === pass);
       if (encontrado) {
-        usuarioLogadoAtuales = encontrado;
         localStorage.setItem('usuario_logado_arena_obj', JSON.stringify(encontrado));
         usuarioLogadoAtual = encontrado;
         exibirSistemaPrincipal();
       } else {
-        // Fallback para coordenação se digitar qualquer credencial válida ou master
         entrarComoCoord();
       }
     }
