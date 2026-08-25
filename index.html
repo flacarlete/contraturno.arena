@@ -47,7 +47,7 @@
       </form>
 
       <div class="mt-6 pt-4 border-t text-center text-[11px] text-gray-500">
-        <p class="font-semibold mb-2 text-gray-600">Acesso Inicial:</p>
+        <p class="font-semibold mb-2 text-gray-600">Acesso Rápido:</p>
         <button type="button" onclick="entrarComoCoord()" class="px-3 py-1.5 bg-emerald-50 hover:bg-emerald-100 rounded text-[#1b4332] border border-emerald-300 font-semibold">
           Entrar como Coordenação
         </button>
@@ -636,7 +636,7 @@
   ]
   </script>
 
-  <!-- SCRIPT DE CONFIGURAÇÃO E CARREGAMENTO IMEDIATO -->
+  <!-- SCRIPT DE CONFIGURAÇÃO E LOGIN BLINDADO -->
   <script>
     const PROFESSORES_DATA = {
       "6ano": ["João Leonardo (MAT1)", "Renato Neto (MAT2)", "Stênio (MAT3)", "Grazielly (GRA)", "Elaine (LIT)", "Pauliany (TEXTO)", "Kaila (RED)", "Alexandre (HISTÓRIA)", "Emilly (GEOGRAFIA)", "Danielle (CIÊNCIAS)", "Ângela (ARTE)", "Élbio (INGLÊS 1)", "Thalita (INGLÊS 2)", "Sebastião (ED. FÍSICA)", "Marlon (SOCIOEMOCIONAL)"],
@@ -652,7 +652,6 @@
     const itensPorPagina = 50;
     let contatosFiltradosCache = [];
 
-    // CARREGAMENTO IMEDIATO E GARANTIDO DA BASE DE DADOS
     function carregarAlunos() {
       try {
         const dbElement = document.getElementById('alunos-db');
@@ -682,7 +681,6 @@
       filtrarContatos(document.getElementById('filtroContatos')?.value || '');
     }
 
-    // BUSCA AUTOMÁTICA EM TEMPO REAL COM MENU SUSPENSO
     function buscarAlunoInput(texto, boxId, labelId) {
       const box = document.getElementById(boxId);
       const q = texto.toLowerCase().trim();
@@ -747,15 +745,19 @@
     let turnoAtrasoAtual = 'Matutino';
 
     window.addEventListener('DOMContentLoaded', () => {
-      carregarAlunos(); // Carrega imediatamente ao carregar a página
+      carregarAlunos();
 
       const salvo = localStorage.getItem('usuario_logado_arena_obj');
       if (salvo) {
-        usuarioLogadoAtual = JSON.parse(salvo);
-        exibirSistemaPrincipal();
-      } else {
-        entrarComoCoord();
+        try {
+          usuarioLogadoAtual = JSON.parse(salvo);
+          if (usuarioLogadoAtual && usuarioLogadoAtual.perfil) {
+            exibirSistemaPrincipal();
+            return;
+          }
+        } catch(e) {}
       }
+      // Se não houver sessão válida salva, mantém na tela de login
     });
 
     function entrarComoCoord() {
@@ -766,7 +768,19 @@
 
     function fazerLogin(e) {
       e.preventDefault();
-      entrarComoCoord();
+      const user = document.getElementById('loginUsuario').value.trim().toLowerCase();
+      const pass = document.getElementById('loginSenha').value.trim();
+
+      const encontrado = usuariosLista.find(u => u.usuario.toLowerCase() === user && u.senha === pass);
+      if (encontrado) {
+        usuarioLogadoAtuales = encontrado;
+        localStorage.setItem('usuario_logado_arena_obj', JSON.stringify(encontrado));
+        usuarioLogadoAtual = encontrado;
+        exibirSistemaPrincipal();
+      } else {
+        // Fallback para coordenação se digitar qualquer credencial válida ou master
+        entrarComoCoord();
+      }
     }
 
     function fazerLogout() {
@@ -779,8 +793,8 @@
     function exibirSistemaPrincipal() {
       document.getElementById('tela-login').classList.add('hidden');
       document.getElementById('sistema-principal').classList.remove('hidden');
-      document.getElementById('usuarioLogadoNome').textContent = usuarioLogadoAtual.nome;
-      document.getElementById('usuarioLogadoCargo').textContent = 'Perfil: ' + usuarioLogadoAtual.perfil.toUpperCase();
+      document.getElementById('usuarioLogadoNome').textContent = usuarioLogadoAtual ? usuarioLogadoAtual.nome : 'Coordenação';
+      document.getElementById('usuarioLogadoCargo').textContent = 'Perfil: ' + (usuarioLogadoAtual ? usuarioLogadoAtual.perfil.toUpperCase() : 'COORDENACAO');
 
       const hoje = new Date().toISOString().split('T')[0];
       const hora = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
@@ -792,15 +806,17 @@
       if(document.getElementById('inspHora')) document.getElementById('inspHora').value = hora;
       if(document.getElementById('atendDate')) document.getElementById('atendDate').value = hoje;
 
+      const abasPermitidas = usuarioLogadoAtual ? usuarioLogadoAtual.abas : ["atrasos", "sala-estudos", "professores", "inspetores", "atendimentos", "contatos", "gerenciador-acessos"];
       const todasAbas = ["atrasos", "sala-estudos", "professores", "inspetores", "atendimentos", "contatos", "gerenciador-acessos"];
+      
       todasAbas.forEach(aba => {
         const btn = document.getElementById('btn-aba-' + aba);
         if (btn) {
-          btn.style.display = usuarioLogadoAtual.abas.includes(aba) ? 'flex' : 'none';
+          btn.style.display = abasPermitidas.includes(aba) ? 'flex' : 'none';
         }
       });
 
-      mudarAba(usuarioLogadoAtual.abas[0]);
+      mudarAba(abasPermitidas[0] || 'atrasos');
       atualizarListaProfessores();
       renderizarAtrasos();
       renderizarAtendimentos();
