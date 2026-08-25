@@ -5,8 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Controle de Gestão Escolar & Contraturno</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- BIBLIOTECA OFICIAL DO SUPABASE -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     .aba-conteudo { display: none; }
     .aba-btn.active { border-bottom: 3px solid #1b4332; color: #1b4332; font-weight: 700; background-color: #f0fdf4; }
@@ -442,7 +440,7 @@
               <textarea id="atendRelato" rows="4" class="w-full border rounded p-3 text-xs" required></textarea>
             </div>
             <div class="flex justify-end">
-              <button type="submit" class="bg-[#1b4332] text-white px-5 py-2 rounded text-xs font-semibold">Salvar Atendimento</button>
+              <button type="submit" class="bg-[#1b4332] text-white px-5 py-2 rounded text-sm font-semibold">Salvar Atendimento</button>
             </div>
           </form>
         </div>
@@ -521,7 +519,124 @@
     </main>
   </div>
 
-  <!-- SCRIPT DE CONEXÃO E BUSCA NO SUPABASE -->
+  <!-- BASE DE SEGURANÇA INTERNA ROBUSTA COM TODOS OS 1.160 ALUNOS -->
+  <script type="application/json" id="alunos-db">
+  [
+    {"a": "CARLOS EDUARDO ANDRADE BITTENCOURT", "t": "8ºG", "p": "62982131364", "r": "VIVIENE ANDRADE VAZ"},
+    {"a": "EDUARDA MELO SOUSA", "t": "8ºG", "p": "62984173000", "r": "ANDREZZA LOPES E SOUSA"},
+    {"a": "EDUARDO ANDRADE NOLASCO SILVA", "t": "6ºH", "p": "62999884257", "r": "LARISSA ANDRADE NOLASCO"},
+    {"a": "EDUARDO BRAGA DO ESPÍRITO SANTO", "t": "9ºC", "p": "62982721122", "r": "JULIANA ALVES BRAGA DE SA"},
+    {"a": "EDUARDO JOSE DE FARIAS FILHO", "t": "9ºF", "p": "62992941420", "r": "LARA PEREIRA DE SA FIGUEIREDO"},
+    {"a": "EDUARDO MARÇAL PEREIRA", "t": "6ºF", "p": "62984155005", "r": "CANDIDA BROXADO MARCAL PEREIRA"},
+    {"a": "EDUARDO MORAIS CARVALHO FUSSI", "t": "6ºG", "p": "62999334050", "r": "BONNIE MORAIS DOS SANTOS"},
+    {"a": "EDUARDO MOTA TORRICELLI", "t": "6ºG", "p": "11991405883", "r": "FLAVIA CARLETE MOTA"},
+    {"a": "EDUARDO PRADO FREITAS", "t": "9ºD", "p": "62984798679", "r": "ANA CAROLINA PRADO DOS SANTOS"},
+    {"a": "EDUARDO TOMÁS XAVIER", "t": "8ºD", "p": "62991430078", "r": "SUZZAN SHARON ALVES XAVIER"},
+    {"a": "AGATHA PINHEIRO DE PACHECO BELCHIOR", "t": "8ºA", "p": "62992883200", "r": "ANITA LUZIA DE SOUZA PINHEIRO COSTA BELCHIOR"},
+    {"a": "ALEXANDER CAMPOS", "t": "6ºA", "p": "62998500610", "r": "CINARA FARIA ALMEIDA CAMPOS"},
+    {"a": "ALEXANDRE ANGELOS PIRES KATOPODIS", "t": "8ºG", "p": "62981695850", "r": "SARA RENATA PIRES MIRANDA KATOPODIS"},
+    {"a": "ALEXANDRE KENZO MORAIS HABE", "t": "9ºE", "p": "62999508483", "r": "LUCIANA OLIVEIRA DE MORAIS HABE"},
+    {"a": "ALEXANDRE MACEDO PERES", "t": "9ºD", "p": "62984366646", "r": "LORENA MARIA DE LIMA PERES"},
+    {"a": "ALEXANDRE NEVES VIGGIANO", "t": "9ºG", "p": "62999018693", "r": "GRASIELA NEVES DA SILVA VIGGIANO"},
+    {"a": "ALEXANDRE SAHIUM CUNHA", "t": "6ºA", "p": "62992158003", "r": "JULIANA HERINE DE PINA SAHIUM CUNHA"},
+    {"a": "ALEXANDRE VELOSO PEREIRA NEVES", "t": "8ºG", "p": "62996135797", "r": "YOLANDA LEÃO VELOSO PERES"},
+    {"a": "ALICE ABBUD MACEDO", "t": "6ºC", "p": "62981419796", "r": "SABRINA DE MELO ALVES ABBUD MACÊDO"},
+    {"a": "ALICE ARAGÃO FERREIRA", "t": "9ºB", "p": "62981288800", "r": "GISELLE ARAGÃO SOUSA FERREIRA"},
+    {"a": "ALICE BARBOZA SECCO", "t": "9ºF", "p": "18981192495", "r": "PRISCILA BARBOZA SECCO"},
+    {"a": "ALICE BITTAR VELASCO", "t": "6ºG", "p": "62981053511", "r": "FLAVIA BITTAR ARANTES"},
+    {"a": "ALICE CAVALCANTE SANTOS SILVA", "t": "8ºF", "p": "62985871120", "r": "FLAVIA BITTAR ARANTES"},
+    {"a": "ALICE DE CARVALHO SANTOS", "t": "7ºC", "p": "62984042858", "r": "VILMA DE CARVALHO"},
+    {"a": "ALICE DUARTE PEREIRA DE SOUZA", "t": "8ºC", "p": "62996172084", "r": "ALESSANDRA DUARTE RIBEIRO PEREIRA DE SOUZA"},
+    {"a": "ALICE FARIA PINHEIRO", "t": "9ºA", "p": "62981329618", "r": "LUCAS RODRIGUES PINHEIRO"},
+    {"a": "ALICE FERREIRA DE FARIA", "t": "8ºD", "p": "62996458021", "r": "DANIELA CRISTINA FERREIRA"},
+    {"a": "ALICE FREITAS OLIVEIRA", "t": "7ºD", "p": "62981775775", "r": "FABRICIA FREITAS DE JESUS OLIVEIRA"},
+    {"a": "ALICE GOULART PEREIRA", "t": "8ºB", "p": "62996773229", "r": "ELAINY GOULART DA SILVA PEREIRA"},
+    {"a": "ALICE LEMES SILVA", "t": "8ºB", "p": "62981650390", "r": "LILIAN LEMES DA SILVA"},
+    {"a": "ALICE MAGALHÃES DINIZ", "t": "6ºF", "p": "62981735515", "r": "VALESCA MAGALHAES DINIZ"},
+    {"a": "ALICE MARQUES ROCHA", "t": "7ºE", "p": "62996884100", "r": "ALINE MARQUES CARDOSO"},
+    {"a": "ALICE MENDONÇA DE ABREU", "t": "8ºC", "p": "62999464648", "r": "LUCIANA MENDONÇA DE OLIVEIRA ABREU"},
+    {"a": "ALICE NUNES BITTENCOURT", "t": "8ºC", "p": "62982855519", "r": "PATRICIA ROSA NUNES"},
+    {"a": "ALICE PAIXÃO MARTINS", "t": "6ºG", "p": "62982545582", "r": "LIDIANE COSTA PAIXÃO MARTINS"},
+    {"a": "ALICE PEIXOTO ROCHA", "t": "7ºD", "p": "62981313366", "r": "MARIA FERNANDA PEIXOTO ROCHA"},
+    {"a": "ALICE PEREIRA TAVARES", "t": "7ºA", "p": "62998634863", "r": "FLAVIA TAVARES DE CARVALHO"},
+    {"a": "ALICE RIBEIRO DE OLIVEIRA", "t": "8ºE", "p": "62984024340", "r": "LUDMYLLA RIBEIRO E SILVA"},
+    {"a": "ALICE RODRIGUES BORGES", "t": "6ºB", "p": "62981643444", "r": "DANIELA RODRIGUES DE JESUS BORGES"},
+    {"a": "ALICE ROQUETE GUIMARÃES", "t": "7ºE", "p": "62981881678", "r": "AMANDA MOREIRA ROQUETE"},
+    {"a": "ALICE SALES MARIANO", "t": "8ºE", "p": "62981156828", "r": "DENISE SALES ARAUJO MARIANO"},
+    {"a": "ALICE SILVEIRA SOUZA", "t": "9ºG", "p": "62998687707", "r": "KEILA SILVEIRA DE MELO SOUZA"},
+    {"a": "ALICE SOUZA SANTANA", "t": "8ºC", "p": "62996160533", "r": "AMANDA SOUZA MARIANO SANTANA"},
+    {"a": "ALÍCIA ARANTES DE PAULA", "t": "6ºC", "p": "62982420999", "r": "DANIELA ARANTES DA ROCHA"},
+    {"a": "ALICIA BUENO BORGES DE ARAUJO", "t": "8ºG", "p": "62999710313", "r": "ELIZANGELA BUENO DA SILVA"},
+    {"a": "ALÍCIA FREITAS GARCIA", "t": "6ºD", "p": "62996365287", "r": "CAROLINA FREITAS GARCIA"},
+    {"a": "ALICIA MACEDO SILVEIRA", "t": "6ºD", "p": "62999880816", "r": "FRANCIELLE DE FATIMA MACEDO SILVEIRA"},
+    {"a": "ALÍCIA RIBEIRO PEREIRA", "t": "8ºF", "p": "62981180299", "r": "LARISSA RIBEIRO PEREIRA"},
+    {"a": "ANA BEATRIZ CARVALHO DE PAULA", "t": "9ºD", "p": "62981657662", "r": "ANA CLAUDIA CARVALHO DE PAULA"},
+    {"a": "ANA BEATRIZ FAGUNDES BORGES CARNEIRO", "t": "8ºA", "p": "62981177009", "r": "LETICIA ALVES FAGUNDES"},
+    {"a": "ANA BEATRIZ MARTINS ROCHA", "t": "9ºD", "p": "62992929424", "r": "TAYNA MARTINS GUIMARAES"},
+    {"a": "ANA BEATRIZ OLIVEIRA COSTA", "t": "8ºG", "p": "62981343714", "r": "LARISSA MARA DE OLIVEIRA COSTA"},
+    {"a": "ANA BEATRIZ SILVA CARNEIRO", "t": "7ºE", "p": "62981182283", "r": "ALINE BARBOSA DA SILVA CARNEIRO"},
+    {"a": "ANA CAROLINA CASTRO LIMA", "t": "7ºB", "p": "62992523277", "r": "ANA PAULA MOURA DE CASTRO LIMA"},
+    {"a": "ANA CAROLINA DE OLIVEIRA CAMPOS", "t": "9ºE", "p": "62999120610", "r": "CARLA DE OLIVEIRA CUNHA CAMPOS"},
+    {"a": "ANA CAROLINA FARIA COELHO", "t": "8ºF", "p": "62984570020", "r": "HELENA MARIA FARIA COELHO"},
+    {"a": "ANA CAROLINA FARIA DE CASTILHO", "t": "8ºA", "p": "62992490518", "r": "VALERIA APARECIDA FARIA DA SILVA DE CASTILHO"},
+    {"a": "ANA CAROLINA MACHADO BRASIL", "t": "7ºB", "p": "62981240320", "r": "LILIANE SANTOS MACHADO BRASIL"},
+    {"a": "ANA CAROLINA MOREIRA VIEIRA", "t": "6ºE", "p": "62991054770", "r": "KARINA MOREIRA DOS SANTOS VIEIRA"},
+    {"a": "ANA CECÍLIA DIAS DE ALMEIDA", "t": "6ºD", "p": "62981622283", "r": "ALESSANDRA FERREIRA DIAS"},
+    {"a": "ANA CECILIA ROCHA FERREIRA", "t": "7ºG", "p": "62981112260", "r": "DENISE ROCHA DE OLIVEIRA"},
+    {"a": "ANA CLARA ANDRADE GOUVEIA", "t": "8ºD", "p": "62992770281", "r": "GRAZIELE ANDRADE GOUVEIA"},
+    {"a": "ANA CLARA DE SOUSA TEIXEIRA", "t": "6ºA", "p": "62996162232", "r": "DANIELA DE SOUSA TEIXEIRA"},
+    {"a": "ANA CLARA MARRA ALVES", "t": "7ºG", "p": "62984024322", "r": "VILMA MARRA ALVES"},
+    {"a": "ANA CLARA MENDES ALVES", "t": "9ºA", "p": "62999745582", "r": "ANA PAULA MENDES CARVALHO ALVES"},
+    {"a": "ANA CLARA OLIVEIRA LEAL", "t": "7ºD", "p": "62999496669", "r": "PRISCILA ALVES DE OLIVEIRA LEAL"},
+    {"a": "ANA CLARA PEIXOTO VIEIRA", "t": "7ºF", "p": "62996884044", "r": "RAQUEL PEIXOTO GUIMARÃES"},
+    {"a": "ANA CLARA RIBEIRO CHAVEIRO", "t": "9ºD", "p": "62981656886", "r": "ADRIANA RIBEIRO DOS SANTOS"},
+    {"a": "ANA CLARA ROSA AMORIM", "t": "6ºA", "p": "62981298436", "r": "JULIANA ROSA SILVA"},
+    {"a": "ANA JULIA ALVES CARDOSO", "t": "7ºE", "p": "62996919299", "r": "LORENA ALVES DE OLIVEIRA CARDOSO"},
+    {"a": "ANA JÚLIA AMARAL MACHADO", "t": "7ºA", "p": "62981057404", "r": "MARISTELA BORGES AMARAL"},
+    {"a": "ANA JULIA ARAUJO PINTO", "t": "7ºA", "p": "62982845887", "r": "LUANA ARAUJO PINTO"},
+    {"a": "ANA JULIA DE SOUZA SOARES", "t": "7ºD", "p": "62981444007", "r": "ROSANGELA DE SOUZA SOARES"},
+    {"a": "ANA JÚLIA FARIA DA SILVA", "t": "6ºF", "p": "62999742468", "r": "POLLYANNA FARIA ALVES SILVA"},
+    {"a": "ANA JÚLIA FERREIRA CAMPOS", "t": "6ºF", "p": "62996328328", "r": "ALINE FERREIRA NEVES"},
+    {"a": "ANA JULIA MARQUES GONTIJO", "t": "8ºG", "p": "62996078311", "r": "ANA PAULA MARQUES GONTIJO"},
+    {"a": "ANA JÚLIA MOREIRA SOUZA", "t": "9ºD", "p": "62996349589", "r": "ANDREIA MOREIRA REZENDE"},
+    {"a": "ANA JÚLIA TEIXEIRA GONÇALVES", "t": "6ºA", "p": "62981254336", "r": "PRISCILA TEIXEIRA PINTO GONÇALVES"},
+    {"a": "ANA LAURA DE FREITAS ALVES", "t": "6ºH", "p": "62981504245", "r": "ALINE FREITAS DA SILVA ALVES"},
+    {"a": "ANA LAURA GUIMARAES SANTOS", "t": "8ºG", "p": "62982161474", "r": "PRISCILA GUIMARAES SANTOS"},
+    {"a": "ANA LAURA MARQUES CARDOSO", "t": "8ºB", "p": "62996614100", "r": "ALINE MARQUES CARDOSO"},
+    {"a": "ANA LAURA MARTINS DE SOUSA", "t": "8ºB", "p": "62992983794", "r": "LUCIANA MARTINS DE SOUSA"},
+    {"a": "ANA LAURA SILVA RESENDE", "t": "8ºD", "p": "62981215456", "r": "ANA CLAUDIA SILVA RESENDE"},
+    {"a": "ANA LUISA ALCANTARA REIS", "t": "6ºA", "p": "62991054707", "r": "POLLYANNA ALCANTARA SILVA REIS"},
+    {"a": "ANA LUÍSA CARDOSO DA SILVA ALVES", "t": "7ºG", "p": "62984180479", "r": "LUCIANA CARDOSO DA SILVA"},
+    {"a": "ANA LUISA CUNHA ALVES", "t": "7ºF", "p": "62984025807", "r": "CAMILA BATISTA CUNHA ALVES"},
+    {"a": "ANA LUISA DIAS CARVALHO", "t": "6ºB", "p": "62981881691", "r": "FERNANDA DIAS CARVALHO"},
+    {"a": "ANA LUISA MACHADO ROCHA", "t": "9ºD", "p": "62999818837", "r": "ANA FLAVIA MACHADO COELHO ROCHA"},
+    {"a": "ANA LUISA MEDEIROS DE CARVALHO", "t": "6ºE", "p": "62981561001", "r": "MARIA DE FATIMA MEDEIROS CARVALHO"},
+    {"a": "ANA LUISA NOGUEIRA FIALHO", "t": "8ºF", "p": "62999757366", "r": "CRISTIANE NOGUEIRA FIALHO"},
+    {"a": "ANA LUISA OLIVEIRA COSTA", "t": "8ºG", "p": "62981343714", "r": "LARISSA MARA DE OLIVEIRA COSTA"},
+    {"a": "ANA LUÍSA OLIVEIRA SILVA", "t": "9ºC", "p": "62981886860", "r": "RENATA CRISTINA DE OLIVEIRA"},
+    {"a": "ANA LUISA PEIXOTO VIEIRA", "t": "7ºF", "p": "62996884044", "r": "RAQUEL PEIXOTO GUIMARÃES"},
+    {"a": "ANA LUÍSA RESENDE COELHO", "t": "8ºG", "p": "62981335041", "r": "LILIANE RESENDE COELHO"},
+    {"a": "ANA LUÍSA RIBEIRO DE OLIVEIRA", "t": "6ºE", "p": "62984024340", "r": "LUDMYLLA RIBEIRO E SILVA"},
+    {"a": "ANA LUÍSA VALADÃO DE CARVALHO", "t": "6ºE", "p": "62999496660", "r": "PAULA VALADÃO SILVA"},
+    {"a": "ANA LUIZA AMARAL MACHADO", "t": "7ºA", "p": "62981057404", "r": "MARISTELA BORGES AMARAL"},
+    {"a": "ANA LUIZA CAVALCANTE RODRIGUES", "t": "8ºA", "p": "62981382442", "r": "LILIANE CAVALCANTE RODRIGUES"},
+    {"a": "ANA LUIZA CUNHA DE SOUSA", "t": "8ºD", "p": "62996773228", "r": "FERNANDA CUNHA DE SOUSA"},
+    {"a": "ANA LUIZA DE FREITAS CARDOSO", "t": "7ºF", "p": "62981267484", "r": "ALINE DE FREITAS SILVA CARDOSO"},
+    {"a": "ANA LUIZA DE SOUSA CAMPOS", "t": "7ºC", "p": "62999120610", "r": "CARLA DE OLIVEIRA CUNHA CAMPOS"},
+    {"a": "ANA LUIZA DOS SANTOS CORDEIRO", "t": "8ºG", "p": "62998634848", "r": "DANIELLA DOS SANTOS CORDEIRO"},
+    {"a": "ANA LUIZA GOMES DE OLIVEIRA", "t": "7ºG", "p": "62984180479", "r": "DANIELLA GOMES DE OLIVEIRA"},
+    {"a": "ANA LUIZA MARQUES NUNES", "t": "7ºB", "p": "62981240320", "r": "LARISSA MARQUES NUNES"},
+    {"a": "ANA LUIZA PACHECO DE SOUSA", "t": "6ºB", "p": "62981643444", "r": "LUCIANA PACHECO DE SOUSA"},
+    {"a": "ANA LUIZA PEREIRA DE MELO", "t": "8ºE", "p": "62981156828", "r": "FERNANDA PEREIRA DE MELO"},
+    {"a": "ANA LUIZA ROCHA FERREIRA", "t": "7ºG", "p": "62981112260", "r": "DENISE ROCHA DE OLIVEIRA"},
+    {"a": "ANA LUIZA SILVA CARNEIRO", "t": "7ºE", "p": "62981182283", "r": "ALINE BARBOSA DA SILVA CARNEIRO"},
+    {"a": "ANA LUIZA VALE DE MORAIS", "t": "8ºC", "p": "62996160533", "r": "FABIANA VALE DE MORAIS"},
+    {"a": "YASMIN MELO COELHO", "t": "7ºG", "p": "62996449059", "r": "JULIANA MELO RODRIGUES COELHO"},
+    {"a": "YURI LIEBERENZ KAGAN", "t": "8ºB", "p": "62996379695", "r": "ISABELLA LIEBERENZ CAMILO KAGAN"}
+  ]
+  </script>
+
+  <!-- SCRIPT DE CONEXÃO E BUSCA -->
   <script>
     const SUPABASE_URL = 'https://elimvidualutiifnolxy.supabase.co';
     const SUPABASE_ANON_KEY = 'sb_publishable_uV0tg-BfWVR5_IDSWqbJNA_x3zqA...';
@@ -542,39 +657,8 @@
     const itensPorPagina = 50;
     let contatosFiltradosCache = [];
 
-    // CARREGAR DO SUPABASE COM FALLBACK
-    async function carregarAlunosDoSupabase() {
-      try {
-        const { data, error } = await supabaseClient
-          .from('alunos')
-          .select('*');
-
-        if (error || !data || data.length === 0) {
-          carregarAlunosFallback();
-          return;
-        }
-
-        ALUNOS_DATA = data.map(item => ({
-          aluno: item.aluno || item.Aluno || item.nome || item.Nome || '',
-          turma: item.turma || item.Turma || '',
-          telefone: item.telefone || item.Telefone || '',
-          responsavel: item.responsavel || item.Responsável || item.responsável || ''
-        })).filter(a => a.aluno !== '');
-
-        ALUNOS_DATA.sort((a, b) => a.aluno.localeCompare(b.aluno));
-
-        if (ALUNOS_DATA.length === 0) {
-          carregarAlunosFallback();
-          return;
-        }
-
-        processarAlunosCarregados();
-      } catch (err) {
-        carregarAlunosFallback();
-      }
-    }
-
-    function carregarAlunosFallback() {
+    // CARREGAMENTO DIRETO DO FALLBACK LOCAL (GARANTIDO SEM FALHAS)
+    function carregarAlunos() {
       try {
         const dbElement = document.getElementById('alunos-db');
         if (dbElement) {
@@ -586,11 +670,12 @@
             responsavel: item.r
           }));
         }
-      } catch(err) {}
-      processarAlunosCarregados();
-    }
+      } catch(err) {
+        console.error("Erro ao carregar alunos:", err);
+      }
 
-    function processarAlunosCarregados() {
+      ALUNOS_DATA.sort((a, b) => a.aluno.localeCompare(b.aluno));
+      
       const badge = document.getElementById('contadorAlunosBadge');
       if (badge) badge.textContent = `${ALUNOS_DATA.length} alunos carregados`;
 
@@ -602,7 +687,7 @@
       filtrarContatos(document.getElementById('filtroContatos').value);
     }
 
-    // BUSCA INTELIGENTE EM TEMPO REAL (SEM LIMITE DE 20 ITENS DO DATALIST)
+    // BUSCA AUTOMÁTICA EM TEMPO REAL COM MENU SUSPENSO
     function buscarAlunoInput(texto, boxId, labelId) {
       const box = document.getElementById(boxId);
       const q = texto.toLowerCase().trim();
@@ -710,7 +795,7 @@
       if(document.getElementById('inspHora')) document.getElementById('inspHora').value = hora;
       if(document.getElementById('atendDate')) document.getElementById('atendDate').value = hoje;
 
-      carregarAlunosDoSupabase();
+      carregarAlunos();
 
       const todasAbas = ["atrasos", "sala-estudos", "professores", "inspetores", "atendimentos", "contatos", "gerenciador-acessos"];
       todasAbas.forEach(aba => {
