@@ -636,13 +636,8 @@
   ]
   </script>
 
-  <!-- SCRIPT DE CONEXÃO E BUSCA -->
+  <!-- SCRIPT DE CONFIGURAÇÃO E CARREGAMENTO IMEDIATO -->
   <script>
-    const SUPABASE_URL = 'https://elimvidualutiifnolxy.supabase.co';
-    const SUPABASE_ANON_KEY = 'sb_publishable_uV0tg-BfWVR5_IDSWqbJNA_x3zqA...';
-
-    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
     const PROFESSORES_DATA = {
       "6ano": ["João Leonardo (MAT1)", "Renato Neto (MAT2)", "Stênio (MAT3)", "Grazielly (GRA)", "Elaine (LIT)", "Pauliany (TEXTO)", "Kaila (RED)", "Alexandre (HISTÓRIA)", "Emilly (GEOGRAFIA)", "Danielle (CIÊNCIAS)", "Ângela (ARTE)", "Élbio (INGLÊS 1)", "Thalita (INGLÊS 2)", "Sebastião (ED. FÍSICA)", "Marlon (SOCIOEMOCIONAL)"],
       "7ano": ["Fernanda (MAT1)", "Fernando (MAT2)", "Bruno (MAT3)", "Tomás (GRA)", "Cecília (LIT)", "Luana (TEXTO)", "Lorena (RED)", "Letícia (HISTÓRIA)", "Wilker (GEOGRAFIA)", "Paula (CIÊNCIAS)", "Ângela (ARTE)", "Lucas (INGLÊS)", "Thalita (INGLÊS 2)", "Gustavo Coutinho (ED. FÍSICA)", "Marlon (SOCIOEMOCIONAL)"],
@@ -657,7 +652,7 @@
     const itensPorPagina = 50;
     let contatosFiltradosCache = [];
 
-    // CARREGAMENTO DIRETO DO FALLBACK LOCAL (GARANTIDO SEM FALHAS)
+    // CARREGAMENTO IMEDIATO E GARANTIDO DA BASE DE DADOS
     function carregarAlunos() {
       try {
         const dbElement = document.getElementById('alunos-db');
@@ -684,7 +679,7 @@
           MAPA_ALUNOS[a.aluno.toUpperCase()] = a;
         }
       });
-      filtrarContatos(document.getElementById('filtroContatos').value);
+      filtrarContatos(document.getElementById('filtroContatos')?.value || '');
     }
 
     // BUSCA AUTOMÁTICA EM TEMPO REAL COM MENU SUSPENSO
@@ -700,7 +695,7 @@
         return;
       }
 
-      const filtrados = ALUNOS_DATA.filter(a => a.aluno.toLowerCase().includes(q) || a.turma.toLowerCase().includes(q)).slice(0, 30);
+      const filtrados = ALUNOS_DATA.filter(a => a.aluno.toLowerCase().includes(q) || a.turma.toLowerCase().includes(q)).slice(0, 40);
       
       if (filtrados.length === 0) {
         box.classList.add('hidden');
@@ -752,6 +747,8 @@
     let turnoAtrasoAtual = 'Matutino';
 
     window.addEventListener('DOMContentLoaded', () => {
+      carregarAlunos(); // Carrega imediatamente ao carregar a página
+
       const salvo = localStorage.getItem('usuario_logado_arena_obj');
       if (salvo) {
         usuarioLogadoAtual = JSON.parse(salvo);
@@ -794,8 +791,6 @@
       if(document.getElementById('inspData')) document.getElementById('inspData').value = hoje;
       if(document.getElementById('inspHora')) document.getElementById('inspHora').value = hora;
       if(document.getElementById('atendDate')) document.getElementById('atendDate').value = hoje;
-
-      carregarAlunos();
 
       const todasAbas = ["atrasos", "sala-estudos", "professores", "inspetores", "atendimentos", "contatos", "gerenciador-acessos"];
       todasAbas.forEach(aba => {
