@@ -120,11 +120,11 @@
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
                 <label class="block text-xs font-medium text-gray-700 mb-1">Nome do Aluno</label>
-                <input type="text" id="atrasoAluno" placeholder="Nome completo do aluno..." class="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm font-medium focus:outline-none focus:border-[#1b4332]" required />
+                <input type="text" id="atrasoAluno" placeholder="Nome completo do aluno..." class="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm font-bold text-[#1b4332] focus:outline-none focus:border-[#1b4332]" required />
               </div>
               <div>
                 <label class="block text-xs font-medium text-gray-700 mb-1">Turma</label>
-                <input type="text" id="atrasoTurma" placeholder="Ex: 8ºG" class="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-[#1b4332]" required />
+                <input type="text" id="atrasoTurma" placeholder="Ex: 8ºG" class="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm font-semibold text-[#1b4332] focus:outline-none focus:border-[#1b4332]" required />
               </div>
               <div>
                 <label class="block text-xs font-medium text-gray-700 mb-1">Justificativa</label>
@@ -265,11 +265,11 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-3">
                   <div>
                     <label class="block text-xs font-medium text-gray-700 mb-1">Nome do Aluno</label>
-                    <input type="text" id="seAluno" placeholder="Nome do aluno..." class="w-full border border-gray-300 rounded px-3 py-2 text-xs" />
+                    <input type="text" id="seAluno" placeholder="Nome do aluno..." class="w-full border border-gray-300 rounded px-3 py-2 text-xs font-bold text-[#1b4332]" />
                   </div>
                   <div>
                     <label class="block text-xs font-medium text-gray-700 mb-1">Turma</label>
-                    <input type="text" id="seTurma" placeholder="Ex: 9ºD" class="w-full border border-gray-300 rounded px-3 py-2 text-xs" />
+                    <input type="text" id="seTurma" placeholder="Ex: 9ºD" class="w-full border border-gray-300 rounded px-3 py-2 text-xs font-semibold text-[#1b4332]" />
                   </div>
                 </div>
                 <textarea id="seOcorrencia" rows="3" placeholder="Descreva os tópicos ou acontecimentos observados..." class="w-full border border-gray-300 rounded p-3 text-xs focus:outline-none focus:border-[#1b4332]"></textarea>
@@ -326,7 +326,7 @@
               </div>
               <div>
                 <label class="block text-xs font-medium text-gray-700 mb-1">Professor & Disciplina</label>
-                <select id="profNome" class="w-full border border-gray-300 rounded px-3 py-2 text-sm" required></select>
+                <select id="profNome" class="w-full border border-gray-300 rounded px-3 py-2 text-sm font-bold text-[#1b4332]" required></select>
               </div>
               <div>
                 <label class="block text-xs font-medium text-gray-700 mb-1">Data</label>
@@ -376,7 +376,7 @@
             <p class="text-xs text-emerald-700">Selecione o professor para gerar um relatório exclusivo com todas as ocorrências em sequência:</p>
           </div>
           <div class="flex gap-2 w-full md:w-auto">
-            <select id="selectProfessorFiltro" class="border border-emerald-300 rounded px-3 py-2 text-xs bg-white flex-1"></select>
+            <select id="selectProfessorFiltro" class="border border-emerald-300 rounded px-3 py-2 text-xs bg-white font-bold text-[#1b4332] flex-1"></select>
             <button onclick="imprimirRelatorioProfessorIndividual()" class="bg-[#1b4332] text-white px-4 py-2 rounded text-xs font-semibold hover:bg-emerald-900 whitespace-nowrap">
               Imprimir Professor
             </button>
@@ -420,7 +420,7 @@
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
                 <label class="block text-xs font-medium text-gray-700 mb-1">Orientador / Inspetor</label>
-                <input type="text" id="inspNome" class="w-full border rounded px-3 py-2 text-sm" required />
+                <input type="text" id="inspNome" placeholder="Seu nome..." class="w-full border rounded px-3 py-2 text-sm font-bold text-[#1b4332]" required />
               </div>
               <div>
                 <label class="block text-xs font-medium text-gray-700 mb-1">Data</label>
@@ -667,8 +667,8 @@
           <tr class="border-b hover:bg-gray-50">
             <td class="p-2 border font-medium">${a.data} às ${a.hora}</td>
             <td class="p-2 border">${a.turno}</td>
-            <td class="p-2 border font-semibold">${a.aluno}</td>
-            <td class="p-2 border">${a.turma}</td>
+            <td class="p-2 border font-bold text-[#1b4332]">${a.aluno}</td>
+            <td class="p-2 border font-semibold text-[#1b4332]">${a.turma}</td>
             <td class="p-2 border">${a.espaco}</td>
             <td class="p-2 border text-gray-600">${a.justificativa || '—'}</td>
             <td class="p-2 border text-center no-print">
@@ -719,7 +719,6 @@
       mudarSubAbaSala('relatorios');
     }
 
-    // RELATÓRIO AGRUPADO POR ALUNO (Ocorrências juntas com as datas respectivas)
     function renderizarSalaEstudos() {
       const container = document.getElementById('listaRelatoriosContainer');
       if (!container) return;
@@ -730,7 +729,6 @@
         return;
       }
 
-      // Agrupa ocorrências por Nome do Aluno
       const agrupado = {};
       salaEstudosList.forEach(r => {
         const nomeAluno = r.aluno;
@@ -742,7 +740,7 @@
 
       for (const [aluno, dados] of Object.entries(agrupado)) {
         let htmlOcorrencias = '';
-        dados.ocorrencias.forEach((occ, idx) => {
+        dados.ocorrencias.forEach((occ) => {
           htmlOcorrencias += `
             <div class="bg-white p-3 rounded border mb-2 text-xs">
               <div class="flex justify-between items-center text-emerald-800 font-bold mb-1">
@@ -799,7 +797,6 @@
         selectProfessor.appendChild(option);
       });
 
-      // Preenche também o select de filtro geral para impressão individual
       if (selectFiltro) {
         let todasOpcoes = '';
         for (const [seg, profs] of Object.entries(PROFESSORES_DATA)) {
@@ -858,7 +855,6 @@
       });
     }
 
-    // IMPRESSÃO DE RELATÓRIO INDIVIDUAL POR NOME DO PROFESSOR
     function imprimirRelatorioProfessorIndividual() {
       const profSelecionado = document.getElementById('selectProfessorFiltro').value;
       const ocorrenciasProf = profOcorrenciasList.filter(p => p.professor === profSelecionado);
@@ -868,10 +864,9 @@
         return;
       }
 
-      // Cria uma janela de impressão isolada com as ocorrências em sequência
       let janelaPrint = window.open('', '_blank');
       let htmlTabela = '';
-      ocorrenciasProf.forEach((occ, idx) => {
+      ocorrenciasProf.forEach((occ) => {
         htmlTabela += `
           <tr style="border-bottom: 1px solid #ddd;">
             <td style="padding: 8px; border: 1px solid #ccc;">${occ.data}</td>
