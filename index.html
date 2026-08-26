@@ -10,8 +10,8 @@
     .aba-btn.active { border-bottom: 3px solid #1b4332; color: #1b4332; font-weight: 700; background-color: #f0fdf4; }
     @media print {
       body * { visibility: hidden; }
-      #printableArea, #printableArea *, #printableProfArea, #printableProfArea *, #printableRelatorioArea, #printableRelatorioArea * { visibility: visible; }
-      #printableArea, #printableProfArea, #printableRelatorioArea { 
+      #printableArea, #printableArea *, #printableProfIndividualArea, #printableProfIndividualArea *, #printableRelatorioArea, #printableRelatorioArea * { visibility: visible; }
+      #printableArea, #printableProfIndividualArea, #printableRelatorioArea { 
         position: absolute; left: 0; top: 0; width: 100%; background: white !important; padding: 0 !important; margin: 0 !important;
       }
       .no-print { display: none !important; }
@@ -168,9 +168,10 @@
       <section id="aba-sala-estudos" class="aba-conteudo">
         <div class="flex gap-3 mb-4 no-print">
           <button onclick="mudarSubAbaSala('novo')" id="subbtn-novo" class="px-4 py-2 bg-[#1b4332] text-white rounded text-xs font-semibold">Novo Relatório Diário</button>
-          <button onclick="mudarSubAbaSala('relatorios')" id="subbtn-relatorios" class="px-4 py-2 bg-gray-200 text-gray-700 rounded text-xs font-semibold hover:bg-gray-300">📋 Todos os Relatórios Salvos</button>
+          <button onclick="mudarSubAbaSala('relatorios')" id="subbtn-relatorios" class="px-4 py-2 bg-gray-200 text-gray-700 rounded text-xs font-semibold hover:bg-gray-300">📋 Relatório por Aluno (Ocorrências Agrupadas)</button>
         </div>
 
+        <!-- Sub-aba 2A: Novo Relatório -->
         <div id="subaba-novo" class="subaba-sala-conteudo">
           <div id="printableArea" class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
             <div class="flex justify-between items-center mb-4">
@@ -263,11 +264,11 @@
                 </h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-3">
                   <div>
-                    <label class="block text-xs font-medium text-gray-700 mb-1">Nome do Aluno (Opcional)</label>
+                    <label class="block text-xs font-medium text-gray-700 mb-1">Nome do Aluno</label>
                     <input type="text" id="seAluno" placeholder="Nome do aluno..." class="w-full border border-gray-300 rounded px-3 py-2 text-xs" />
                   </div>
                   <div>
-                    <label class="block text-xs font-medium text-gray-700 mb-1">Turma (Opcional)</label>
+                    <label class="block text-xs font-medium text-gray-700 mb-1">Turma</label>
                     <input type="text" id="seTurma" placeholder="Ex: 9ºD" class="w-full border border-gray-300 rounded px-3 py-2 text-xs" />
                   </div>
                 </div>
@@ -283,12 +284,16 @@
           </div>
         </div>
 
+        <!-- Sub-aba 2B: Relatório Agrupado por Aluno -->
         <div id="subaba-relatorios" class="subaba-sala-conteudo" style="display: none;">
-          <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+          <div id="printableRelatorioArea" class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
             <div class="flex justify-between items-center mb-4">
-              <h2 class="text-base font-bold text-[#1b4332]">📋 Histórico de Relatórios Diários — Sala de Estudos</h2>
+              <div>
+                <h2 class="text-base font-bold text-[#1b4332]">📋 Relatório Consolidado por Aluno — Sala de Estudos</h2>
+                <p class="text-xs text-gray-500">Ocorrências do mesmo aluno agrupadas com suas respectivas datas</p>
+              </div>
               <button onclick="window.print()" class="bg-gray-800 text-white px-3 py-1.5 rounded text-xs hover:bg-black no-print">
-                🖨️ Imprimir Histórico
+                🖨️ Imprimir Relatório Consolidado
               </button>
             </div>
             <div id="listaRelatoriosContainer" class="space-y-4"></div>
@@ -302,7 +307,7 @@
           <div class="flex justify-between items-center mb-4">
             <h2 id="profFormTitulo" class="text-base font-bold text-[#1b4332]">Ocorrências com Professores</h2>
             <button onclick="window.print()" class="bg-[#1b4332] text-white px-4 py-2 rounded text-xs font-semibold hover:bg-emerald-900 flex items-center gap-1.5 shadow">
-              🖨️ Imprimir Relatório
+              🖨️ Imprimir Histórico Geral
             </button>
           </div>
 
@@ -364,11 +369,25 @@
           </form>
         </div>
 
+        <!-- Seção de Impressão de Relatório Individual por Professor -->
+        <div class="bg-emerald-50 border border-emerald-200 rounded-lg p-4 mb-6 no-print flex flex-col md:flex-row items-center justify-between gap-3">
+          <div>
+            <h3 class="font-bold text-emerald-900 text-sm">🖨️ Imprimir Relatório Individual por Professor</h3>
+            <p class="text-xs text-emerald-700">Selecione o professor para gerar um relatório exclusivo com todas as ocorrências em sequência:</p>
+          </div>
+          <div class="flex gap-2 w-full md:w-auto">
+            <select id="selectProfessorFiltro" class="border border-emerald-300 rounded px-3 py-2 text-xs bg-white flex-1"></select>
+            <button onclick="imprimirRelatorioProfessorIndividual()" class="bg-[#1b4332] text-white px-4 py-2 rounded text-xs font-semibold hover:bg-emerald-900 whitespace-nowrap">
+              Imprimir Professor
+            </button>
+          </div>
+        </div>
+
         <div id="printableProfArea" class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
           <div class="border-b pb-3 mb-4 flex justify-between items-center">
             <div>
-              <h3 class="font-bold text-gray-800 text-sm">📋 Relatório de Acompanhamento Docente</h3>
-              <p class="text-xs text-gray-500">Histórico de chamadas pendentes e pontualidade</p>
+              <h3 class="font-bold text-gray-800 text-sm">📋 Histórico Geral de Acompanhamento Docente</h3>
+              <p class="text-xs text-gray-500">Chamadas pendentes e pontualidade</p>
             </div>
             <div class="text-right text-xs text-gray-500">
               <p><strong>Colégio Arena</strong></p>
@@ -447,7 +466,7 @@
               <input type="text" id="novoSenha" placeholder="Senha" class="bg-white border rounded px-3 py-2 text-xs" required />
             </div>
             <div class="flex justify-end">
-              <button type="submit" class="bg-[#1b4332] text-white px-5 py-2 rounded text-xs font-semibold">+ Cadastrar Usuário</button>
+              <button type="submit" class="bg-[#1b4332] text-white px-5 py-2 rounded text-sm font-semibold">+ Cadastrar Usuário</button>
             </div>
           </form>
 
@@ -688,7 +707,7 @@
         respostas: document.getElementById('chkRespostas').checked ? 'Sim' : 'Não',
         erro: document.getElementById('chkErro').checked ? 'Sim' : 'Não',
         ativo: document.getElementById('chkAtivo').checked ? 'Sim' : 'Não',
-        aluno: document.getElementById('seAluno').value.trim() || '—',
+        aluno: document.getElementById('seAluno').value.trim().toUpperCase() || 'ALUNO NÃO INFORMADO',
         turma: document.getElementById('seTurma').value.trim() || '—',
         ocorrencia: document.getElementById('seOcorrencia').value.trim() || 'Nenhuma ocorrência descrita.'
       };
@@ -700,6 +719,7 @@
       mudarSubAbaSala('relatorios');
     }
 
+    // RELATÓRIO AGRUPADO POR ALUNO (Ocorrências juntas com as datas respectivas)
     function renderizarSalaEstudos() {
       const container = document.getElementById('listaRelatoriosContainer');
       if (!container) return;
@@ -710,34 +730,52 @@
         return;
       }
 
+      // Agrupa ocorrências por Nome do Aluno
+      const agrupado = {};
       salaEstudosList.forEach(r => {
+        const nomeAluno = r.aluno;
+        if (!agrupado[nomeAluno]) {
+          agrupado[nomeAluno] = { turma: r.turma, ocorrencias: [] };
+        }
+        agrupado[nomeAluno].ocorrencias.push(r);
+      });
+
+      for (const [aluno, dados] of Object.entries(agrupado)) {
+        let htmlOcorrencias = '';
+        dados.ocorrencias.forEach((occ, idx) => {
+          htmlOcorrencias += `
+            <div class="bg-white p-3 rounded border mb-2 text-xs">
+              <div class="flex justify-between items-center text-emerald-800 font-bold mb-1">
+                <span>📅 Data da Ocorrência: ${occ.data} (Responsável: ${occ.professor})</span>
+                <button onclick="excluirSalaEstudos(${occ.id})" class="text-red-600 font-bold hover:underline text-[11px] no-print">Apagar este registro</button>
+              </div>
+              <p><strong>Descrição / Feedback:</strong> ${occ.ocorrencia}</p>
+              <div class="mt-2 grid grid-cols-2 md:grid-cols-4 gap-1 text-[11px] text-gray-600 bg-gray-50 p-1.5 rounded">
+                <span>Silêncio: ${occ.silencio}</span>
+                <span>Foco: ${occ.foco}</span>
+                <span>Celular: ${occ.celular}</span>
+                <span>Organização: ${occ.org}</span>
+              </div>
+            </div>
+          `;
+        });
+
         container.innerHTML += `
-          <div class="border rounded-lg p-4 bg-gray-50 text-xs space-y-2">
-            <div class="flex justify-between items-center border-b pb-2">
-              <p class="font-bold text-[#1b4332] text-sm">📅 Data: ${r.data} | Responsável: ${r.professor}</p>
-              <button onclick="excluirSalaEstudos(${r.id})" class="text-red-600 font-bold hover:underline no-print">Excluir Relatório</button>
+          <div class="border rounded-lg p-4 bg-gray-50 mb-4">
+            <div class="border-b pb-2 mb-3 flex justify-between items-center">
+              <h3 class="font-bold text-[#1b4332] text-sm">👤 Aluno(a): ${aluno} <span class="text-gray-500 font-normal">(${dados.turma})</span></h3>
+              <span class="bg-emerald-100 text-emerald-800 text-[11px] font-bold px-2 py-0.5 rounded-full">${dados.ocorrencias.length} ocorrência(s) registrada(s)</span>
             </div>
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-2 bg-white p-2.5 rounded border">
-              <p><strong>Silêncio:</strong> ${r.silencio}</p>
-              <p><strong>Foco:</strong> ${r.foco}</p>
-              <p><strong>Celular:</strong> ${r.celular}</p>
-              <p><strong>Organização:</strong> ${r.org}</p>
+            <div class="space-y-2">
+              ${htmlOcorrencias}
             </div>
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-2 bg-white p-2.5 rounded border text-[11px]">
-              <p>📖 Apostila Viva: ${r.apostila}</p>
-              <p>✍️ Respostas: ${r.respostas}</p>
-              <p>🔍 Correção do Erro: ${r.erro}</p>
-              <p>💡 Estudo Ativo: ${r.ativo}</p>
-            </div>
-            <p><strong>Aluno(a):</strong> ${r.aluno} (${r.turma})</p>
-            <p><strong>Observações / Ocorrência:</strong> ${r.ocorrencia}</p>
           </div>
         `;
-      });
+      }
     }
 
     function excluirSalaEstudos(id) {
-      if(confirm('Tem certeza de que deseja apagar este relatório?')) {
+      if(confirm('Tem certeza de que deseja apagar esta ocorrência?')) {
         salaEstudosList = salaEstudosList.filter(s => s.id !== id);
         localStorage.setItem('escola_sala_estudos', JSON.stringify(salaEstudosList));
         renderizarSalaEstudos();
@@ -747,6 +785,7 @@
     function atualizarListaProfessores() {
       const selectSegmento = document.getElementById('profSegmento');
       const selectProfessor = document.getElementById('profNome');
+      const selectFiltro = document.getElementById('selectProfessorFiltro');
       if (!selectSegmento || !selectProfessor) return;
 
       const segmento = selectSegmento.value;
@@ -759,6 +798,17 @@
         option.textContent = prof;
         selectProfessor.appendChild(option);
       });
+
+      // Preenche também o select de filtro geral para impressão individual
+      if (selectFiltro) {
+        let todasOpcoes = '';
+        for (const [seg, profs] of Object.entries(PROFESSORES_DATA)) {
+          profs.forEach(p => {
+            todasOpcoes += `<option value="${p}">${p} (${seg.toUpperCase()})</option>`;
+          });
+        }
+        selectFiltro.innerHTML = todasOpcoes;
+      }
     }
 
     function salvarOcorrenciaProfessor(e) {
@@ -806,6 +856,69 @@
           </tr>
         `;
       });
+    }
+
+    // IMPRESSÃO DE RELATÓRIO INDIVIDUAL POR NOME DO PROFESSOR
+    function imprimirRelatorioProfessorIndividual() {
+      const profSelecionado = document.getElementById('selectProfessorFiltro').value;
+      const ocorrenciasProf = profOcorrenciasList.filter(p => p.professor === profSelecionado);
+
+      if (ocorrenciasProf.length === 0) {
+        alert(`Não há ocorrências registradas para o(a) professor(a): ${profSelecionado}`);
+        return;
+      }
+
+      // Cria uma janela de impressão isolada com as ocorrências em sequência
+      let janelaPrint = window.open('', '_blank');
+      let htmlTabela = '';
+      ocorrenciasProf.forEach((occ, idx) => {
+        htmlTabela += `
+          <tr style="border-bottom: 1px solid #ddd;">
+            <td style="padding: 8px; border: 1px solid #ccc;">${occ.data}</td>
+            <td style="padding: 8px; border: 1px solid #ccc; text-align: center;">${occ.semChamada ? 'Sim' : '—'}</td>
+            <td style="padding: 8px; border: 1px solid #ccc; text-align: center;">${occ.atrasoInicio}</td>
+            <td style="padding: 8px; border: 1px solid #ccc; text-align: center;">${occ.atrasoIntervalo}</td>
+            <td style="padding: 8px; border: 1px solid #ccc;">${occ.obs || '—'}</td>
+          </tr>
+        `;
+      });
+
+      janelaPrint.document.write(`
+        <html>
+        <head>
+          <title>Relatório do Professor - Colégio Arena</title>
+          <style>
+            body { font-family: Arial, sans-serif; padding: 20px; color: #333; }
+            h2 { color: #1b4332; margin-bottom: 5px; }
+            p { font-size: 12px; color: #666; margin-bottom: 20px; }
+            table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 12px; }
+            th { background-color: #1b4332; color: white; padding: 8px; border: 1px solid #1b4332; text-align: left; }
+          </style>
+        </head>
+        <body>
+          <h2>Colégio Arena — Relatório Individual de Acompanhamento Docente</h2>
+          <p><strong>Professor(a):</strong> ${profSelecionado} | Emitido em: ${new Date().toLocaleDateString('pt-BR')}</p>
+          <table>
+            <thead>
+              <tr>
+                <th>Data</th>
+                <th style="text-align: center;">Chamada Pendente</th>
+                <th style="text-align: center;">Atraso Entrada</th>
+                <th style="text-align: center;">Atraso Intervalo</th>
+                <th>Observações</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${htmlTabela}
+            </tbody>
+          </table>
+          <script>
+            window.onload = function() { window.print(); window.close(); }
+          <\/script>
+        </body>
+        </html>
+      `);
+      janelaPrint.document.close();
     }
 
     function editarOcorrenciaProfessor(id) {
