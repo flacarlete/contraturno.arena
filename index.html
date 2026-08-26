@@ -3,15 +3,15 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Controle de Gestão Escolar & Contraturno</title>
+  <title>Controle de Gestão Escolar — Arena</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     .aba-conteudo { display: none; }
     .aba-btn.active { border-bottom: 3px solid #1b4332; color: #1b4332; font-weight: 700; background-color: #f0fdf4; }
     @media print {
       body * { visibility: hidden; }
-      #printableProfArea, #printableProfArea * { visibility: visible; }
-      #printableProfArea { 
+      #printableArea, #printableArea *, #printableProfArea, #printableProfArea * { visibility: visible; }
+      #printableArea, #printableProfArea { 
         position: absolute; left: 0; top: 0; width: 100%; background: white !important; padding: 0 !important; margin: 0 !important;
       }
       .no-print { display: none !important; }
@@ -26,27 +26,25 @@
       <div class="text-center mb-6">
         <div class="inline-flex p-3 bg-emerald-100 text-[#1b4332] rounded-full mb-3 text-2xl">📋</div>
         <h1 class="text-xl font-bold text-gray-800">Arena Contraturno</h1>
-        <p class="text-xs text-gray-500 mt-1">Ensino Fundamental - Sistema de Gestão</p>
+        <p class="text-xs text-gray-500 mt-1">Painel de Gestão e Ocorrências</p>
       </div>
 
-      <form id="formLogin" onsubmit="fazerLogin(event)" class="space-y-4">
+      <form onsubmit="fazerLogin(event)" class="space-y-4">
         <div>
           <label class="block text-xs font-semibold text-gray-700 mb-1">Usuário</label>
-          <input type="text" id="loginUsuario" value="coordenacao" placeholder="Digite seu usuário..." class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-[#1b4332]" required />
+          <input type="text" id="loginUsuario" value="coordenacao" class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-[#1b4332]" required />
         </div>
         <div>
           <label class="block text-xs font-semibold text-gray-700 mb-1">Senha</label>
-          <input type="password" id="loginSenha" value="123" placeholder="Digite sua senha..." class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-[#1b4332]" required />
+          <input type="password" id="loginSenha" value="123" class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-[#1b4332]" required />
         </div>
-        <button type="submit" class="w-full bg-[#1b4332] text-white py-2.5 rounded text-sm font-semibold hover:bg-emerald-900 transition flex items-center justify-center gap-2">
-          <span>Entrar no Sistema</span> →
+        <button type="submit" class="w-full bg-[#1b4332] text-white py-2.5 rounded text-sm font-semibold hover:bg-emerald-900 transition">
+          Entrar no Sistema →
         </button>
       </form>
-
-      <div class="mt-6 pt-4 border-t text-center text-[11px] text-gray-500">
-        <p class="font-semibold mb-2 text-gray-600">Acesso Rápido:</p>
-        <button type="button" onclick="entrarComoCoord()" class="px-3 py-1.5 bg-emerald-50 hover:bg-emerald-100 rounded text-[#1b4332] border border-emerald-300 font-semibold">
-          Entrar como Coordenação
+      <div class="mt-4 text-center">
+        <button type="button" onclick="entrarDireto()" class="text-xs text-[#1b4332] font-bold underline hover:text-emerald-800">
+          Acesso Direto (Coordenação)
         </button>
       </div>
     </div>
@@ -58,15 +56,15 @@
     <header class="bg-[#1b4332] text-white px-6 py-3.5 shadow flex flex-col md:flex-row justify-between items-start md:items-center no-print gap-3">
       <div>
         <h1 class="text-lg font-bold flex items-center gap-2">
-          <span>📋</span> Controle de Gestão e Contraturno
+          <span>📋</span> Colégio Arena — Gestão Escolar
         </h1>
-        <p id="currentDateDisplay" class="text-xs text-emerald-200 mt-0.5"></p>
+        <p class="text-xs text-emerald-200 mt-0.5">Módulos: Atrasos, Sala de Estudos, Professores e Inspetores</p>
       </div>
 
       <div class="flex items-center gap-3">
         <div class="text-right">
-          <p id="usuarioLogadoNome" class="text-xs font-bold text-white"></p>
-          <p id="usuarioLogadoCargo" class="text-[11px] text-emerald-200"></p>
+          <p id="usuarioLogadoNome" class="text-xs font-bold text-white">Coordenação</p>
+          <p class="text-[11px] text-emerald-200">Acesso Geral</p>
         </div>
         <button onclick="fazerLogout()" class="bg-red-800 hover:bg-red-700 text-white px-3 py-1.5 rounded text-xs font-semibold">
           Sair ⎋
@@ -75,19 +73,16 @@
     </header>
 
     <nav class="bg-white border-b border-gray-200 px-6 flex flex-wrap gap-2 text-sm font-medium text-gray-600 no-print">
-      <button onclick="mudarAba('atrasos')" id="btn-aba-atrasos" class="aba-btn py-3 px-4 border-b-2 text-gray-600 flex items-center gap-2">⏰ Atrasos</button>
+      <button onclick="mudarAba('atrasos')" id="btn-aba-atrasos" class="aba-btn py-3 px-4 border-b-2 text-gray-600 flex items-center gap-2 active">⏰ Atrasos</button>
       <button onclick="mudarAba('sala-estudos')" id="btn-aba-sala-estudos" class="aba-btn py-3 px-4 border-b-2 text-gray-600 flex items-center gap-2">📚 Sala de Estudos</button>
       <button onclick="mudarAba('professores')" id="btn-aba-professores" class="aba-btn py-3 px-4 border-b-2 text-gray-600 flex items-center gap-2">👨‍🏫 Professores</button>
       <button onclick="mudarAba('inspetores')" id="btn-aba-inspetores" class="aba-btn py-3 px-4 border-b-2 text-gray-600 flex items-center gap-2">📋 Inspetores</button>
-      <button onclick="mudarAba('atendimentos')" id="btn-aba-atendimentos" class="aba-btn py-3 px-4 border-b-2 text-gray-600 flex items-center gap-2">📑 Atendimentos</button>
-      <button onclick="mudarAba('contatos')" id="btn-aba-contatos" class="aba-btn py-3 px-4 border-b-2 text-gray-600 flex items-center gap-2">📞 Contatos</button>
-      <button onclick="mudarAba('gerenciador-acessos')" id="btn-aba-gerenciador-acessos" class="aba-btn py-3 px-4 border-b-2 text-gray-600 flex items-center gap-2 bg-emerald-50">🔐 Acessos</button>
     </nav>
 
     <main class="p-6 max-w-6xl w-full mx-auto flex-1">
 
-      <!-- ABA 1: ATRASOS -->
-      <section id="aba-atrasos" class="aba-conteudo">
+      <!-- ==================== ABA 1: ATRASOS ==================== -->
+      <section id="aba-atrasos" class="aba-conteudo" style="display: block;">
         <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
           <div class="flex gap-4 border-b border-gray-200 pb-3 mb-4">
             <button onclick="setAtrasoTurno('Matutino')" id="btn-turno-mat" class="px-4 py-1.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800">Período Matutino</button>
@@ -123,7 +118,7 @@
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label class="block text-xs font-medium text-gray-700 mb-1">Nome do Aluno (Busque digitando)</label>
+                <label class="block text-xs font-medium text-gray-700 mb-1">Nome do Aluno (Busca Rápida)</label>
                 <input list="listaAlunosDatalist" id="atrasoAluno" oninput="completarInfoAluno(this.value, 'atrasoTurmaLabel')" autocomplete="off" placeholder="Digite o nome do aluno..." class="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm font-medium focus:outline-none focus:border-[#1b4332]" required />
                 <p id="atrasoTurmaLabel" class="text-xs text-emerald-800 font-bold mt-1.5"></p>
               </div>
@@ -142,8 +137,10 @@
         </div>
 
         <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <h3 class="font-bold text-gray-700 text-sm mb-3">Histórico de Atrasos & Alertas</h3>
-          <div id="alertasContainer" class="mb-4 space-y-2"></div>
+          <div class="flex justify-between items-center mb-3">
+            <h3 class="font-bold text-gray-700 text-sm">Histórico de Atrasos</h3>
+            <button onclick="limparAtrasos()" class="text-xs text-red-600 hover:underline">Limpar Histórico</button>
+          </div>
           <div class="overflow-x-auto">
             <table class="w-full text-left text-xs border border-gray-200">
               <thead class="bg-gray-100 font-semibold text-gray-700">
@@ -154,7 +151,7 @@
                   <th class="p-2 border">Turma</th>
                   <th class="p-2 border">Espaço</th>
                   <th class="p-2 border">Justificativa</th>
-                  <th class="p-2 border text-center">Ocorrências</th>
+                  <th class="p-2 border text-center no-print">Ações</th>
                 </tr>
               </thead>
               <tbody id="listaAtrasosTbody"></tbody>
@@ -163,7 +160,7 @@
         </div>
       </section>
 
-      <!-- ABA 2: SALA DE ESTUDOS -->
+      <!-- ==================== ABA 2: SALA DE ESTUDOS ==================== -->
       <section id="aba-sala-estudos" class="aba-conteudo">
         <div id="printableArea" class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
           <div class="flex justify-between items-center mb-4">
@@ -264,19 +261,19 @@
 
             <div class="flex justify-end gap-3 no-print">
               <button type="submit" class="bg-[#1b4332] text-white px-5 py-2 rounded text-sm font-medium hover:bg-emerald-900">
-                💾 Salvar Relatório
+                💾 Salvar Relatório Diário
               </button>
             </div>
           </form>
         </div>
       </section>
 
-      <!-- ABA 3: PROFESSORES -->
+      <!-- ==================== ABA 3: PROFESSORES ==================== -->
       <section id="aba-professores" class="aba-conteudo">
         <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6 no-print">
           <div class="flex justify-between items-center mb-4">
             <h2 id="profFormTitulo" class="text-base font-bold text-[#1b4332]">Ocorrências com Professores</h2>
-            <button onclick="imprimirRelatorioProfessores()" class="bg-[#1b4332] text-white px-4 py-2 rounded text-xs font-semibold hover:bg-emerald-900 flex items-center gap-1.5 shadow">
+            <button onclick="window.print()" class="bg-[#1b4332] text-white px-4 py-2 rounded text-xs font-semibold hover:bg-emerald-900 flex items-center gap-1.5 shadow">
               🖨️ Imprimir Relatório
             </button>
           </div>
@@ -367,7 +364,7 @@
         </div>
       </section>
 
-      <!-- ABA 4: INSPETORES -->
+      <!-- ==================== ABA 4: INSPETORES ==================== -->
       <section id="aba-inspetores" class="aba-conteudo">
         <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
           <h2 id="inspFormTitulo" class="text-base font-bold text-[#1b4332] mb-4">Registro de Orientações — Inspetores</h2>
@@ -404,231 +401,125 @@
         <div id="listaInspetoresCards" class="space-y-3"></div>
       </section>
 
-      <!-- ABA 5: ATENDIMENTOS -->
-      <section id="aba-atendimentos" class="aba-conteudo">
-        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
-          <h2 class="text-base font-bold text-[#1b4332] mb-4">Registro de Atendimentos</h2>
-          <form id="formAtendimento" onsubmit="salvarAtendimento(event)" class="space-y-4">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label class="block text-xs font-medium text-gray-700 mb-1">Data</label>
-                <input type="date" id="atendDate" class="w-full border rounded px-3 py-2 text-sm" required />
-              </div>
-              <div>
-                <label class="block text-xs font-medium text-gray-700 mb-1">Tema</label>
-                <select id="atendTema" class="w-full border rounded px-3 py-2 text-sm">
-                  <option value="Acadêmico">Acadêmico</option>
-                  <option value="Disciplinar">Disciplinar</option>
-                  <option value="Pedagógico / Família">Pedagógico / Família</option>
-                  <option value="Acolhimento">Acolhimento</option>
-                </select>
-              </div>
-            </div>
-            <div>
-              <label class="block text-xs font-medium text-gray-700 mb-1">Aluno (Busca Rápida)</label>
-              <input list="listaAlunosDatalist" id="atendAlunoInput" oninput="completarInfoAluno(this.value, 'atendTurmaLabel')" autocomplete="off" placeholder="Digite o nome do aluno..." class="w-full border rounded px-3 py-2 text-sm font-medium" required />
-              <p id="atendTurmaLabel" class="text-xs text-emerald-800 font-bold mt-1.5"></p>
-            </div>
-            <div>
-              <label class="block text-xs font-medium text-gray-700 mb-1">Relato</label>
-              <textarea id="atendRelato" rows="4" class="w-full border rounded p-3 text-xs" required></textarea>
-            </div>
-            <div class="flex justify-end">
-              <button type="submit" class="bg-[#1b4332] text-white px-5 py-2 rounded text-sm font-semibold">Salvar Atendimento</button>
-            </div>
-          </form>
-        </div>
-        <div id="listaAtendimentosTbody" class="space-y-3"></div>
-      </section>
-
-      <!-- ABA 6: CONTATOS -->
-      <section id="aba-contatos" class="aba-conteudo">
-        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <div class="flex justify-between items-center mb-3">
-            <h2 class="text-base font-bold text-[#1b4332]">Busca Rápida de Responsáveis</h2>
-            <span id="contadorAlunosBadge" class="text-xs font-semibold text-gray-500 bg-gray-100 px-3 py-1 rounded-full">Carregando alunos...</span>
-          </div>
-          <input type="text" id="filtroContatos" oninput="mudarPaginaContatos(1); filtrarContatos(this.value)" placeholder="Buscar por aluno, turma ou responsável..." class="w-full border rounded-lg px-4 py-2.5 text-sm mb-4" />
-          <div class="overflow-x-auto min-h-[400px]">
-            <table class="w-full text-left text-xs border border-gray-200">
-              <thead class="bg-gray-100 font-semibold text-gray-700 sticky top-0">
-                <tr>
-                  <th class="p-2.5 border">Aluno</th>
-                  <th class="p-2.5 border">Turma</th>
-                  <th class="p-2.5 border">Responsável</th>
-                  <th class="p-2.5 border">Telefone</th>
-                  <th class="p-2.5 border text-center">WhatsApp</th>
-                </tr>
-              </thead>
-              <tbody id="listaContatosTbody"></tbody>
-            </table>
-          </div>
-          <div class="flex justify-between items-center mt-4 text-xs text-gray-600 no-print">
-            <span id="contatosPaginacaoInfo">Mostrando página 1</span>
-            <div class="flex gap-2">
-              <button type="button" onclick="mudarPaginaContatos(paginaContatosAtual - 1)" class="px-3 py-1 bg-gray-200 hover:bg-gray-300 rounded font-semibold">← Anterior</button>
-              <button type="button" onclick="mudarPaginaContatos(paginaContatosAtual + 1)" class="px-3 py-1 bg-gray-200 hover:bg-gray-300 rounded font-semibold">Próxima →</button>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- ABA 7: GERENCIADOR DE ACESSOS -->
-      <section id="aba-gerenciador-acessos" class="aba-conteudo">
-        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
-          <h2 class="text-base font-bold text-[#1b4332] mb-4">🔐 Gerenciador de Usuários & Acessos</h2>
-          <form id="formNovoUsuario" onsubmit="cadastrarNovoUsuario(event)" class="bg-gray-50 p-4 rounded border mb-6 space-y-4">
-            <h3 class="text-xs font-bold text-gray-700 uppercase">Cadastrar Novo Usuário</h3>
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
-              <input type="text" id="novoUserNome" placeholder="Nome do Profissional" class="bg-white border rounded px-3 py-2 text-xs" required />
-              <select id="novoUserPerfil" class="bg-white border rounded px-3 py-2 text-xs" required>
-                <option value="assistente">Assistente de Coordenação</option>
-                <option value="inspetor">Inspetor / Orientador</option>
-              </select>
-              <input type="text" id="novoUserLogin" placeholder="Usuário (Login)" class="bg-white border rounded px-3 py-2 text-xs" required />
-              <input type="text" id="novoUserSenha" placeholder="Senha" class="bg-white border rounded px-3 py-2 text-xs" required />
-            </div>
-            <div class="flex justify-end">
-              <button type="submit" class="bg-[#1b4332] text-white px-5 py-2 rounded text-sm font-semibold">+ Cadastrar Usuário</button>
-            </div>
-          </form>
-          <div class="overflow-x-auto">
-            <table class="w-full text-left text-xs border">
-              <thead class="bg-gray-100 font-semibold">
-                <tr>
-                  <th class="p-2.5 border">Profissional</th>
-                  <th class="p-2.5 border">Login</th>
-                  <th class="p-2.5 border">Perfil</th>
-                  <th class="p-2.5 border">Abas Liberadas</th>
-                  <th class="p-2.5 border">Senha</th>
-                  <th class="p-2.5 border text-center">Ações</th>
-                </tr>
-              </thead>
-              <tbody id="listaUsuariosTbody"></tbody>
-            </table>
-          </div>
-        </div>
-      </section>
-
     </main>
   </div>
 
   <datalist id="listaAlunosDatalist"></datalist>
 
-  <!-- LISTA DIRETA DE TODOS OS 1.160 ALUNOS EM JAVASCRIPT PURO -->
+  <!-- LISTA COMPLETA DOS 1.160 ALUNOS -->
   <script>
     const ALUNOS_DADOS_OFICIAIS = [
-      {a: "CARLOS EDUARDO ANDRADE BITTENCOURT", t: "8ºG", p: "62982131364", r: "VIVIENE ANDRADE VAZ"},
-      {a: "EDUARDA MELO SOUSA", t: "8ºG", "p": "62984173000", r: "ANDREZZA LOPES E SOUSA"},
-      {a: "EDUARDO ANDRADE NOLASCO SILVA", t: "6ºH", "p": "62999884257", r: "LARISSA ANDRADE NOLASCO"},
-      {a: "EDUARDO BRAGA DO ESPÍRITO SANTO", t: "9ºC", "p": "62982721122", r: "JULIANA ALVES BRAGA DE SA"},
-      {a: "EDUARDO JOSE DE FARIAS FILHO", t: "9ºF", "p": "62992941420", r: "LARA PEREIRA DE SA FIGUEIREDO"},
-      {a: "EDUARDO MARÇAL PEREIRA", t: "6ºF", "p": "62984155005", r: "CANDIDA BROXADO MARCAL PEREIRA"},
-      {a: "EDUARDO MORAIS CARVALHO FUSSI", t: "6ºG", "p": "62999334050", r: "BONNIE MORAIS DOS SANTOS"},
-      {a: "EDUARDO MOTA TORRICELLI", t: "6ºG", "p": "11991405883", r: "FLAVIA CARLETE MOTA"},
-      {a: "EDUARDO PRADO FREITAS", t: "9ºD", "p": "62984798679", r: "ANA CAROLINA PRADO DOS SANTOS"},
-      {a: "EDUARDO TOMÁS XAVIER", t: "8ºD", "p": "62991430078", r: "SUZZAN SHARON ALVES XAVIER"},
-      {a: "AGATHA PINHEIRO DE PACHECO BELCHIOR", t: "8ºA", "p": "62992883200", r: "ANITA LUZIA DE SOUZA PINHEIRO COSTA BELCHIOR"},
-      {a: "ALEXANDER CAMPOS", t: "6ºA", "p": "62998500610", r: "CINARA FARIA ALMEIDA CAMPOS"},
-      {a: "ALEXANDRE ANGELOS PIRES KATOPODIS", t: "8ºG", "p": "62981695850", r: "SARA RENATA PIRES MIRANDA KATOPODIS"},
-      {a: "ALEXANDRE KENZO MORAIS HABE", t: "9ºE", "p": "62999508483", r: "LUCIANA OLIVEIRA DE MORAIS HABE"},
-      {a: "ALEXANDRE MACEDO PERES", t: "9ºD", "p": "62984366646", r: "LORENA MARIA DE LIMA PERES"},
-      {a: "ALEXANDRE NEVES VIGGIANO", t: "9ºG", "p": "62999018693", r: "GRASIELA NEVES DA SILVA VIGGIANO"},
-      {a: "ALEXANDRE SAHIUM CUNHA", t: "6ºA", "p": "62992158003", r: "JULIANA HERINE DE PINA SAHIUM CUNHA"},
-      {a: "ALEXANDRE VELOSO PEREIRA NEVES", t: "8ºG", "p": "62996135797", r: "YOLANDA LEÃO VELOSO PERES"},
-      {a: "ALICE ABBUD MACEDO", t: "6ºC", "p": "62981419796", r: "SABRINA DE MELO ALVES ABBUD MACÊDO"},
-      {a: "ALICE ARAGÃO FERREIRA", t: "9ºB", "p": "62981288800", r: "GISELLE ARAGÃO SOUSA FERREIRA"},
-      {a: "ALICE BARBOZA SECCO", t: "9ºF", "p": "18981192495", r: "PRISCILA BARBOZA SECCO"},
-      {a: "ALICE BITTAR VELASCO", t: "6ºG", "p": "62981053511", r: "FLAVIA BITTAR ARANTES"},
-      {a: "ALICE CAVALCANTE SANTOS SILVA", t: "8ºF", "p": "62985871120", r: "FLAVIA BITTAR ARANTES"},
-      {a: "ALICE DE CARVALHO SANTOS", t: "7ºC", "p": "62984042858", r: "VILMA DE CARVALHO"},
-      {a: "ALICE DUARTE PEREIRA DE SOUZA", t: "8ºC", "p": "62996172084", r: "ALESSANDRA DUARTE RIBEIRO PEREIRA DE SOUZA"},
-      {a: "ALICE FARIA PINHEIRO", t: "9ºA", "p": "62981329618", r: "LUCAS RODRIGUES PINHEIRO"},
-      {a: "ALICE FERREIRA DE FARIA", t: "8ºD", "p": "62996458021", "r": "DANIELA CRISTINA FERREIRA"},
-      {a: "ALICE FREITAS OLIVEIRA", t: "7ºD", "p": "62981775775", r: "FABRICIA FREITAS DE JESUS OLIVEIRA"},
-      {a: "ALICE GOULART PEREIRA", t: "8ºB", "p": "62996773229", "r": "ELAINY GOULART DA SILVA PEREIRA"},
-      {a: "ALICE LEMES SILVA", t: "8ºB", "p": "62981650390", "r": "LILIAN LEMES DA SILVA"},
-      {a: "ALICE MAGALHÃES DINIZ", t: "6ºF", "p": "62981735515", "r": "VALESCA MAGALHAES DINIZ"},
-      {a: "ALICE MARQUES ROCHA", t: "7ºE", "p": "62996884100", "r": "ALINE MARQUES CARDOSO"},
-      {a: "ALICE MENDONÇA DE ABREU", t: "8ºC", "p": "62999464648", "r": "LUCIANA MENDONÇA DE OLIVEIRA ABREU"},
-      {a: "ALICE NUNES BITTENCOURT", t: "8ºC", "p": "62982855519", "r": "PATRICIA ROSA NUNES"},
-      {a: "ALICE PAIXÃO MARTINS", t: "6ºG", "p": "62982545582", "r": "LIDIANE COSTA PAIXÃO MARTINS"},
-      {a: "ALICE PEIXOTO ROCHA", t: "7ºD", "p": "62981313366", "r": "MARIA FERNANDA PEIXOTO ROCHA"},
-      {a: "ALICE PEREIRA TAVARES", t: "7ºA", "p": "62998634863", "r": "FLAVIA TAVARES DE CARVALHO"},
-      {a: "ALICE RIBEIRO DE OLIVEIRA", t: "8ºE", "p": "62984024340", "r": "LUDMYLLA RIBEIRO E SILVA"},
-      {a: "ALICE RODRIGUES BORGES", t: "6ºB", "p": "62981643444", "r": "DANIELA RODRIGUES DE JESUS BORGES"},
-      {a: "ALICE ROQUETE GUIMARÃES", t: "7ºE", "p": "62981881678", "r": "AMANDA MOREIRA ROQUETE"},
-      {a: "ALICE SALES MARIANO", t: "8ºE", "p": "62981156828", "r": "DENISE SALES ARAUJO MARIANO"},
-      {a: "ALICE SILVEIRA SOUZA", t: "9ºG", "p": "62998687707", "r": "KEILA SILVEIRA DE MELO SOUZA"},
-      {a: "ALICE SOUZA SANTANA", t: "8ºC", "p": "62996160533", "r": "AMANDA SOUZA MARIANO SANTANA"},
-      {a: "ALÍCIA ARANTES DE PAULA", t: "6ºC", "p": "62982420999", "r": "DANIELA ARANTES DA ROCHA"},
-      {a: "ALICIA BUENO BORGES DE ARAUJO", t: "8ºG", "p": "62999710313", "r": "ELIZANGELA BUENO DA SILVA"},
-      {a: "ALÍCIA FREITAS GARCIA", t: "6ºD", "p": "62996365287", "r": "CAROLINA FREITAS GARCIA"},
-      {a: "ALICIA MACEDO SILVEIRA", t: "6ºD", "p": "62999880816", "r": "FRANCIELLE DE FATIMA MACEDO SILVEIRA"},
-      {a: "ALÍCIA RIBEIRO PEREIRA", t: "8ºF", "p": "62981180299", "r": "LARISSA RIBEIRO PEREIRA"},
-      {a: "ANA BEATRIZ CARVALHO DE PAULA", t: "9ºD", "p": "62981657662", "r": "ANA CLAUDIA CARVALHO DE PAULA"},
-      {a: "ANA BEATRIZ FAGUNDES BORGES CARNEIRO", t: "8ºA", "p": "62981177009", "r": "LETICIA ALVES FAGUNDES"},
-      {a: "ANA BEATRIZ MARTINS ROCHA", t: "9ºD", "p": "62992929424", "r": "TAYNA MARTINS GUIMARAES"},
-      {a: "ANA BEATRIZ OLIVEIRA COSTA", t: "8ºG", "p": "62981343714", "r": "LARISSA MARA DE OLIVEIRA COSTA"},
-      {a: "ANA BEATRIZ SILVA CARNEIRO", t: "7ºE", "p": "62981182283", "r": "ALINE BARBOSA DA SILVA CARNEIRO"},
-      {a: "ANA CAROLINA CASTRO LIMA", t: "7ºB", "p": "62992523277", "r": "ANA PAULA MOURA DE CASTRO LIMA"},
-      {a: "ANA CAROLINA DE OLIVEIRA CAMPOS", t: "9ºE", "p": "62999120610", "r": "CARLA DE OLIVEIRA CUNHA CAMPOS"},
-      {a: "ANA CAROLINA FARIA COELHO", t: "8ºF", "p": "62984570020", "r": "HELENA MARIA FARIA COELHO"},
-      {a: "ANA CAROLINA FARIA DE CASTILHO", t: "8ºA", "p": "62992490518", "r": "VALERIA APARECIDA FARIA DA SILVA DE CASTILHO"},
-      {a: "ANA CAROLINA MACHADO BRASIL", t: "7ºB", "p": "62981240320", "r": "LILIANE SANTOS MACHADO BRASIL"},
-      {a: "ANA CAROLINA MOREIRA VIEIRA", t: "6ºE", "p": "62991054770", "r": "KARINA MOREIRA DOS SANTOS VIEIRA"},
-      {a: "ANA CECÍLIA DIAS DE ALMEIDA", t: "6ºD", "p": "62981622283", "r": "ALESSANDRA FERREIRA DIAS"},
-      {a: "ANA CECILIA ROCHA FERREIRA", t: "7ºG", "p": "62981112260", "r": "DENISE ROCHA DE OLIVEIRA"},
-      {a: "ANA CLARA ANDRADE GOUVEIA", t: "8ºD", "p": "62992770281", "r": "GRAZIELE ANDRADE GOUVEIA"},
-      {a: "ANA CLARA DE SOUSA TEIXEIRA", t: "6ºA", "p": "62996162232", "r": "DANIELA DE SOUSA TEIXEIRA"},
-      {a: "ANA CLARA MARRA ALVES", t: "7ºG", "p": "62984024322", "r": "VILMA MARRA ALVES"},
-      {a: "ANA CLARA MENDES ALVES", t: "9ºA", "p": "62999745582", "r": "ANA PAULA MENDES CARVALHO ALVES"},
-      {a: "ANA CLARA OLIVEIRA LEAL", t: "7ºD", "p": "62999496669", "r": "PRISCILA ALVES DE OLIVEIRA LEAL"},
-      {a: "ANA CLARA PEIXOTO VIEIRA", t: "7ºF", "p": "62996884044", "r": "RAQUEL PEIXOTO GUIMARÃES"},
-      {a: "ANA CLARA RIBEIRO CHAVEIRO", t: "9ºD", "p": "62981656886", "r": "ADRIANA RIBEIRO DOS SANTOS"},
-      {a: "ANA CLARA ROSA AMORIM", t: "6ºA", "p": "62981298436", "r": "JULIANA ROSA SILVA"},
-      {a: "ANA JULIA ALVES CARDOSO", t: "7ºE", "p": "62996919299", "r": "LORENA ALVES DE OLIVEIRA CARDOSO"},
-      {a: "ANA JÚLIA AMARAL MACHADO", t: "7ºA", "p": "62981057404", "r": "MARISTELA BORGES AMARAL"},
-      {a: "ANA JULIA ARAUJO PINTO", t: "7ºA", "p": "62982845887", "r": "LUANA ARAUJO PINTO"},
-      {a: "ANA JULIA DE SOUZA SOARES", t: "7ºD", "p": "62981444007", "r": "ROSANGELA DE SOUZA SOARES"},
-      {a: "ANA JÚLIA FARIA DA SILVA", t: "6ºF", "p": "62999742468", "r": "POLLYANNA FARIA ALVES SILVA"},
-      {a: "ANA JÚLIA FERREIRA CAMPOS", t: "6ºF", "p": "62996328328", "r": "ALINE FERREIRA NEVES"},
-      {a: "ANA JULIA MARQUES GONTIJO", t: "8ºG", "p": "62996078311", "r": "ANA PAULA MARQUES GONTIJO"},
-      {a: "ANA JÚLIA MOREIRA SOUZA", t: "9ºD", "p": "62996349589", "r": "ANDREIA MOREIRA REZENDE"},
-      {a: "ANA JÚLIA TEIXEIRA GONÇALVES", t: "6ºA", "p": "62981254336", "r": "PRISCILA TEIXEIRA PINTO GONÇALVES"},
-      {a: "ANA LAURA DE FREITAS ALVES", t: "6ºH", "p": "62981504245", "r": "ALINE FREITAS DA SILVA ALVES"},
-      {a: "ANA LAURA GUIMARAES SANTOS", t: "8ºG", "p": "62982161474", "r": "PRISCILA GUIMARAES SANTOS"},
-      {a: "ANA LAURA MARQUES CARDOSO", t: "8ºB", "p": "62996614100", "r": "ALINE MARQUES CARDOSO"},
-      {a: "ANA LAURA MARTINS DE SOUSA", t: "8ºB", "p": "62992983794", "r": "LUCIANA MARTINS DE SOUSA"},
-      {a: "ANA LAURA SILVA RESENDE", t: "8ºD", "p": "62981215456", "r": "ANA CLAUDIA SILVA RESENDE"},
-      {a: "ANA LUISA ALCANTARA REIS", t: "6ºA", "p": "62991054707", "r": "POLLYANNA ALCANTARA SILVA REIS"},
-      {a: "ANA LUÍSA CARDOSO DA SILVA ALVES", t: "7ºG", "p": "62984180479", "r": "LUCIANA CARDOSO DA SILVA"},
-      {a: "ANA LUISA CUNHA ALVES", t: "7ºF", "p": "62984025807", "r": "CAMILA BATISTA CUNHA ALVES"},
-      {a: "ANA LUISA DIAS CARVALHO", t: "6ºB", "p": "62981881691", "r": "FERNANDA DIAS CARVALHO"},
-      {a: "ANA LUISA MACHADO ROCHA", t: "9ºD", "p": "62999818837", "r": "ANA FLAVIA MACHADO COELHO ROCHA"},
-      {a: "ANA LUISA MEDEIROS DE CARVALHO", t: "6ºE", "p": "62981561001", "r": "MARIA DE FATIMA MEDEIROS CARVALHO"},
-      {a: "ANA LUISA NOGUEIRA FIALHO", t: "8ºF", "p": "62999757366", "r": "CRISTIANE NOGUEIRA FIALHO"},
-      {a: "ANA LUISA OLIVEIRA COSTA", t: "8ºG", "p": "62981343714", "r": "LARISSA MARA DE OLIVEIRA COSTA"},
-      {a: "ANA LUÍSA OLIVEIRA SILVA", t: "9ºC", "p": "62981886860", "r": "RENATA CRISTINA DE OLIVEIRA"},
-      {a: "ANA LUISA PEIXOTO VIEIRA", t: "7ºF", "p": "62996884044", "r": "RAQUEL PEIXOTO GUIMARÃES"},
-      {a: "ANA LUÍSA RESENDE COELHO", t: "8ºG", "p": "62981335041", "r": "LILIANE RESENDE COELHO"},
-      {a: "ANA LUÍSA RIBEIRO DE OLIVEIRA", t: "6ºE", "p": "62984024340", "r": "LUDMYLLA RIBEIRO E SILVA"},
-      {a: "ANA LUÍSA VALADÃO DE CARVALHO", t: "6ºE", "p": "62999496660", "r": "PAULA VALADÃO SILVA"},
-      {a: "ANA LUIZA AMARAL MACHADO", t: "7ºA", "p": "62981057404", "r": "MARISTELA BORGES AMARAL"},
-      {a: "ANA LUIZA CAVALCANTE RODRIGUES", t: "8ºA", "p": "62981382442", "r": "LILIANE CAVALCANTE RODRIGUES"},
-      {a: "ANA LUIZA CUNHA DE SOUSA", t: "8ºD", "p": "62996773228", "r": "FERNANDA CUNHA DE SOUSA"},
-      {a: "ANA LUIZA DE FREITAS CARDOSO", t: "7ºF", "p": "62981267484", "r": "ALINE DE FREITAS SILVA CARDOSO"},
-      {a: "ANA LUIZA DE SOUSA CAMPOS", t: "7ºC", "p": "62999120610", "r": "CARLA DE OLIVEIRA CUNHA CAMPOS"},
-      {a: "ANA LUIZA DOS SANTOS CORDEIRO", t: "8ºG", "p": "62998634848", "r": "DANIELLA DOS SANTOS CORDEIRO"},
-      {a: "ANA LUIZA GOMES DE OLIVEIRA", t: "7ºG", "p": "62984180479", "r": "DANIELLA GOMES DE OLIVEIRA"},
-      {a: "ANA LUIZA MARQUES NUNES", t: "7ºB", "p": "62981240320", "r": "LARISSA MARQUES NUNES"},
-      {a: "ANA LUIZA PACHECO DE SOUSA", t: "6ºB", "p": "62981643444", "r": "LUCIANA PACHECO DE SOUSA"},
-      {a: "ANA LUIZA PEREIRA DE MELO", t: "8ºE", "p": "62981156828", "r": "FERNANDA PEREIRA DE MELO"},
-      {a: "ANA LUIZA ROCHA FERREIRA", t: "7ºG", "p": "62981112260", "r": "DENISE ROCHA DE OLIVEIRA"},
-      {a: "ANA LUIZA SILVA CARNEIRO", t: "7ºE", "p": "62981182283", "r": "ALINE BARBOSA DA SILVA CARNEIRO"},
-      {a: "ANA LUIZA VALE DE MORAIS", t: "8ºC", "p": "62996160533", "r": "FABIANA VALE DE MORAIS"},
-      {a: "YASMIN MELO COELHO", t: "7ºG", "p": "62996449059", "r": "JULIANA MELO RODRIGUES COELHO"},
-      {a: "YURI LIEBERENZ KAGAN", t: "8ºB", "p": "62996379695", "r": "ISABELLA LIEBERENZ CAMILO KAGAN"}
+      {"a": "CARLOS EDUARDO ANDRADE BITTENCOURT", "t": "8ºG", "p": "62982131364", "r": "VIVIENE ANDRADE VAZ"},
+      {"a": "EDUARDA MELO SOUSA", "t": "8ºG", "p": "62984173000", "r": "ANDREZZA LOPES E SOUSA"},
+      {"a": "EDUARDO ANDRADE NOLASCO SILVA", "t": "6ºH", "p": "62999884257", "r": "LARISSA ANDRADE NOLASCO"},
+      {"a": "EDUARDO BRAGA DO ESPÍRITO SANTO", "t": "9ºC", "p": "62982721122", "r": "JULIANA ALVES BRAGA DE SA"},
+      {"a": "EDUARDO JOSE DE FARIAS FILHO", "t": "9ºF", "p": "62992941420", "r": "LARA PEREIRA DE SA FIGUEIREDO"},
+      {"a": "EDUARDO MARÇAL PEREIRA", "t": "6ºF", "p": "62984155005", "r": "CANDIDA BROXADO MARCAL PEREIRA"},
+      {"a": "EDUARDO MORAIS CARVALHO FUSSI", "t": "6ºG", "p": "62999334050", "r": "BONNIE MORAIS DOS SANTOS"},
+      {"a": "EDUARDO MOTA TORRICELLI", "t": "6ºG", "p": "11991405883", "r": "FLAVIA CARLETE MOTA"},
+      {"a": "EDUARDO PRADO FREITAS", "t": "9ºD", "p": "62984798679", "r": "ANA CAROLINA PRADO DOS SANTOS"},
+      {"a": "EDUARDO TOMÁS XAVIER", "t": "8ºD", "p": "62991430078", "r": "SUZZAN SHARON ALVES XAVIER"},
+      {"a": "AGATHA PINHEIRO DE PACHECO BELCHIOR", "t": "8ºA", "p": "62992883200", "r": "ANITA LUZIA DE SOUZA PINHEIRO COSTA BELCHIOR"},
+      {"a": "ALEXANDER CAMPOS", "t": "6ºA", "p": "62998500610", "r": "CINARA FARIA ALMEIDA CAMPOS"},
+      {"a": "ALEXANDRE ANGELOS PIRES KATOPODIS", "t": "8ºG", "p": "62981695850", "r": "SARA RENATA PIRES MIRANDA KATOPODIS"},
+      {"a": "ALEXANDRE KENZO MORAIS HABE", "t": "9ºE", "p": "62999508483", "r": "LUCIANA OLIVEIRA DE MORAIS HABE"},
+      {"a": "ALEXANDRE MACEDO PERES", "t": "9ºD", "p": "62984366646", "r": "LORENA MARIA DE LIMA PERES"},
+      {"a": "ALEXANDRE NEVES VIGGIANO", "t": "9ºG", "p": "62999018693", "r": "GRASIELA NEVES DA SILVA VIGGIANO"},
+      {"a": "ALEXANDRE SAHIUM CUNHA", "t": "6ºA", "p": "62992158003", "r": "JULIANA HERINE DE PINA SAHIUM CUNHA"},
+      {"a": "ALEXANDRE VELOSO PEREIRA NEVES", "t": "8ºG", "p": "62996135797", "r": "YOLANDA LEÃO VELOSO PERES"},
+      {"a": "ALICE ABBUD MACEDO", "t": "6ºC", "p": "62981419796", "r": "SABRINA DE MELO ALVES ABBUD MACÊDO"},
+      {"a": "ALICE ARAGÃO FERREIRA", "t": "9ºB", "p": "62981288800", "r": "GISELLE ARAGÃO SOUSA FERREIRA"},
+      {"a": "ALICE BARBOZA SECCO", "t": "9ºF", "p": "18981192495", "r": "PRISCILA BARBOZA SECCO"},
+      {"a": "ALICE BITTAR VELASCO", "t": "6ºG", "p": "62981053511", "r": "FLAVIA BITTAR ARANTES"},
+      {"a": "ALICE CAVALCANTE SANTOS SILVA", "t": "8ºF", "p": "62985871120", "r": "FLAVIA BITTAR ARANTES"},
+      {"a": "ALICE DE CARVALHO SANTOS", "t": "7ºC", "p": "62984042858", "r": "VILMA DE CARVALHO"},
+      {"a": "ALICE DUARTE PEREIRA DE SOUZA", "t": "8ºC", "p": "62996172084", "r": "ALESSANDRA DUARTE RIBEIRO PEREIRA DE SOUZA"},
+      {"a": "ALICE FARIA PINHEIRO", "t": "9ºA", "p": "62981329618", "r": "LUCAS RODRIGUES PINHEIRO"},
+      {"a": "ALICE FERREIRA DE FARIA", "t": "8ºD", "p": "62996458021", "r": "DANIELA CRISTINA FERREIRA"},
+      {"a": "ALICE FREITAS OLIVEIRA", "t": "7ºD", "p": "62981775775", "r": "FABRICIA FREITAS DE JESUS OLIVEIRA"},
+      {"a": "ALICE GOULART PEREIRA", "t": "8ºB", "p": "62996773229", "r": "ELAINY GOULART DA SILVA PEREIRA"},
+      {"a": "ALICE LEMES SILVA", "t": "8ºB", "p": "62981650390", "r": "LILIAN LEMES DA SILVA"},
+      {"a": "ALICE MAGALHÃES DINIZ", "t": "6ºF", "p": "62981735515", "r": "VALESCA MAGALHAES DINIZ"},
+      {"a": "ALICE MARQUES ROCHA", "t": "7ºE", "p": "62996884100", "r": "ALINE MARQUES CARDOSO"},
+      {"a": "ALICE MENDONÇA DE ABREU", "t": "8ºC", "p": "62999464648", "r": "LUCIANA MENDONÇA DE OLIVEIRA ABREU"},
+      {"a": "ALICE NUNES BITTENCOURT", "t": "8ºC", "p": "62982855519", "r": "PATRICIA ROSA NUNES"},
+      {"a": "ALICE PAIXÃO MARTINS", "t": "6ºG", "p": "62982545582", "r": "LIDIANE COSTA PAIXÃO MARTINS"},
+      {"a": "ALICE PEIXOTO ROCHA", "t": "7ºD", "p": "62981313366", "r": "MARIA FERNANDA PEIXOTO ROCHA"},
+      {"a": "ALICE PEREIRA TAVARES", "t": "7ºA", "p": "62998634863", "r": "FLAVIA TAVARES DE CARVALHO"},
+      {"a": "ALICE RIBEIRO DE OLIVEIRA", "t": "8ºE", "p": "62984024340", "r": "LUDMYLLA RIBEIRO E SILVA"},
+      {"a": "ALICE RODRIGUES BORGES", "t": "6ºB", "p": "62981643444", "r": "DANIELA RODRIGUES DE JESUS BORGES"},
+      {"a": "ALICE ROQUETE GUIMARÃES", "t": "7ºE", "p": "62981881678", "r": "AMANDA MOREIRA ROQUETE"},
+      {"a": "ALICE SALES MARIANO", "t": "8ºE", "p": "62981156828", "r": "DENISE SALES ARAUJO MARIANO"},
+      {"a": "ALICE SILVEIRA SOUZA", "t": "9ºG", "p": "62998687707", "r": "KEILA SILVEIRA DE MELO SOUZA"},
+      {"a": "ALICE SOUZA SANTANA", "t": "8ºC", "p": "62996160533", "r": "AMANDA SOUZA MARIANO SANTANA"},
+      {"a": "ALÍCIA ARANTES DE PAULA", "t": "6ºC", "p": "62982420999", "r": "DANIELA ARANTES DA ROCHA"},
+      {"a": "ALICIA BUENO BORGES DE ARAUJO", "t": "8ºG", "p": "62999710313", "r": "ELIZANGELA BUENO DA SILVA"},
+      {"a": "ALÍCIA FREITAS GARCIA", "t": "6ºD", "p": "62996365287", "r": "CAROLINA FREITAS GARCIA"},
+      {"a": "ALICIA MACEDO SILVEIRA", "t": "6ºD", "p": "62999880816", "r": "FRANCIELLE DE FATIMA MACEDO SILVEIRA"},
+      {"a": "ALÍCIA RIBEIRO PEREIRA", "t": "8ºF", "p": "62981180299", "r": "LARISSA RIBEIRO PEREIRA"},
+      {"a": "ANA BEATRIZ CARVALHO DE PAULA", "t": "9ºD", "p": "62981657662", "r": "ANA CLAUDIA CARVALHO DE PAULA"},
+      {"a": "ANA BEATRIZ FAGUNDES BORGES CARNEIRO", "t": "8ºA", "p": "62981177009", "r": "LETICIA ALVES FAGUNDES"},
+      {"a": "ANA BEATRIZ MARTINS ROCHA", "t": "9ºD", "p": "62992929424", "r": "TAYNA MARTINS GUIMARAES"},
+      {"a": "ANA BEATRIZ OLIVEIRA COSTA", "t": "8ºG", "p": "62981343714", "r": "LARISSA MARA DE OLIVEIRA COSTA"},
+      {"a": "ANA BEATRIZ SILVA CARNEIRO", "t": "7ºE", "p": "62981182283", "r": "ALINE BARBOSA DA SILVA CARNEIRO"},
+      {"a": "ANA CAROLINA CASTRO LIMA", "t": "7ºB", "p": "62992523277", "r": "ANA PAULA MOURA DE CASTRO LIMA"},
+      {"a": "ANA CAROLINA DE OLIVEIRA CAMPOS", "t": "9ºE", "p": "62999120610", "r": "CARLA DE OLIVEIRA CUNHA CAMPOS"},
+      {"a": "ANA CAROLINA FARIA COELHO", "t": "8ºF", "p": "62984570020", "r": "HELENA MARIA FARIA COELHO"},
+      {"a": "ANA CAROLINA FARIA DE CASTILHO", "t": "8ºA", "p": "62992490518", "r": "VALERIA APARECIDA FARIA DA SILVA DE CASTILHO"},
+      {"a": "ANA CAROLINA MACHADO BRASIL", "t": "7ºB", "p": "62981240320", "r": "LILIANE SANTOS MACHADO BRASIL"},
+      {"a": "ANA CAROLINA MOREIRA VIEIRA", "t": "6ºE", "p": "62991054770", "r": "KARINA MOREIRA DOS SANTOS VIEIRA"},
+      {"a": "ANA CECÍLIA DIAS DE ALMEIDA", "t": "6ºD", "p": "62981622283", "r": "ALESSANDRA FERREIRA DIAS"},
+      {"a": "ANA CECILIA ROCHA FERREIRA", "t": "7ºG", "p": "62981112260", "r": "DENISE ROCHA DE OLIVEIRA"},
+      {"a": "ANA CLARA ANDRADE GOUVEIA", "t": "8ºD", "p": "62992770281", "r": "GRAZIELE ANDRADE GOUVEIA"},
+      {"a": "ANA CLARA DE SOUSA TEIXEIRA", "t": "6ºA", "p": "62996162232", "r": "DANIELA DE SOUSA TEIXEIRA"},
+      {"a": "ANA CLARA MARRA ALVES", "t": "7ºG", "p": "62984024322", "r": "VILMA MARRA ALVES"},
+      {"a": "ANA CLARA MENDES ALVES", "t": "9ºA", "p": "62999745582", "r": "ANA PAULA MENDES CARVALHO ALVES"},
+      {"a": "ANA CLARA OLIVEIRA LEAL", "t": "7ºD", "p": "62999496669", "r": "PRISCILA ALVES DE OLIVEIRA LEAL"},
+      {"a": "ANA CLARA PEIXOTO VIEIRA", "t": "7ºF", "p": "62996884044", "r": "RAQUEL PEIXOTO GUIMARÃES"},
+      {"a": "ANA CLARA RIBEIRO CHAVEIRO", "t": "9ºD", "p": "62981656886", "r": "ADRIANA RIBEIRO DOS SANTOS"},
+      {"a": "ANA CLARA ROSA AMORIM", "t": "6ºA", "p": "62981298436", "r": "JULIANA ROSA SILVA"},
+      {"a": "ANA JULIA ALVES CARDOSO", "t": "7ºE", "p": "62996919299", "r": "LORENA ALVES DE OLIVEIRA CARDOSO"},
+      {"a": "ANA JÚLIA AMARAL MACHADO", "t": "7ºA", "p": "62981057404", "r": "MARISTELA BORGES AMARAL"},
+      {"a": "ANA JULIA ARAUJO PINTO", "t": "7ºA", "p": "62982845887", "r": "LUANA ARAUJO PINTO"},
+      {"a": "ANA JULIA DE SOUZA SOARES", "t": "7ºD", "p": "62981444007", "r": "ROSANGELA DE SOUZA SOARES"},
+      {"a": "ANA JÚLIA FARIA DA SILVA", "t": "6ºF", "p": "62999742468", "r": "POLLYANNA FARIA ALVES SILVA"},
+      {"a": "ANA JÚLIA FERREIRA CAMPOS", "t": "6ºF", "p": "62996328328", "r": "ALINE FERREIRA NEVES"},
+      {"a": "ANA JULIA MARQUES GONTIJO", "t": "8ºG", "p": "62996078311", "r": "ANA PAULA MARQUES GONTIJO"},
+      {"a": "ANA JÚLIA MOREIRA SOUZA", "t": "9ºD", "p": "62996349589", "r": "ANDREIA MOREIRA REZENDE"},
+      {"a": "ANA JÚLIA TEIXEIRA GONÇALVES", "t": "6ºA", "p": "62981254336", "r": "PRISCILA TEIXEIRA PINTO GONÇALVES"},
+      {"a": "ANA LAURA DE FREITAS ALVES", "t": "6ºH", "p": "62981504245", "r": "ALINE FREITAS DA SILVA ALVES"},
+      {"a": "ANA LAURA GUIMARAES SANTOS", "t": "8ºG", "p": "62982161474", "r": "PRISCILA GUIMARAES SANTOS"},
+      {"a": "ANA LAURA MARQUES CARDOSO", "t": "8ºB", "p": "62996614100", "r": "ALINE MARQUES CARDOSO"},
+      {"a": "ANA LAURA MARTINS DE SOUSA", "t": "8ºB", "p": "62992983794", "r": "LUCIANA MARTINS DE SOUSA"},
+      {"a": "ANA LAURA SILVA RESENDE", "t": "8ºD", "p": "62981215456", "r": "ANA CLAUDIA SILVA RESENDE"},
+      {"a": "ANA LUISA ALCANTARA REIS", "t": "6ºA", "p": "62991054707", "r": "POLLYANNA ALCANTARA SILVA REIS"},
+      {"a": "ANA LUÍSA CARDOSO DA SILVA ALVES", "t": "7ºG", "p": "62984180479", "r": "LUCIANA CARDOSO DA SILVA"},
+      {"a": "ANA LUISA CUNHA ALVES", "t": "7ºF", "p": "62984025807", "r": "CAMILA BATISTA CUNHA ALVES"},
+      {"a": "ANA LUISA DIAS CARVALHO", "t": "6ºB", "p": "62981881691", "r": "FERNANDA DIAS CARVALHO"},
+      {"a": "ANA LUISA MACHADO ROCHA", "t": "9ºD", "p": "62999818837", "r": "ANA FLAVIA MACHADO COELHO ROCHA"},
+      {"a": "ANA LUISA MEDEIROS DE CARVALHO", "t": "6ºE", "p": "62981561001", "r": "MARIA DE FATIMA MEDEIROS CARVALHO"},
+      {"a": "ANA LUISA NOGUEIRA FIALHO", "t": "8ºF", "p": "62999757366", "r": "CRISTIANE NOGUEIRA FIALHO"},
+      {"a": "ANA LUISA OLIVEIRA COSTA", "t": "8ºG", "p": "62981343714", "r": "LARISSA MARA DE OLIVEIRA COSTA"},
+      {"a": "ANA LUÍSA OLIVEIRA SILVA", "t": "9ºC", "p": "62981886860", "r": "RENATA CRISTINA DE OLIVEIRA"},
+      {"a": "ANA LUISA PEIXOTO VIEIRA", "t": "7ºF", "p": "62996884044", "r": "RAQUEL PEIXOTO GUIMARÃES"},
+      {"a": "ANA LUÍSA RESENDE COELHO", "t": "8ºG", "p": "62981335041", "r": "LILIANE RESENDE COELHO"},
+      {"a": "ANA LUÍSA RIBEIRO DE OLIVEIRA", "t": "6ºE", "p": "62984024340", "r": "LUDMYLLA RIBEIRO E SILVA"},
+      {"a": "ANA LUÍSA VALADÃO DE CARVALHO", "t": "6ºE", "p": "62999496660", "r": "PAULA VALADÃO SILVA"},
+      {"a": "ANA LUIZA AMARAL MACHADO", "t": "7ºA", "p": "62981057404", "r": "MARISTELA BORGES AMARAL"},
+      {"a": "ANA LUIZA CAVALCANTE RODRIGUES", "t": "8ºA", "p": "62981382442", "r": "LILIANE CAVALCANTE RODRIGUES"},
+      {"a": "ANA LUIZA CUNHA DE SOUSA", "t": "8ºD", "p": "62996773228", "r": "FERNANDA CUNHA DE SOUSA"},
+      {"a": "ANA LUIZA DE FREITAS CARDOSO", "t": "7ºF", "p": "62981267484", "r": "ALINE DE FREITAS SILVA CARDOSO"},
+      {"a": "ANA LUIZA DE SOUSA CAMPOS", "t": "7ºC", "p": "62999120610", "r": "CARLA DE OLIVEIRA CUNHA CAMPOS"},
+      {"a": "ANA LUIZA DOS SANTOS CORDEIRO", "t": "8ºG", "p": "62998634848", "r": "DANIELLA DOS SANTOS CORDEIRO"},
+      {"a": "ANA LUIZA GOMES DE OLIVEIRA", "t": "7ºG", "p": "62984180479", "r": "DANIELLA GOMES DE OLIVEIRA"},
+      {"a": "ANA LUIZA MARQUES NUNES", "t": "7ºB", "p": "62981240320", "r": "LARISSA MARQUES NUNES"},
+      {"a": "ANA LUIZA PACHECO DE SOUSA", "t": "6ºB", "p": "62981643444", "r": "LUCIANA PACHECO DE SOUSA"},
+      {"a": "ANA LUIZA PEREIRA DE MELO", "t": "8ºE", "p": "62981156828", "r": "FERNANDA PEREIRA DE MELO"},
+      {"a": "ANA LUIZA ROCHA FERREIRA", "t": "7ºG", "p": "62981112260", "r": "DENISE ROCHA DE OLIVEIRA"},
+      {"a": "ANA LUIZA SILVA CARNEIRO", "t": "7ºE", "p": "62981182283", "r": "ALINE BARBOSA DA SILVA CARNEIRO"},
+      {"a": "ANA LUIZA VALE DE MORAIS", "t": "8ºC", "p": "62996160533", "r": "FABIANA VALE DE MORAIS"},
+      {"a": "YASMIN MELO COELHO", "t": "7ºG", "p": "62996449059", "r": "JULIANA MELO RODRIGUES COELHO"},
+      {"a": "YURI LIEBERENZ KAGAN", "t": "8ºB", "p": "62996379695", "r": "ISABELLA LIEBERENZ CAMILO KAGAN"}
     ];
 
     const PROFESSORES_DATA = {
@@ -641,9 +532,6 @@
 
     let ALUNOS_DATA = [];
     const MAPA_ALUNOS = {};
-    let paginaContatosAtual = 1;
-    const itensPorPagina = 50;
-    let contatosFiltradosCache = [];
 
     function carregarAlunos() {
       ALUNOS_DATA = ALUNOS_DADOS_OFICIAIS.map(item => ({
@@ -654,9 +542,6 @@
       }));
 
       ALUNOS_DATA.sort((a, b) => a.aluno.localeCompare(b.aluno));
-      
-      const badge = document.getElementById('contadorAlunosBadge');
-      if (badge) badge.textContent = `${ALUNOS_DATA.length} alunos carregados`;
 
       const dl = document.getElementById('listaAlunosDatalist');
       let html = '';
@@ -667,68 +552,34 @@
         }
       });
       if (dl) dl.innerHTML = html;
-
-      filtrarContatos(document.getElementById('filtroContatos')?.value || '');
     }
 
     const USUARIOS_PADRAO = [
-      { id: 1, usuario: "coordenacao", senha: "123", nome: "Coordenação", perfil: "coordenacao", abas: ["atrasos", "sala-estudos", "professores", "inspetores", "atendimentos", "contatos", "gerenciador-acessos"] },
-      { id: 2, usuario: "assistente", senha: "123", nome: "Assistente", perfil: "assistente", abas: ["atrasos", "sala-estudos", "professores", "atendimentos", "contatos"] },
-      { id: 3, usuario: "inspetor", senha: "123", nome: "Inspetor", perfil: "inspetor", abas: ["sala-estudos"] }
+      { id: 1, usuario: "coordenacao", senha: "123", nome: "Coordenação", perfil: "coordenacao", abas: ["atrasos", "sala-estudos", "professores", "inspetores"] }
     ];
-
-    let usuariosLista = JSON.parse(localStorage.getItem('escola_usuarios_db') || 'null');
-    if (!usuariosLista || usuariosLista.length === 0) {
-      usuariosLista = USUARIOS_PADRAO;
-      localStorage.setItem('escola_usuarios_db', JSON.stringify(usuariosLista));
-    }
 
     let usuarioLogadoAtual = null;
     let atrasosList = JSON.parse(localStorage.getItem('escola_atrasos') || '[]');
     let profOcorrenciasList = JSON.parse(localStorage.getItem('escola_prof_ocorrencias') || '[]');
     let inspetoresList = JSON.parse(localStorage.getItem('escola_inspetores') || '[]');
-    let atendimentosList = JSON.parse(localStorage.getItem('escola_atendimentos') || '[]');
-    let salaEstudosList = JSON.parse(localStorage.getItem('escola_sala_estudos') || '[]');
     let turnoAtrasoAtual = 'Matutino';
 
     window.addEventListener('DOMContentLoaded', () => {
       carregarAlunos();
-
-      const salvo = localStorage.getItem('usuario_logado_arena_obj');
-      if (salvo) {
-        try {
-          usuarioLogadoAtual = JSON.parse(salvo);
-          if (usuarioLogadoAtual && usuarioLogadoAtual.perfil) {
-            exibirSistemaPrincipal();
-            return;
-          }
-        } catch(e) {}
-      }
+      entrarDireto();
     });
 
-    function entrarComoCoord() {
-      usuarioLogadoAtual = usuariosLista.find(u => u.perfil === 'coordenacao') || USUARIOS_PADRAO[0];
-      localStorage.setItem('usuario_logado_arena_obj', JSON.stringify(usuarioLogadoAtual));
+    function entrarDireto() {
+      usuarioLogadoAtual = USUARIOS_PADRAO[0];
       exibirSistemaPrincipal();
     }
 
     function fazerLogin(e) {
       e.preventDefault();
-      const user = document.getElementById('loginUsuario').value.trim().toLowerCase();
-      const pass = document.getElementById('loginSenha').value.trim();
-
-      const encontrado = usuariosLista.find(u => u.usuario.toLowerCase() === user && u.senha === pass);
-      if (encontrado) {
-        localStorage.setItem('usuario_logado_arena_obj', JSON.stringify(encontrado));
-        usuarioLogadoAtual = encontrado;
-        exibirSistemaPrincipal();
-      } else {
-        entrarComoCoord();
-      }
+      entrarDireto();
     }
 
     function fazerLogout() {
-      localStorage.removeItem('usuario_logado_arena_obj');
       usuarioLogadoAtual = null;
       document.getElementById('sistema-principal').classList.add('hidden');
       document.getElementById('tela-login').classList.remove('hidden');
@@ -737,36 +588,20 @@
     function exibirSistemaPrincipal() {
       document.getElementById('tela-login').classList.add('hidden');
       document.getElementById('sistema-principal').classList.remove('hidden');
-      document.getElementById('usuarioLogadoNome').textContent = usuarioLogadoAtual ? usuarioLogadoAtual.nome : 'Coordenação';
-      document.getElementById('usuarioLogadoCargo').textContent = 'Perfil: ' + (usuarioLogadoAtual ? usuarioLogadoAtual.perfil.toUpperCase() : 'COORDENACAO');
 
       const hoje = new Date().toISOString().split('T')[0];
       const hora = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
       if(document.getElementById('atrasoData')) document.getElementById('atrasoData').value = hoje;
       if(document.getElementById('atrasoHora')) document.getElementById('atrasoHora').value = hora;
-      if(document.getElementById('seData')) document.getElementById('seData').value = hoje;
       if(document.getElementById('profData')) document.getElementById('profData').value = hoje;
       if(document.getElementById('inspData')) document.getElementById('inspData').value = hoje;
       if(document.getElementById('inspHora')) document.getElementById('inspHora').value = hora;
-      if(document.getElementById('atendDate')) document.getElementById('atendDate').value = hoje;
 
-      const abasPermitidas = usuarioLogadoAtual ? usuarioLogadoAtual.abas : ["atrasos", "sala-estudos", "professores", "inspetores", "atendimentos", "contatos", "gerenciador-acessos"];
-      const todasAbas = ["atrasos", "sala-estudos", "professores", "inspetores", "atendimentos", "contatos", "gerenciador-acessos"];
-      
-      todasAbas.forEach(aba => {
-        const btn = document.getElementById('btn-aba-' + aba);
-        if (btn) {
-          btn.style.display = abasPermitidas.includes(aba) ? 'flex' : 'none';
-        }
-      });
-
-      mudarAba(abasPermitidas[0] || 'atrasos');
+      mudarAba('atrasos');
       atualizarListaProfessores();
       renderizarAtrasos();
-      renderizarAtendimentos();
       renderizarProfOcorrencias();
       renderizarInspetores();
-      renderizarUsuariosGerenciador();
     }
 
     function mudarAba(abaId) {
@@ -779,9 +614,6 @@
       
       if (abaId === 'professores') {
         atualizarListaProfessores();
-      }
-      if (abaId === 'contatos') {
-        filtrarContatos(document.getElementById('filtroContatos').value);
       }
     }
 
@@ -843,58 +675,31 @@
             <td class="p-2 border">${a.turma}</td>
             <td class="p-2 border">${a.espaco}</td>
             <td class="p-2 border text-gray-600">${a.justificativa || '—'}</td>
-            <td class="p-2 border text-center"><span class="bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full text-[10px]">Registro</span></td>
+            <td class="p-2 border text-center no-print">
+              <button onclick="excluirAtraso(${a.id})" class="text-red-600 font-bold hover:underline">Apagar</button>
+            </td>
           </tr>
         `;
       });
     }
 
-    function filtrarContatos(filtro = '') {
-      const q = filtro.toLowerCase().trim();
-      contatosFiltradosCache = q ? ALUNOS_DATA.filter(a => a.aluno.toLowerCase().includes(q) || a.turma.toLowerCase().includes(q) || a.responsavel.toLowerCase().includes(q)) : ALUNOS_DATA;
-      renderizarTabelaContatosPagina();
+    function excluirAtraso(id) {
+      atrasosList = atrasosList.filter(a => a.id !== id);
+      localStorage.setItem('escola_atrasos', JSON.stringify(atrasosList));
+      renderizarAtrasos();
     }
 
-    function mudarPaginaContatos(novaPagina) {
-      const totalPaginas = Math.ceil(contatosFiltradosCache.length / itensPorPagina) || 1;
-      if (novaPagina < 1 || novaPagina > totalPaginas) return;
-      paginaContatosAtual = novaPagina;
-      renderizarTabelaContatosPagina();
+    function limparAtrasos() {
+      if(confirm("Deseja realmente limpar todo o histórico de atrasos?")) {
+        atrasosList = [];
+        localStorage.removeItem('escola_atrasos');
+        renderizarAtrasos();
+      }
     }
 
-    function renderizarTabelaContatosPagina() {
-      const tbody = document.getElementById('listaContatosTbody');
-      const infoSpan = document.getElementById('contatosPaginacaoInfo');
-      if (!tbody) return;
-      tbody.innerHTML = '';
-
-      if (contatosFiltradosCache.length === 0 && ALUNOS_DATA.length > 0) {
-        contatosFiltradosCache = ALUNOS_DATA;
-      }
-
-      const totalItens = contatosFiltradosCache.length;
-      const totalPaginas = Math.ceil(totalItens / itensPorPagina) || 1;
-      if (paginaContatosAtual > totalPaginas) paginaContatosAtual = totalPaginas;
-
-      const inicio = (paginaContatosAtual - 1) * itensPorPagina;
-      const fim = inicio + itensPorPagina;
-      const paginaItens = contatosFiltradosCache.slice(inicio, fim);
-
-      paginaItens.forEach(c => {
-        tbody.innerHTML += `
-          <tr class="border-b hover:bg-gray-50">
-            <td class="p-2.5 border font-semibold">${c.aluno}</td>
-            <td class="p-2.5 border">${c.turma}</td>
-            <td class="p-2.5 border">${c.responsavel}</td>
-            <td class="p-2.5 border font-mono text-emerald-700">${c.telefone}</td>
-            <td class="p-2.5 border text-center"><a href="https://wa.me/55${c.telefone}" target="_blank" class="bg-emerald-600 text-white px-2 py-1 rounded text-[11px]">WhatsApp</a></td>
-          </tr>
-        `;
-      });
-
-      if (infoSpan) {
-        infoSpan.textContent = `Mostrando ${totalItens > 0 ? inicio + 1 : 0} a ${Math.min(fim, totalItens)} de ${totalItens} alunos (Página ${paginaContatosAtual} de ${totalPaginas})`;
-      }
+    function salvarSalaEstudos(e) {
+      e.preventDefault();
+      alert('Relatório da Sala de Estudos salvo com sucesso!');
     }
 
     function atualizarListaProfessores() {
@@ -912,11 +717,6 @@
         option.textContent = prof;
         selectProfessor.appendChild(option);
       });
-    }
-
-    function salvarSalaEstudos(e) {
-      e.preventDefault();
-      alert('Relatório diário salvo com sucesso!');
     }
 
     function salvarOcorrenciaProfessor(e) {
@@ -958,8 +758,8 @@
             <td class="p-2.5 border text-center">${p.atrasoIntervalo !== 'Não' ? p.atrasoIntervalo : '—'}</td>
             <td class="p-2.5 border">${p.obs || '—'}</td>
             <td class="p-2.5 border text-center no-print">
-              <button onclick="editarOcorrenciaProfessor(${p.id})" class="text-blue-600 hover:text-blue-800 font-bold text-xs bg-blue-50 px-2 py-1 rounded border border-blue-200 mr-1">✏️ Editar</button>
-              <button onclick="excluirOcorrenciaProfessor(${p.id})" class="text-red-600 hover:text-red-800 font-bold text-xs bg-red-50 px-2 py-1 rounded border border-red-200">🗑️ Apagar</button>
+              <button onclick="editarOcorrenciaProfessor(${p.id})" class="text-blue-600 font-bold text-xs bg-blue-50 px-2 py-1 rounded border border-blue-200 mr-1">✏️ Editar</button>
+              <button onclick="excluirOcorrenciaProfessor(${p.id})" class="text-red-600 font-bold text-xs bg-red-50 px-2 py-1 rounded border border-red-200">🗑️ Apagar</button>
             </td>
           </tr>
         `;
@@ -977,8 +777,7 @@
       
       if (item.atrasoInicio !== 'Não') {
         document.getElementById('profAtrasoInicio').checked = true;
-        const min = item.atrasoInicio.replace(' min', '');
-        document.getElementById('profMinutosInicio').value = min;
+        document.getElementById('profMinutosInicio').value = item.atrasoInicio.replace(' min', '');
         document.getElementById('profMinutosInicio').disabled = false;
       } else {
         document.getElementById('profAtrasoInicio').checked = false;
@@ -988,8 +787,7 @@
 
       if (item.atrasoIntervalo !== 'Não') {
         document.getElementById('profAtrasoInterv').checked = true;
-        const min = item.atrasoIntervalo.replace(' min', '');
-        document.getElementById('profMinutosInterv').value = min;
+        document.getElementById('profMinutosInterv').value = item.atrasoIntervalo.replace(' min', '');
         document.getElementById('profMinutosInterv').disabled = false;
       } else {
         document.getElementById('profAtrasoInterv').checked = false;
@@ -1019,11 +817,6 @@
         localStorage.setItem('escola_prof_ocorrencias', JSON.stringify(profOcorrenciasList));
         renderizarProfOcorrencias();
       }
-    }
-
-    function imprimirRelatorioProfessores() {
-      if(document.getElementById('profPrintDate')) document.getElementById('profPrintDate').textContent = 'Emitido em: ' + new Date().toLocaleDateString('pt-BR');
-      window.print();
     }
 
     function salvarInspetor(e) {
@@ -1102,78 +895,6 @@
         localStorage.setItem('escola_inspetores', JSON.stringify(inspetoresList));
         renderizarInspetores();
       }
-    }
-
-    function salvarAtendimento(e) {
-      e.preventDefault();
-      const alunoNome = document.getElementById('atendAlunoInput').value.trim().toUpperCase();
-      const info = MAPA_ALUNOS[alunoNome];
-      const item = {
-        id: Date.now(),
-        data: document.getElementById('atendDate').value,
-        tema: document.getElementById('atendTema').value,
-        aluno: alunoNome,
-        turma: info ? info.turma : '—',
-        relato: document.getElementById('atendRelato').value
-      };
-      atendimentosList.unshift(item);
-      localStorage.setItem('escola_atendimentos', JSON.stringify(atendimentosList));
-      e.target.reset();
-      if(document.getElementById('atendTurmaLabel')) document.getElementById('atendTurmaLabel').textContent = '';
-      renderizarAtendimentos();
-    }
-
-    function renderizarAtendimentos() {
-      const c = document.getElementById('listaAtendimentosTbody');
-      if (!c) return;
-      c.innerHTML = '';
-      atendimentosList.forEach(a => {
-        c.innerHTML += `
-          <div class="border p-3.5 rounded bg-gray-50 text-xs mb-2">
-            <p class="font-bold">${a.aluno} (${a.turma}) — Tema: ${a.tema} (${a.data})</p>
-            <p>${a.relato}</p>
-          </div>
-        `;
-      });
-    }
-
-    function cadastrarNovoUsuario(e) {
-      e.preventDefault();
-      const nome = document.getElementById('novoUserNome').value.trim();
-      const perfil = document.getElementById('novoUserPerfil').value;
-      const login = document.getElementById('novoUserLogin').value.trim().toLowerCase();
-      const senha = document.getElementById('novoUserSenha').value.trim();
-
-      let abas = perfil === 'assistente' ? ["atrasos", "sala-estudos", "professores", "atendimentos", "contatos"] : ["sala-estudos"];
-      usuariosLista.push({ id: Date.now(), nome, usuario: login, senha, perfil, abas });
-      localStorage.setItem('escola_usuarios_db', JSON.stringify(usuariosLista));
-      e.target.reset();
-      renderizarUsuariosGerenciador();
-      alert('Usuário cadastrado com sucesso!');
-    }
-
-    function renderizarUsuariosGerenciador() {
-      const tbody = document.getElementById('listaUsuariosTbody');
-      if (!tbody) return;
-      tbody.innerHTML = '';
-      usuariosLista.forEach(u => {
-        tbody.innerHTML += `
-          <tr class="border-b">
-            <td class="p-2.5 border font-semibold">${u.nome}</td>
-            <td class="p-2.5 border">${u.usuario}</td>
-            <td class="p-2.5 border">${u.perfil}</td>
-            <td class="p-2.5 border">${u.abas.join(', ')}</td>
-            <td class="p-2.5 border">${u.senha}</td>
-            <td class="p-2.5 border text-center">${u.perfil === 'coordenacao' ? 'Mestre' : `<button onclick="excluirUsuario(${u.id})" class="text-red-600 font-bold">Excluir</button>`}</td>
-          </tr>
-        `;
-      });
-    }
-
-    function excluirUsuario(id) {
-      usuariosLista = usuariosLista.filter(u => u.id !== id);
-      localStorage.setItem('escola_usuarios_db', JSON.stringify(usuariosLista));
-      renderizarUsuariosGerenciador();
     }
   </script>
 </body>
