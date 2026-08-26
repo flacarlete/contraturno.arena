@@ -492,12 +492,11 @@
     if (!usuariosLista || usuariosLista.length === 0) {
       usuariosLista = [
         { id: 1, nome: "Coordenação Geral", perfil: "coordenador", usuario: "coordenacao", senha: "123" },
-        { id: 2, nome: "Tamires Coordenação", perfil: "coordenador", usuario: "tamires", senha: "123" },
+        { id: 2, nome: "Tamires", perfil: "coordenador", usuario: "tamires", senha: "123" },
         { id: 3, nome: "Orientador Plantão", perfil: "orientador", usuario: "orientador", senha: "123" }
       ];
       localStorage.setItem('escola_usuarios_db', JSON.stringify(usuariosLista));
     } else {
-      // Garante que a Tamires esteja cadastrada caso o banco local já exista
       if (!usuariosLista.some(u => u.usuario.toLowerCase() === 'tamires')) {
         usuariosLista.push({ id: Date.now(), nome: "Tamires", perfil: "coordenador", usuario: "tamires", senha: "123" });
         localStorage.setItem('escola_usuarios_db', JSON.stringify(usuariosLista));
@@ -525,7 +524,6 @@
       }
     });
 
-    // Gera os 20 espaços/linhas no item 3 da Sala de Estudos
     function montar20EspacosSalaEstudos() {
       const container = document.getElementById('container20Espacos');
       if (!container) return;
@@ -684,13 +682,15 @@
 
     function salvarAtraso(e) {
       e.preventDefault();
+      const nomeAluno = document.getElementById('atrasoAluno').value.trim().toUpperCase();
+      
       const item = {
         id: Date.now(),
         turno: turnoAtrasoAtual,
         espaco: document.getElementById('atrasoEspaco').value,
         hora: document.getElementById('atrasoHora').value,
         data: document.getElementById('atrasoData').value,
-        aluno: document.getElementById('atrasoAluno').value.trim().toUpperCase(),
+        aluno: nomeAluno,
         turma: document.getElementById('atrasoTurma').value.trim(),
         justificativa: document.getElementById('atrasoJustificativa').value
       };
@@ -705,12 +705,29 @@
       const tbody = document.getElementById('listaAtrasosTbody');
       if (!tbody) return;
       tbody.innerHTML = '';
+
+      // Conta quantas vezes cada aluno aparece no histórico
+      const contagemAlunos = {};
       atrasosList.forEach(a => {
+        const nome = a.aluno;
+        contagemAlunos[nome] = (contagemAlunos[nome] || 0) + 1;
+      });
+
+      atrasosList.forEach(a => {
+        const qtdAparicoes = contagemAlunos[a.aluno] || 1;
+        let badgeReincidente = '';
+        let corLinha = '';
+
+        if (qtdAparicoes > 1) {
+          badgeReincidente = `<span class="ml-2 bg-red-100 text-red-800 text-[10px] font-bold px-2 py-0.5 rounded-full border border-red-300">⚠️ REINCIDENTE (${qtdAparicoes}x)</span>`;
+          corLinha = 'bg-red-50/40';
+        }
+
         tbody.innerHTML += `
-          <tr class="border-b hover:bg-gray-50">
+          <tr class="border-b hover:bg-gray-50 ${corLinha}">
             <td class="p-2 border font-medium">${a.data} às ${a.hora}</td>
             <td class="p-2 border">${a.turno}</td>
-            <td class="p-2 border font-bold text-[#1b4332]">${a.aluno}</td>
+            <td class="p-2 border font-bold text-[#1b4332]">${a.aluno} ${badgeReincidente}</td>
             <td class="p-2 border font-semibold text-[#1b4332]">${a.turma}</td>
             <td class="p-2 border">${a.espaco}</td>
             <td class="p-2 border text-gray-600">${a.justificativa || '—'}</td>
@@ -749,7 +766,6 @@
       const erro = document.getElementById('chkErro').checked ? 'Sim' : 'Não';
       const ativo = document.getElementById('chkAtivo').checked ? 'Sim' : 'Não';
 
-      // Coleta os preenchidos nos 20 espaços
       let preenchidosCount = 0;
       for (let i = 1; i <= 20; i++) {
         const nomeAluno = document.getElementById(`se_aluno_${i}`).value.trim();
@@ -816,11 +832,14 @@
           `;
         });
 
+        const qtdTotal = dados.ocorrencias.length;
+        const badgeReincidenteSala = qtdTotal > 1 ? `<span class="bg-red-100 text-red-800 text-[10px] font-bold px-2 py-0.5 rounded-full border border-red-300 ml-2">⚠️ REINCIDENTE (${qtdTotal}x)</span>` : '';
+
         container.innerHTML += `
           <div class="border rounded-lg p-4 bg-gray-50 mb-4">
             <div class="border-b pb-2 mb-3 flex justify-between items-center">
-              <h3 class="font-bold text-[#1b4332] text-sm">👤 Aluno(a): ${aluno} <span class="text-gray-500 font-normal">(${dados.turma})</span></h3>
-              <span class="bg-emerald-100 text-emerald-800 text-[11px] font-bold px-2 py-0.5 rounded-full">${dados.ocorrencias.length} ocorrência(s) registrada(s)</span>
+              <h3 class="font-bold text-[#1b4332] text-sm">👤 Aluno(a): ${aluno} <span class="text-gray-500 font-normal">(${dados.turma})</span> ${badgeReincidenteSala}</h3>
+              <span class="bg-emerald-100 text-emerald-800 text-[11px] font-bold px-2 py-0.5 rounded-full">${qtdTotal} ocorrência(s)</span>
             </div>
             <div class="space-y-2">
               ${htmlOcorrencias}
