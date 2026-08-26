@@ -10,8 +10,8 @@
     .aba-btn.active { border-bottom: 3px solid #1b4332; color: #1b4332; font-weight: 700; background-color: #f0fdf4; }
     @media print {
       body * { visibility: hidden; }
-      #printableArea, #printableArea *, #printableProfArea, #printableProfArea * { visibility: visible; }
-      #printableArea, #printableProfArea { 
+      #printableArea, #printableArea *, #printableProfArea, #printableProfArea *, #printableRelatorioArea, #printableRelatorioArea * { visibility: visible; }
+      #printableArea, #printableProfArea, #printableRelatorioArea { 
         position: absolute; left: 0; top: 0; width: 100%; background: white !important; padding: 0 !important; margin: 0 !important;
       }
       .no-print { display: none !important; }
@@ -32,19 +32,19 @@
       <form onsubmit="fazerLogin(event)" class="space-y-4">
         <div>
           <label class="block text-xs font-semibold text-gray-700 mb-1">Usuário</label>
-          <input type="text" id="loginUsuario" value="coordenacao" class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-[#1b4332]" required />
+          <input type="text" id="loginUsuario" placeholder="Digite seu usuário..." class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-[#1b4332]" required />
         </div>
         <div>
           <label class="block text-xs font-semibold text-gray-700 mb-1">Senha</label>
-          <input type="password" id="loginSenha" value="123" class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-[#1b4332]" required />
+          <input type="password" id="loginSenha" placeholder="Digite sua senha..." class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-[#1b4332]" required />
         </div>
         <button type="submit" class="w-full bg-[#1b4332] text-white py-2.5 rounded text-sm font-semibold hover:bg-emerald-900 transition">
           Entrar no Sistema →
         </button>
       </form>
       <div class="mt-4 text-center">
-        <button type="button" onclick="entrarDireto()" class="text-xs text-[#1b4332] font-bold underline hover:text-emerald-800">
-          Acesso Direto (Coordenação)
+        <button type="button" onclick="entrarComoCoordDireto()" class="text-xs text-[#1b4332] font-bold underline hover:text-emerald-800">
+          Entrar como Coordenador (Padrão)
         </button>
       </div>
     </div>
@@ -58,13 +58,13 @@
         <h1 class="text-lg font-bold flex items-center gap-2">
           <span>📋</span> Colégio Arena — Gestão Escolar
         </h1>
-        <p class="text-xs text-emerald-200 mt-0.5">Módulos: Atrasos, Sala de Estudos, Professores e Inspetores</p>
+        <p class="text-xs text-emerald-200 mt-0.5" id="headerCargoLogado">Painel Escolar</p>
       </div>
 
       <div class="flex items-center gap-3">
         <div class="text-right">
-          <p id="usuarioLogadoNome" class="text-xs font-bold text-white">Coordenação</p>
-          <p class="text-[11px] text-emerald-200">Acesso Geral</p>
+          <p id="usuarioLogadoNome" class="text-xs font-bold text-white">Usuário</p>
+          <p id="usuarioLogadoPerfil" class="text-[11px] text-emerald-200">Perfil</p>
         </div>
         <button onclick="fazerLogout()" class="bg-red-800 hover:bg-red-700 text-white px-3 py-1.5 rounded text-xs font-semibold">
           Sair ⎋
@@ -77,6 +77,7 @@
       <button onclick="mudarAba('sala-estudos')" id="btn-aba-sala-estudos" class="aba-btn py-3 px-4 border-b-2 text-gray-600 flex items-center gap-2">📚 Sala de Estudos</button>
       <button onclick="mudarAba('professores')" id="btn-aba-professores" class="aba-btn py-3 px-4 border-b-2 text-gray-600 flex items-center gap-2">👨‍🏫 Professores</button>
       <button onclick="mudarAba('inspetores')" id="btn-aba-inspetores" class="aba-btn py-3 px-4 border-b-2 text-gray-600 flex items-center gap-2">📋 Inspetores</button>
+      <button onclick="mudarAba('adm')" id="btn-aba-adm" class="aba-btn py-3 px-4 border-b-2 text-gray-600 flex items-center gap-2 bg-emerald-50 text-[#1b4332]">⚙️ ADM (Acessos)</button>
     </nav>
 
     <main class="p-6 max-w-6xl w-full mx-auto flex-1">
@@ -116,11 +117,14 @@
               </div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
-                <label class="block text-xs font-medium text-gray-700 mb-1">Nome do Aluno (Busca Rápida)</label>
-                <input list="listaAlunosDatalist" id="atrasoAluno" oninput="completarInfoAluno(this.value, 'atrasoTurmaLabel')" autocomplete="off" placeholder="Digite o nome do aluno..." class="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm font-medium focus:outline-none focus:border-[#1b4332]" required />
-                <p id="atrasoTurmaLabel" class="text-xs text-emerald-800 font-bold mt-1.5"></p>
+                <label class="block text-xs font-medium text-gray-700 mb-1">Nome do Aluno</label>
+                <input type="text" id="atrasoAluno" placeholder="Nome completo do aluno..." class="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm font-medium focus:outline-none focus:border-[#1b4332]" required />
+              </div>
+              <div>
+                <label class="block text-xs font-medium text-gray-700 mb-1">Turma</label>
+                <input type="text" id="atrasoTurma" placeholder="Ex: 8ºG" class="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-[#1b4332]" required />
               </div>
               <div>
                 <label class="block text-xs font-medium text-gray-700 mb-1">Justificativa</label>
@@ -162,109 +166,133 @@
 
       <!-- ==================== ABA 2: SALA DE ESTUDOS ==================== -->
       <section id="aba-sala-estudos" class="aba-conteudo">
-        <div id="printableArea" class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
-          <div class="flex justify-between items-center mb-4">
-            <h2 class="text-base font-bold text-[#1b4332]">Controle Diário — Sala de Estudos e Biblioteca</h2>
-            <button onclick="window.print()" class="bg-gray-800 text-white px-3 py-1.5 rounded text-xs hover:bg-black flex items-center gap-1.5 no-print">
-              🖨️ Imprimir Relatório Diário
-            </button>
-          </div>
+        <div class="flex gap-3 mb-4 no-print">
+          <button onclick="mudarSubAbaSala('novo')" id="subbtn-novo" class="px-4 py-2 bg-[#1b4332] text-white rounded text-xs font-semibold">Novo Relatório Diário</button>
+          <button onclick="mudarSubAbaSala('relatorios')" id="subbtn-relatorios" class="px-4 py-2 bg-gray-200 text-gray-700 rounded text-xs font-semibold hover:bg-gray-300">📋 Todos os Relatórios Salvos</button>
+        </div>
 
-          <form id="formSalaEstudos" onsubmit="salvarSalaEstudos(event)" class="space-y-6">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label class="block text-xs font-medium text-gray-700 mb-1">Data</label>
-                <input type="date" id="seData" class="w-full border border-gray-300 rounded px-3 py-2 text-sm" required />
-              </div>
-              <div>
-                <label class="block text-xs font-medium text-gray-700 mb-1">Professor / Inspetor Responsável</label>
-                <input type="text" id="seProfessor" class="w-full border border-gray-300 rounded px-3 py-2 text-sm" placeholder="Nome do avaliador..." required />
-              </div>
-            </div>
-
-            <div class="space-y-3">
-              <h3 class="text-xs font-bold text-gray-700 uppercase tracking-wider mb-3 flex items-center gap-2">
-                <span class="bg-[#1b4332] text-white rounded-full w-5 h-5 flex items-center justify-center text-[10px]">1</span>
-                Controle de Ambiente e Ciclo de Foco
-              </h3>
-              <div class="flex flex-col md:flex-row justify-between md:items-center border-b pb-2 text-xs">
-                <div>
-                  <p class="font-bold">A) SILÊNCIO / RUÍDO PRODUTIVO</p>
-                  <p class="text-gray-500 text-[11px]">Sussurros / assuntos pertinentes</p>
-                </div>
-                <div class="flex gap-2 mt-2 md:mt-0">
-                  <label class="flex items-center gap-1"><input type="radio" name="ind_silencio" value="Excelente" checked /> Excelente</label>
-                  <label class="flex items-center gap-1"><input type="radio" name="ind_silencio" value="Regular" /> Regular</label>
-                  <label class="flex items-center gap-1"><input type="radio" name="ind_silencio" value="Crítico" /> Crítico</label>
-                </div>
-              </div>
-              <div class="flex flex-col md:flex-row justify-between md:items-center border-b pb-2 text-xs">
-                <div>
-                  <p class="font-bold">B) CICLO DE FOCO</p>
-                  <p class="text-gray-500 text-[11px]">Tempo de foco + tempo de descanso</p>
-                </div>
-                <div class="flex gap-2 mt-2 md:mt-0">
-                  <label class="flex items-center gap-1"><input type="radio" name="ind_foco" value="Excelente" checked /> Excelente</label>
-                  <label class="flex items-center gap-1"><input type="radio" name="ind_foco" value="Regular" /> Regular</label>
-                  <label class="flex items-center gap-1"><input type="radio" name="ind_foco" value="Crítico" /> Crítico</label>
-                </div>
-              </div>
-              <div class="flex flex-col md:flex-row justify-between md:items-center border-b pb-2 text-xs">
-                <div>
-                  <p class="font-bold">C) CELULAR</p>
-                  <p class="text-gray-500 text-[11px]">Devem estar guardados</p>
-                </div>
-                <div class="flex gap-2 mt-2 md:mt-0">
-                  <label class="flex items-center gap-1"><input type="radio" name="ind_celular" value="Excelente" checked /> Excelente</label>
-                  <label class="flex items-center gap-1"><input type="radio" name="ind_celular" value="Regular" /> Regular</label>
-                  <label class="flex items-center gap-1"><input type="radio" name="ind_celular" value="Crítico" /> Crítico</label>
-                </div>
-              </div>
-              <div class="flex flex-col md:flex-row justify-between md:items-center border-b pb-2 text-xs">
-                <div>
-                  <p class="font-bold">D) ORGANIZAÇÃO</p>
-                  <p class="text-gray-500 text-[11px]">Mesa limpa, somente material pertinente</p>
-                </div>
-                <div class="flex gap-2 mt-2 md:mt-0">
-                  <label class="flex items-center gap-1"><input type="radio" name="ind_org" value="Excelente" checked /> Excelente</label>
-                  <label class="flex items-center gap-1"><input type="radio" name="ind_org" value="Regular" /> Regular</label>
-                  <label class="flex items-center gap-1"><input type="radio" name="ind_org" value="Crítico" /> Crítico</label>
-                </div>
-              </div>
-            </div>
-
-            <div>
-              <h3 class="text-xs font-bold text-gray-700 uppercase tracking-wider mb-2 flex items-center gap-2">
-                <span class="bg-[#1b4332] text-white rounded-full w-5 h-5 flex items-center justify-center text-[10px]">2</span>
-                Check-list "Padrão Ouro"
-              </h3>
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs">
-                <label class="flex items-start gap-2"><input type="checkbox" id="chkApostila" class="mt-0.5" /><span><strong>APOSTILA VIVA</strong> — Grifos e anotações</span></label>
-                <label class="flex items-start gap-2"><input type="checkbox" id="chkRespostas" class="mt-0.5" /><span><strong>RESPOSTAS COMPLETAS</strong> — Fundamentadas</span></label>
-                <label class="flex items-start gap-2"><input type="checkbox" id="chkErro" class="mt-0.5" /><span><strong>JUSTIFICATIVA DO ERRO</strong> — Correção</span></label>
-                <label class="flex items-start gap-2"><input type="checkbox" id="chkAtivo" class="mt-0.5" /><span><strong>ESTUDO ATIVO</strong> — Autoexplicação</span></label>
-              </div>
-            </div>
-
-            <div>
-              <h3 class="text-xs font-bold text-gray-700 uppercase tracking-wider mb-2 flex items-center gap-2">
-                <span class="bg-[#1b4332] text-white rounded-full w-5 h-5 flex items-center justify-center text-[10px]">3</span>
-                Ocorrência de Aluno & Feedback para Coordenação
-              </h3>
-              <div class="mb-3">
-                <label class="block text-xs font-medium text-gray-700 mb-1">Aluno Específico (Opcional - Busca Rápida)</label>
-                <input list="listaAlunosDatalist" id="seAlunoInput" oninput="completarInfoAluno(this.value, 'seTurmaLabel')" autocomplete="off" placeholder="Digite o nome do aluno..." class="w-full border border-gray-300 rounded px-3 py-2 text-xs focus:outline-none focus:border-[#1b4332]" />
-                <p id="seTurmaLabel" class="text-xs text-emerald-800 font-bold mt-1"></p>
-              </div>
-              <textarea id="seOcorrencia" rows="3" placeholder="Descreva os tópicos ou acontecimentos observados..." class="w-full border border-gray-300 rounded p-3 text-xs focus:outline-none focus:border-[#1b4332]"></textarea>
-            </div>
-
-            <div class="flex justify-end gap-3 no-print">
-              <button type="submit" class="bg-[#1b4332] text-white px-5 py-2 rounded text-sm font-medium hover:bg-emerald-900">
-                💾 Salvar Relatório Diário
+        <div id="subaba-novo" class="subaba-sala-conteudo">
+          <div id="printableArea" class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+            <div class="flex justify-between items-center mb-4">
+              <h2 class="text-base font-bold text-[#1b4332]">Controle Diário — Sala de Estudos e Biblioteca</h2>
+              <button onclick="window.print()" class="bg-gray-800 text-white px-3 py-1.5 rounded text-xs hover:bg-black flex items-center gap-1.5 no-print">
+                🖨️ Imprimir Formulário
               </button>
             </div>
-          </form>
+
+            <form id="formSalaEstudos" onsubmit="salvarSalaEstudos(event)" class="space-y-6">
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-xs font-medium text-gray-700 mb-1">Data</label>
+                  <input type="date" id="seData" class="w-full border border-gray-300 rounded px-3 py-2 text-sm" required />
+                </div>
+                <div>
+                  <label class="block text-xs font-medium text-gray-700 mb-1">Professor / Inspetor Responsável</label>
+                  <input type="text" id="seProfessor" class="w-full border border-gray-300 rounded px-3 py-2 text-sm" placeholder="Nome do avaliador..." required />
+                </div>
+              </div>
+
+              <div class="space-y-3">
+                <h3 class="text-xs font-bold text-gray-700 uppercase tracking-wider mb-3 flex items-center gap-2">
+                  <span class="bg-[#1b4332] text-white rounded-full w-5 h-5 flex items-center justify-center text-[10px]">1</span>
+                  Controle de Ambiente e Ciclo de Foco
+                </h3>
+                <div class="flex flex-col md:flex-row justify-between md:items-center border-b pb-2 text-xs">
+                  <div>
+                    <p class="font-bold">A) SILÊNCIO / RUÍDO PRODUTIVO</p>
+                    <p class="text-gray-500 text-[11px]">Sussurros / assuntos pertinentes</p>
+                  </div>
+                  <div class="flex gap-2 mt-2 md:mt-0">
+                    <label class="flex items-center gap-1"><input type="radio" name="ind_silencio" value="Excelente" checked /> Excelente</label>
+                    <label class="flex items-center gap-1"><input type="radio" name="ind_silencio" value="Regular" /> Regular</label>
+                    <label class="flex items-center gap-1"><input type="radio" name="ind_silencio" value="Crítico" /> Crítico</label>
+                  </div>
+                </div>
+                <div class="flex flex-col md:flex-row justify-between md:items-center border-b pb-2 text-xs">
+                  <div>
+                    <p class="font-bold">B) CICLO DE FOCO</p>
+                    <p class="text-gray-500 text-[11px]">Tempo de foco + tempo de descanso</p>
+                  </div>
+                  <div class="flex gap-2 mt-2 md:mt-0">
+                    <label class="flex items-center gap-1"><input type="radio" name="ind_foco" value="Excelente" checked /> Excelente</label>
+                    <label class="flex items-center gap-1"><input type="radio" name="ind_foco" value="Regular" /> Regular</label>
+                    <label class="flex items-center gap-1"><input type="radio" name="ind_foco" value="Crítico" /> Crítico</label>
+                  </div>
+                </div>
+                <div class="flex flex-col md:flex-row justify-between md:items-center border-b pb-2 text-xs">
+                  <div>
+                    <p class="font-bold">C) CELULAR</p>
+                    <p class="text-gray-500 text-[11px]">Devem estar guardados</p>
+                  </div>
+                  <div class="flex gap-2 mt-2 md:mt-0">
+                    <label class="flex items-center gap-1"><input type="radio" name="ind_celular" value="Excelente" checked /> Excelente</label>
+                    <label class="flex items-center gap-1"><input type="radio" name="ind_celular" value="Regular" /> Regular</label>
+                    <label class="flex items-center gap-1"><input type="radio" name="ind_celular" value="Crítico" /> Crítico</label>
+                  </div>
+                </div>
+                <div class="flex flex-col md:flex-row justify-between md:items-center border-b pb-2 text-xs">
+                  <div>
+                    <p class="font-bold">D) ORGANIZAÇÃO</p>
+                    <p class="text-gray-500 text-[11px]">Mesa limpa, somente material pertinente</p>
+                  </div>
+                  <div class="flex gap-2 mt-2 md:mt-0">
+                    <label class="flex items-center gap-1"><input type="radio" name="ind_org" value="Excelente" checked /> Excelente</label>
+                    <label class="flex items-center gap-1"><input type="radio" name="ind_org" value="Regular" /> Regular</label>
+                    <label class="flex items-center gap-1"><input type="radio" name="ind_org" value="Crítico" /> Crítico</label>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <h3 class="text-xs font-bold text-gray-700 uppercase tracking-wider mb-2 flex items-center gap-2">
+                  <span class="bg-[#1b4332] text-white rounded-full w-5 h-5 flex items-center justify-center text-[10px]">2</span>
+                  Check-list "Padrão Ouro"
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs">
+                  <label class="flex items-start gap-2"><input type="checkbox" id="chkApostila" class="mt-0.5" /><span><strong>APOSTILA VIVA</strong> — Grifos e anotações</span></label>
+                  <label class="flex items-start gap-2"><input type="checkbox" id="chkRespostas" class="mt-0.5" /><span><strong>RESPOSTAS COMPLETAS</strong> — Fundamentadas</span></label>
+                  <label class="flex items-start gap-2"><input type="checkbox" id="chkErro" class="mt-0.5" /><span><strong>JUSTIFICATIVA DO ERRO</strong> — Correção</span></label>
+                  <label class="flex items-start gap-2"><input type="checkbox" id="chkAtivo" class="mt-0.5" /><span><strong>ESTUDO ATIVO</strong> — Autoexplicação</span></label>
+                </div>
+              </div>
+
+              <div>
+                <h3 class="text-xs font-bold text-gray-700 uppercase tracking-wider mb-2 flex items-center gap-2">
+                  <span class="bg-[#1b4332] text-white rounded-full w-5 h-5 flex items-center justify-center text-[10px]">3</span>
+                  Ocorrência de Aluno & Feedback para Coordenação
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-3">
+                  <div>
+                    <label class="block text-xs font-medium text-gray-700 mb-1">Nome do Aluno (Opcional)</label>
+                    <input type="text" id="seAluno" placeholder="Nome do aluno..." class="w-full border border-gray-300 rounded px-3 py-2 text-xs" />
+                  </div>
+                  <div>
+                    <label class="block text-xs font-medium text-gray-700 mb-1">Turma (Opcional)</label>
+                    <input type="text" id="seTurma" placeholder="Ex: 9ºD" class="w-full border border-gray-300 rounded px-3 py-2 text-xs" />
+                  </div>
+                </div>
+                <textarea id="seOcorrencia" rows="3" placeholder="Descreva os tópicos ou acontecimentos observados..." class="w-full border border-gray-300 rounded p-3 text-xs focus:outline-none focus:border-[#1b4332]"></textarea>
+              </div>
+
+              <div class="flex justify-end gap-3 no-print">
+                <button type="submit" class="bg-[#1b4332] text-white px-6 py-2.5 rounded text-sm font-semibold hover:bg-emerald-900">
+                  💾 Salvar Relatório Diário
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <div id="subaba-relatorios" class="subaba-sala-conteudo" style="display: none;">
+          <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+            <div class="flex justify-between items-center mb-4">
+              <h2 class="text-base font-bold text-[#1b4332]">📋 Histórico de Relatórios Diários — Sala de Estudos</h2>
+              <button onclick="window.print()" class="bg-gray-800 text-white px-3 py-1.5 rounded text-xs hover:bg-black no-print">
+                🖨️ Imprimir Histórico
+              </button>
+            </div>
+            <div id="listaRelatoriosContainer" class="space-y-4"></div>
+          </div>
         </div>
       </section>
 
@@ -401,127 +429,49 @@
         <div id="listaInspetoresCards" class="space-y-3"></div>
       </section>
 
+      <!-- ==================== ABA 5: ADM (CONTROLE DE ACESSOS) ==================== -->
+      <section id="aba-adm" class="aba-conteudo">
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+          <h2 class="text-base font-bold text-[#1b4332] mb-4">⚙️ Painel ADM — Controle de Acessos</h2>
+          <p class="text-xs text-gray-600 mb-4">Cadastre os profissionais e defina se o perfil é de <strong>Coordenador</strong> (acesso total) ou <strong>Orientador</strong> (acesso a Atrasos, Sala de Estudos e Inspetores).</p>
+          
+          <form id="formNovoUsuario" onsubmit="cadastrarUsuario(event)" class="bg-gray-50 p-4 rounded border mb-6 space-y-4">
+            <h3 class="text-xs font-bold text-gray-700 uppercase">Adicionar Novo Usuário</h3>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
+              <input type="text" id="novoNome" placeholder="Nome do Profissional" class="bg-white border rounded px-3 py-2 text-xs" required />
+              <select id="novoPerfil" class="bg-white border rounded px-3 py-2 text-xs" required>
+                <option value="coordenador">Coordenador (Acesso Total)</option>
+                <option value="orientador">Orientador / Inspetor</option>
+              </select>
+              <input type="text" id="novoLogin" placeholder="Usuário (Login)" class="bg-white border rounded px-3 py-2 text-xs" required />
+              <input type="text" id="novoSenha" placeholder="Senha" class="bg-white border rounded px-3 py-2 text-xs" required />
+            </div>
+            <div class="flex justify-end">
+              <button type="submit" class="bg-[#1b4332] text-white px-5 py-2 rounded text-xs font-semibold">+ Cadastrar Usuário</button>
+            </div>
+          </form>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs border">
+              <thead class="bg-gray-100 font-semibold">
+                <tr>
+                  <th class="p-2.5 border">Profissional</th>
+                  <th class="p-2.5 border">Usuário (Login)</th>
+                  <th class="p-2.5 border">Perfil de Acesso</th>
+                  <th class="p-2.5 border">Senha</th>
+                  <th class="p-2.5 border text-center">Ações</th>
+                </tr>
+              </thead>
+              <tbody id="listaUsuariosTbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
     </main>
   </div>
 
-  <datalist id="listaAlunosDatalist"></datalist>
-
-  <!-- LISTA COMPLETA DOS 1.160 ALUNOS -->
   <script>
-    const ALUNOS_DADOS_OFICIAIS = [
-      {"a": "CARLOS EDUARDO ANDRADE BITTENCOURT", "t": "8ºG", "p": "62982131364", "r": "VIVIENE ANDRADE VAZ"},
-      {"a": "EDUARDA MELO SOUSA", "t": "8ºG", "p": "62984173000", "r": "ANDREZZA LOPES E SOUSA"},
-      {"a": "EDUARDO ANDRADE NOLASCO SILVA", "t": "6ºH", "p": "62999884257", "r": "LARISSA ANDRADE NOLASCO"},
-      {"a": "EDUARDO BRAGA DO ESPÍRITO SANTO", "t": "9ºC", "p": "62982721122", "r": "JULIANA ALVES BRAGA DE SA"},
-      {"a": "EDUARDO JOSE DE FARIAS FILHO", "t": "9ºF", "p": "62992941420", "r": "LARA PEREIRA DE SA FIGUEIREDO"},
-      {"a": "EDUARDO MARÇAL PEREIRA", "t": "6ºF", "p": "62984155005", "r": "CANDIDA BROXADO MARCAL PEREIRA"},
-      {"a": "EDUARDO MORAIS CARVALHO FUSSI", "t": "6ºG", "p": "62999334050", "r": "BONNIE MORAIS DOS SANTOS"},
-      {"a": "EDUARDO MOTA TORRICELLI", "t": "6ºG", "p": "11991405883", "r": "FLAVIA CARLETE MOTA"},
-      {"a": "EDUARDO PRADO FREITAS", "t": "9ºD", "p": "62984798679", "r": "ANA CAROLINA PRADO DOS SANTOS"},
-      {"a": "EDUARDO TOMÁS XAVIER", "t": "8ºD", "p": "62991430078", "r": "SUZZAN SHARON ALVES XAVIER"},
-      {"a": "AGATHA PINHEIRO DE PACHECO BELCHIOR", "t": "8ºA", "p": "62992883200", "r": "ANITA LUZIA DE SOUZA PINHEIRO COSTA BELCHIOR"},
-      {"a": "ALEXANDER CAMPOS", "t": "6ºA", "p": "62998500610", "r": "CINARA FARIA ALMEIDA CAMPOS"},
-      {"a": "ALEXANDRE ANGELOS PIRES KATOPODIS", "t": "8ºG", "p": "62981695850", "r": "SARA RENATA PIRES MIRANDA KATOPODIS"},
-      {"a": "ALEXANDRE KENZO MORAIS HABE", "t": "9ºE", "p": "62999508483", "r": "LUCIANA OLIVEIRA DE MORAIS HABE"},
-      {"a": "ALEXANDRE MACEDO PERES", "t": "9ºD", "p": "62984366646", "r": "LORENA MARIA DE LIMA PERES"},
-      {"a": "ALEXANDRE NEVES VIGGIANO", "t": "9ºG", "p": "62999018693", "r": "GRASIELA NEVES DA SILVA VIGGIANO"},
-      {"a": "ALEXANDRE SAHIUM CUNHA", "t": "6ºA", "p": "62992158003", "r": "JULIANA HERINE DE PINA SAHIUM CUNHA"},
-      {"a": "ALEXANDRE VELOSO PEREIRA NEVES", "t": "8ºG", "p": "62996135797", "r": "YOLANDA LEÃO VELOSO PERES"},
-      {"a": "ALICE ABBUD MACEDO", "t": "6ºC", "p": "62981419796", "r": "SABRINA DE MELO ALVES ABBUD MACÊDO"},
-      {"a": "ALICE ARAGÃO FERREIRA", "t": "9ºB", "p": "62981288800", "r": "GISELLE ARAGÃO SOUSA FERREIRA"},
-      {"a": "ALICE BARBOZA SECCO", "t": "9ºF", "p": "18981192495", "r": "PRISCILA BARBOZA SECCO"},
-      {"a": "ALICE BITTAR VELASCO", "t": "6ºG", "p": "62981053511", "r": "FLAVIA BITTAR ARANTES"},
-      {"a": "ALICE CAVALCANTE SANTOS SILVA", "t": "8ºF", "p": "62985871120", "r": "FLAVIA BITTAR ARANTES"},
-      {"a": "ALICE DE CARVALHO SANTOS", "t": "7ºC", "p": "62984042858", "r": "VILMA DE CARVALHO"},
-      {"a": "ALICE DUARTE PEREIRA DE SOUZA", "t": "8ºC", "p": "62996172084", "r": "ALESSANDRA DUARTE RIBEIRO PEREIRA DE SOUZA"},
-      {"a": "ALICE FARIA PINHEIRO", "t": "9ºA", "p": "62981329618", "r": "LUCAS RODRIGUES PINHEIRO"},
-      {"a": "ALICE FERREIRA DE FARIA", "t": "8ºD", "p": "62996458021", "r": "DANIELA CRISTINA FERREIRA"},
-      {"a": "ALICE FREITAS OLIVEIRA", "t": "7ºD", "p": "62981775775", "r": "FABRICIA FREITAS DE JESUS OLIVEIRA"},
-      {"a": "ALICE GOULART PEREIRA", "t": "8ºB", "p": "62996773229", "r": "ELAINY GOULART DA SILVA PEREIRA"},
-      {"a": "ALICE LEMES SILVA", "t": "8ºB", "p": "62981650390", "r": "LILIAN LEMES DA SILVA"},
-      {"a": "ALICE MAGALHÃES DINIZ", "t": "6ºF", "p": "62981735515", "r": "VALESCA MAGALHAES DINIZ"},
-      {"a": "ALICE MARQUES ROCHA", "t": "7ºE", "p": "62996884100", "r": "ALINE MARQUES CARDOSO"},
-      {"a": "ALICE MENDONÇA DE ABREU", "t": "8ºC", "p": "62999464648", "r": "LUCIANA MENDONÇA DE OLIVEIRA ABREU"},
-      {"a": "ALICE NUNES BITTENCOURT", "t": "8ºC", "p": "62982855519", "r": "PATRICIA ROSA NUNES"},
-      {"a": "ALICE PAIXÃO MARTINS", "t": "6ºG", "p": "62982545582", "r": "LIDIANE COSTA PAIXÃO MARTINS"},
-      {"a": "ALICE PEIXOTO ROCHA", "t": "7ºD", "p": "62981313366", "r": "MARIA FERNANDA PEIXOTO ROCHA"},
-      {"a": "ALICE PEREIRA TAVARES", "t": "7ºA", "p": "62998634863", "r": "FLAVIA TAVARES DE CARVALHO"},
-      {"a": "ALICE RIBEIRO DE OLIVEIRA", "t": "8ºE", "p": "62984024340", "r": "LUDMYLLA RIBEIRO E SILVA"},
-      {"a": "ALICE RODRIGUES BORGES", "t": "6ºB", "p": "62981643444", "r": "DANIELA RODRIGUES DE JESUS BORGES"},
-      {"a": "ALICE ROQUETE GUIMARÃES", "t": "7ºE", "p": "62981881678", "r": "AMANDA MOREIRA ROQUETE"},
-      {"a": "ALICE SALES MARIANO", "t": "8ºE", "p": "62981156828", "r": "DENISE SALES ARAUJO MARIANO"},
-      {"a": "ALICE SILVEIRA SOUZA", "t": "9ºG", "p": "62998687707", "r": "KEILA SILVEIRA DE MELO SOUZA"},
-      {"a": "ALICE SOUZA SANTANA", "t": "8ºC", "p": "62996160533", "r": "AMANDA SOUZA MARIANO SANTANA"},
-      {"a": "ALÍCIA ARANTES DE PAULA", "t": "6ºC", "p": "62982420999", "r": "DANIELA ARANTES DA ROCHA"},
-      {"a": "ALICIA BUENO BORGES DE ARAUJO", "t": "8ºG", "p": "62999710313", "r": "ELIZANGELA BUENO DA SILVA"},
-      {"a": "ALÍCIA FREITAS GARCIA", "t": "6ºD", "p": "62996365287", "r": "CAROLINA FREITAS GARCIA"},
-      {"a": "ALICIA MACEDO SILVEIRA", "t": "6ºD", "p": "62999880816", "r": "FRANCIELLE DE FATIMA MACEDO SILVEIRA"},
-      {"a": "ALÍCIA RIBEIRO PEREIRA", "t": "8ºF", "p": "62981180299", "r": "LARISSA RIBEIRO PEREIRA"},
-      {"a": "ANA BEATRIZ CARVALHO DE PAULA", "t": "9ºD", "p": "62981657662", "r": "ANA CLAUDIA CARVALHO DE PAULA"},
-      {"a": "ANA BEATRIZ FAGUNDES BORGES CARNEIRO", "t": "8ºA", "p": "62981177009", "r": "LETICIA ALVES FAGUNDES"},
-      {"a": "ANA BEATRIZ MARTINS ROCHA", "t": "9ºD", "p": "62992929424", "r": "TAYNA MARTINS GUIMARAES"},
-      {"a": "ANA BEATRIZ OLIVEIRA COSTA", "t": "8ºG", "p": "62981343714", "r": "LARISSA MARA DE OLIVEIRA COSTA"},
-      {"a": "ANA BEATRIZ SILVA CARNEIRO", "t": "7ºE", "p": "62981182283", "r": "ALINE BARBOSA DA SILVA CARNEIRO"},
-      {"a": "ANA CAROLINA CASTRO LIMA", "t": "7ºB", "p": "62992523277", "r": "ANA PAULA MOURA DE CASTRO LIMA"},
-      {"a": "ANA CAROLINA DE OLIVEIRA CAMPOS", "t": "9ºE", "p": "62999120610", "r": "CARLA DE OLIVEIRA CUNHA CAMPOS"},
-      {"a": "ANA CAROLINA FARIA COELHO", "t": "8ºF", "p": "62984570020", "r": "HELENA MARIA FARIA COELHO"},
-      {"a": "ANA CAROLINA FARIA DE CASTILHO", "t": "8ºA", "p": "62992490518", "r": "VALERIA APARECIDA FARIA DA SILVA DE CASTILHO"},
-      {"a": "ANA CAROLINA MACHADO BRASIL", "t": "7ºB", "p": "62981240320", "r": "LILIANE SANTOS MACHADO BRASIL"},
-      {"a": "ANA CAROLINA MOREIRA VIEIRA", "t": "6ºE", "p": "62991054770", "r": "KARINA MOREIRA DOS SANTOS VIEIRA"},
-      {"a": "ANA CECÍLIA DIAS DE ALMEIDA", "t": "6ºD", "p": "62981622283", "r": "ALESSANDRA FERREIRA DIAS"},
-      {"a": "ANA CECILIA ROCHA FERREIRA", "t": "7ºG", "p": "62981112260", "r": "DENISE ROCHA DE OLIVEIRA"},
-      {"a": "ANA CLARA ANDRADE GOUVEIA", "t": "8ºD", "p": "62992770281", "r": "GRAZIELE ANDRADE GOUVEIA"},
-      {"a": "ANA CLARA DE SOUSA TEIXEIRA", "t": "6ºA", "p": "62996162232", "r": "DANIELA DE SOUSA TEIXEIRA"},
-      {"a": "ANA CLARA MARRA ALVES", "t": "7ºG", "p": "62984024322", "r": "VILMA MARRA ALVES"},
-      {"a": "ANA CLARA MENDES ALVES", "t": "9ºA", "p": "62999745582", "r": "ANA PAULA MENDES CARVALHO ALVES"},
-      {"a": "ANA CLARA OLIVEIRA LEAL", "t": "7ºD", "p": "62999496669", "r": "PRISCILA ALVES DE OLIVEIRA LEAL"},
-      {"a": "ANA CLARA PEIXOTO VIEIRA", "t": "7ºF", "p": "62996884044", "r": "RAQUEL PEIXOTO GUIMARÃES"},
-      {"a": "ANA CLARA RIBEIRO CHAVEIRO", "t": "9ºD", "p": "62981656886", "r": "ADRIANA RIBEIRO DOS SANTOS"},
-      {"a": "ANA CLARA ROSA AMORIM", "t": "6ºA", "p": "62981298436", "r": "JULIANA ROSA SILVA"},
-      {"a": "ANA JULIA ALVES CARDOSO", "t": "7ºE", "p": "62996919299", "r": "LORENA ALVES DE OLIVEIRA CARDOSO"},
-      {"a": "ANA JÚLIA AMARAL MACHADO", "t": "7ºA", "p": "62981057404", "r": "MARISTELA BORGES AMARAL"},
-      {"a": "ANA JULIA ARAUJO PINTO", "t": "7ºA", "p": "62982845887", "r": "LUANA ARAUJO PINTO"},
-      {"a": "ANA JULIA DE SOUZA SOARES", "t": "7ºD", "p": "62981444007", "r": "ROSANGELA DE SOUZA SOARES"},
-      {"a": "ANA JÚLIA FARIA DA SILVA", "t": "6ºF", "p": "62999742468", "r": "POLLYANNA FARIA ALVES SILVA"},
-      {"a": "ANA JÚLIA FERREIRA CAMPOS", "t": "6ºF", "p": "62996328328", "r": "ALINE FERREIRA NEVES"},
-      {"a": "ANA JULIA MARQUES GONTIJO", "t": "8ºG", "p": "62996078311", "r": "ANA PAULA MARQUES GONTIJO"},
-      {"a": "ANA JÚLIA MOREIRA SOUZA", "t": "9ºD", "p": "62996349589", "r": "ANDREIA MOREIRA REZENDE"},
-      {"a": "ANA JÚLIA TEIXEIRA GONÇALVES", "t": "6ºA", "p": "62981254336", "r": "PRISCILA TEIXEIRA PINTO GONÇALVES"},
-      {"a": "ANA LAURA DE FREITAS ALVES", "t": "6ºH", "p": "62981504245", "r": "ALINE FREITAS DA SILVA ALVES"},
-      {"a": "ANA LAURA GUIMARAES SANTOS", "t": "8ºG", "p": "62982161474", "r": "PRISCILA GUIMARAES SANTOS"},
-      {"a": "ANA LAURA MARQUES CARDOSO", "t": "8ºB", "p": "62996614100", "r": "ALINE MARQUES CARDOSO"},
-      {"a": "ANA LAURA MARTINS DE SOUSA", "t": "8ºB", "p": "62992983794", "r": "LUCIANA MARTINS DE SOUSA"},
-      {"a": "ANA LAURA SILVA RESENDE", "t": "8ºD", "p": "62981215456", "r": "ANA CLAUDIA SILVA RESENDE"},
-      {"a": "ANA LUISA ALCANTARA REIS", "t": "6ºA", "p": "62991054707", "r": "POLLYANNA ALCANTARA SILVA REIS"},
-      {"a": "ANA LUÍSA CARDOSO DA SILVA ALVES", "t": "7ºG", "p": "62984180479", "r": "LUCIANA CARDOSO DA SILVA"},
-      {"a": "ANA LUISA CUNHA ALVES", "t": "7ºF", "p": "62984025807", "r": "CAMILA BATISTA CUNHA ALVES"},
-      {"a": "ANA LUISA DIAS CARVALHO", "t": "6ºB", "p": "62981881691", "r": "FERNANDA DIAS CARVALHO"},
-      {"a": "ANA LUISA MACHADO ROCHA", "t": "9ºD", "p": "62999818837", "r": "ANA FLAVIA MACHADO COELHO ROCHA"},
-      {"a": "ANA LUISA MEDEIROS DE CARVALHO", "t": "6ºE", "p": "62981561001", "r": "MARIA DE FATIMA MEDEIROS CARVALHO"},
-      {"a": "ANA LUISA NOGUEIRA FIALHO", "t": "8ºF", "p": "62999757366", "r": "CRISTIANE NOGUEIRA FIALHO"},
-      {"a": "ANA LUISA OLIVEIRA COSTA", "t": "8ºG", "p": "62981343714", "r": "LARISSA MARA DE OLIVEIRA COSTA"},
-      {"a": "ANA LUÍSA OLIVEIRA SILVA", "t": "9ºC", "p": "62981886860", "r": "RENATA CRISTINA DE OLIVEIRA"},
-      {"a": "ANA LUISA PEIXOTO VIEIRA", "t": "7ºF", "p": "62996884044", "r": "RAQUEL PEIXOTO GUIMARÃES"},
-      {"a": "ANA LUÍSA RESENDE COELHO", "t": "8ºG", "p": "62981335041", "r": "LILIANE RESENDE COELHO"},
-      {"a": "ANA LUÍSA RIBEIRO DE OLIVEIRA", "t": "6ºE", "p": "62984024340", "r": "LUDMYLLA RIBEIRO E SILVA"},
-      {"a": "ANA LUÍSA VALADÃO DE CARVALHO", "t": "6ºE", "p": "62999496660", "r": "PAULA VALADÃO SILVA"},
-      {"a": "ANA LUIZA AMARAL MACHADO", "t": "7ºA", "p": "62981057404", "r": "MARISTELA BORGES AMARAL"},
-      {"a": "ANA LUIZA CAVALCANTE RODRIGUES", "t": "8ºA", "p": "62981382442", "r": "LILIANE CAVALCANTE RODRIGUES"},
-      {"a": "ANA LUIZA CUNHA DE SOUSA", "t": "8ºD", "p": "62996773228", "r": "FERNANDA CUNHA DE SOUSA"},
-      {"a": "ANA LUIZA DE FREITAS CARDOSO", "t": "7ºF", "p": "62981267484", "r": "ALINE DE FREITAS SILVA CARDOSO"},
-      {"a": "ANA LUIZA DE SOUSA CAMPOS", "t": "7ºC", "p": "62999120610", "r": "CARLA DE OLIVEIRA CUNHA CAMPOS"},
-      {"a": "ANA LUIZA DOS SANTOS CORDEIRO", "t": "8ºG", "p": "62998634848", "r": "DANIELLA DOS SANTOS CORDEIRO"},
-      {"a": "ANA LUIZA GOMES DE OLIVEIRA", "t": "7ºG", "p": "62984180479", "r": "DANIELLA GOMES DE OLIVEIRA"},
-      {"a": "ANA LUIZA MARQUES NUNES", "t": "7ºB", "p": "62981240320", "r": "LARISSA MARQUES NUNES"},
-      {"a": "ANA LUIZA PACHECO DE SOUSA", "t": "6ºB", "p": "62981643444", "r": "LUCIANA PACHECO DE SOUSA"},
-      {"a": "ANA LUIZA PEREIRA DE MELO", "t": "8ºE", "p": "62981156828", "r": "FERNANDA PEREIRA DE MELO"},
-      {"a": "ANA LUIZA ROCHA FERREIRA", "t": "7ºG", "p": "62981112260", "r": "DENISE ROCHA DE OLIVEIRA"},
-      {"a": "ANA LUIZA SILVA CARNEIRO", "t": "7ºE", "p": "62981182283", "r": "ALINE BARBOSA DA SILVA CARNEIRO"},
-      {"a": "ANA LUIZA VALE DE MORAIS", "t": "8ºC", "p": "62996160533", "r": "FABIANA VALE DE MORAIS"},
-      {"a": "YASMIN MELO COELHO", "t": "7ºG", "p": "62996449059", "r": "JULIANA MELO RODRIGUES COELHO"},
-      {"a": "YURI LIEBERENZ KAGAN", "t": "8ºB", "p": "62996379695", "r": "ISABELLA LIEBERENZ CAMILO KAGAN"}
-    ];
-
     const PROFESSORES_DATA = {
       "6ano": ["João Leonardo (MAT1)", "Renato Neto (MAT2)", "Stênio (MAT3)", "Grazielly (GRA)", "Elaine (LIT)", "Pauliany (TEXTO)", "Kaila (RED)", "Alexandre (HISTÓRIA)", "Emilly (GEOGRAFIA)", "Danielle (CIÊNCIAS)", "Ângela (ARTE)", "Élbio (INGLÊS 1)", "Thalita (INGLÊS 2)", "Sebastião (ED. FÍSICA)", "Marlon (SOCIOEMOCIONAL)"],
       "7ano": ["Fernanda (MAT1)", "Fernando (MAT2)", "Bruno (MAT3)", "Tomás (GRA)", "Cecília (LIT)", "Luana (TEXTO)", "Lorena (RED)", "Letícia (HISTÓRIA)", "Wilker (GEOGRAFIA)", "Paula (CIÊNCIAS)", "Ângela (ARTE)", "Lucas (INGLÊS)", "Thalita (INGLÊS 2)", "Gustavo Coutinho (ED. FÍSICA)", "Marlon (SOCIOEMOCIONAL)"],
@@ -530,69 +480,86 @@
       "vespertino": ["João Leonardo + Fernando (MAT)", "Cléssia (LP)", "Carolina Ferraz Bucar Paredes (INGLÊS)", "Caroline Baylão Silva Araújo Gedda (CAMBRIDGE)", "Amanda Bueno Godinho Pancieri (BEO)", "Lajla Katherine Rocha Simião (MONITORIA REDAÇÃO)", "Gustavo Coutinho (ED. FÍSICA)", "Marcelo (VÔLEI)", "Fellipe Gustavo (JUDÔ)", "Dênis (FUTSAL)", "Ananda (DANÇAS)", "Fhellipe Augusto (XADREZ)", "Renato (HANDEBOL)", "Nívea (MEDITAÇÃO)", "Nayara (FUNCIONAL)", "Rodolfo (ED. FINANCEIRA)", "Robótica", "André Arantes (TEATRO/PINTURA)", "André Mols (SONANTE)", "Marco Túlio (EAGLE+BEO)"]
     };
 
-    let ALUNOS_DATA = [];
-    const MAPA_ALUNOS = {};
-
-    function carregarAlunos() {
-      ALUNOS_DATA = ALUNOS_DADOS_OFICIAIS.map(item => ({
-        aluno: item.a,
-        turma: item.t,
-        telefone: item.p,
-        responsavel: item.r
-      }));
-
-      ALUNOS_DATA.sort((a, b) => a.aluno.localeCompare(b.aluno));
-
-      const dl = document.getElementById('listaAlunosDatalist');
-      let html = '';
-      ALUNOS_DATA.forEach(a => {
-        if (a.aluno) {
-          MAPA_ALUNOS[a.aluno.toUpperCase()] = a;
-          html += `<option value="${a.aluno}">${a.turma} — Resp: ${a.responsavel}</option>`;
-        }
-      });
-      if (dl) dl.innerHTML = html;
+    let usuariosLista = JSON.parse(localStorage.getItem('escola_usuarios_db') || 'null');
+    if (!usuariosLista || usuariosLista.length === 0) {
+      usuariosLista = [
+        { id: 1, nome: "Coordenação Geral", perfil: "coordenador", usuario: "coordenacao", senha: "123" },
+        { id: 2, nome: "Orientador Plantão", perfil: "orientador", usuario: "orientador", senha: "123" }
+      ];
+      localStorage.setItem('escola_usuarios_db', JSON.stringify(usuariosLista));
     }
-
-    const USUARIOS_PADRAO = [
-      { id: 1, usuario: "coordenacao", senha: "123", nome: "Coordenação", perfil: "coordenacao", abas: ["atrasos", "sala-estudos", "professores", "inspetores"] }
-    ];
 
     let usuarioLogadoAtual = null;
     let atrasosList = JSON.parse(localStorage.getItem('escola_atrasos') || '[]');
+    let salaEstudosList = JSON.parse(localStorage.getItem('escola_sala_estudos') || '[]');
     let profOcorrenciasList = JSON.parse(localStorage.getItem('escola_prof_ocorrencias') || '[]');
     let inspetoresList = JSON.parse(localStorage.getItem('escola_inspetores') || '[]');
     let turnoAtrasoAtual = 'Matutino';
 
     window.addEventListener('DOMContentLoaded', () => {
-      carregarAlunos();
-      entrarDireto();
+      const salvo = localStorage.getItem('usuario_logado_arena_obj');
+      if (salvo) {
+        try {
+          usuarioLogadoAtual = JSON.parse(salvo);
+          if (usuarioLogadoAtual && usuarioLogadoAtual.usuario) {
+            aplicarSessao();
+            return;
+          }
+        } catch(e) {}
+      }
     });
 
-    function entrarDireto() {
-      usuarioLogadoAtual = USUARIOS_PADRAO[0];
-      exibirSistemaPrincipal();
+    function entrarComoCoordDireto() {
+      usuarioLogadoAtual = usuariosLista.find(u => u.perfil === 'coordenador') || usuariosLista[0];
+      localStorage.setItem('usuario_logado_arena_obj', JSON.stringify(usuarioLogadoAtual));
+      aplicarSessao();
     }
 
     function fazerLogin(e) {
       e.preventDefault();
-      entrarDireto();
+      const user = document.getElementById('loginUsuario').value.trim().toLowerCase();
+      const pass = document.getElementById('loginSenha').value.trim();
+
+      const encontrado = usuariosLista.find(u => u.usuario.toLowerCase() === user && u.senha === pass);
+      if (encontrado) {
+        usuarioLogadoAtual = encontrado;
+        localStorage.setItem('usuario_logado_arena_obj', JSON.stringify(encontrado));
+        aplicarSessao();
+      } else {
+        alert('Usuário ou senha incorretos.');
+      }
     }
 
     function fazerLogout() {
+      localStorage.removeItem('usuario_logado_arena_obj');
       usuarioLogadoAtual = null;
       document.getElementById('sistema-principal').classList.add('hidden');
       document.getElementById('tela-login').classList.remove('hidden');
     }
 
-    function exibirSistemaPrincipal() {
+    function aplicarSessao() {
       document.getElementById('tela-login').classList.add('hidden');
       document.getElementById('sistema-principal').classList.remove('hidden');
+      document.getElementById('usuarioLogadoNome').textContent = usuarioLogadoAtual.nome;
+      document.getElementById('usuarioLogadoPerfil').textContent = 'Perfil: ' + usuarioLogadoAtual.perfil.toUpperCase();
+      document.getElementById('headerCargoLogado').textContent = `Logado como: ${usuarioLogadoAtual.nome} (${usuarioLogadoAtual.perfil.toUpperCase()})`;
+
+      const btnAdm = document.getElementById('btn-aba-adm');
+      const btnProf = document.getElementById('btn-aba-professores');
+
+      if (usuarioLogadoAtual.perfil === 'orientador') {
+        if(btnAdm) btnAdm.style.display = 'none';
+        if(btnProf) btnProf.style.display = 'none';
+      } else {
+        if(btnAdm) btnAdm.style.display = 'flex';
+        if(btnProf) btnProf.style.display = 'flex';
+      }
 
       const hoje = new Date().toISOString().split('T')[0];
       const hora = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
       if(document.getElementById('atrasoData')) document.getElementById('atrasoData').value = hoje;
       if(document.getElementById('atrasoHora')) document.getElementById('atrasoHora').value = hora;
+      if(document.getElementById('seData')) document.getElementById('seData').value = hoje;
       if(document.getElementById('profData')) document.getElementById('profData').value = hoje;
       if(document.getElementById('inspData')) document.getElementById('inspData').value = hoje;
       if(document.getElementById('inspHora')) document.getElementById('inspHora').value = hora;
@@ -600,8 +567,10 @@
       mudarAba('atrasos');
       atualizarListaProfessores();
       renderizarAtrasos();
+      renderizarSalaEstudos();
       renderizarProfOcorrencias();
       renderizarInspetores();
+      renderizarUsuariosADM();
     }
 
     function mudarAba(abaId) {
@@ -615,17 +584,28 @@
       if (abaId === 'professores') {
         atualizarListaProfessores();
       }
+      if (abaId === 'adm') {
+        renderizarUsuariosADM();
+      }
     }
 
-    function completarInfoAluno(nome, labelId) {
-      const info = MAPA_ALUNOS[nome.trim().toUpperCase()];
-      const label = document.getElementById(labelId);
-      if (label) {
-        if (info) {
-          label.textContent = `Turma: ${info.turma} | Responsável: ${info.responsavel}`;
-        } else {
-          label.textContent = '';
-        }
+    function mudarSubAbaSala(sub) {
+      const btnNovo = document.getElementById('subbtn-novo');
+      const btnRel = document.getElementById('subbtn-relatorios');
+      const divNovo = document.getElementById('subaba-novo');
+      const divRel = document.getElementById('subaba-relatorios');
+
+      if (sub === 'novo') {
+        btnNovo.className = "px-4 py-2 bg-[#1b4332] text-white rounded text-xs font-semibold";
+        btnRel.className = "px-4 py-2 bg-gray-200 text-gray-700 rounded text-xs font-semibold hover:bg-gray-300";
+        divNovo.style.display = 'block';
+        divRel.style.display = 'none';
+      } else {
+        btnRel.className = "px-4 py-2 bg-[#1b4332] text-white rounded text-xs font-semibold";
+        btnNovo.className = "px-4 py-2 bg-gray-200 text-gray-700 rounded text-xs font-semibold hover:bg-gray-300";
+        divRel.style.display = 'block';
+        divNovo.style.display = 'none';
+        renderizarSalaEstudos();
       }
     }
 
@@ -643,22 +623,19 @@
 
     function salvarAtraso(e) {
       e.preventDefault();
-      const nome = document.getElementById('atrasoAluno').value.trim().toUpperCase();
-      const info = MAPA_ALUNOS[nome];
       const item = {
         id: Date.now(),
         turno: turnoAtrasoAtual,
         espaco: document.getElementById('atrasoEspaco').value,
         hora: document.getElementById('atrasoHora').value,
         data: document.getElementById('atrasoData').value,
-        aluno: nome,
-        turma: info ? info.turma : '—',
+        aluno: document.getElementById('atrasoAluno').value.trim().toUpperCase(),
+        turma: document.getElementById('atrasoTurma').value.trim(),
         justificativa: document.getElementById('atrasoJustificativa').value
       };
       atrasosList.unshift(item);
       localStorage.setItem('escola_atrasos', JSON.stringify(atrasosList));
       e.target.reset();
-      if(document.getElementById('atrasoTurmaLabel')) document.getElementById('atrasoTurmaLabel').textContent = '';
       renderizarAtrasos();
     }
 
@@ -699,7 +676,72 @@
 
     function salvarSalaEstudos(e) {
       e.preventDefault();
-      alert('Relatório da Sala de Estudos salvo com sucesso!');
+      const item = {
+        id: Date.now(),
+        data: document.getElementById('seData').value,
+        professor: document.getElementById('seProfessor').value,
+        silencio: document.querySelector('input[name="ind_silencio"]:checked')?.value || '—',
+        foco: document.querySelector('input[name="ind_foco"]:checked')?.value || '—',
+        celular: document.querySelector('input[name="ind_celular"]:checked')?.value || '—',
+        org: document.querySelector('input[name="ind_org"]:checked')?.value || '—',
+        apostila: document.getElementById('chkApostila').checked ? 'Sim' : 'Não',
+        respostas: document.getElementById('chkRespostas').checked ? 'Sim' : 'Não',
+        erro: document.getElementById('chkErro').checked ? 'Sim' : 'Não',
+        ativo: document.getElementById('chkAtivo').checked ? 'Sim' : 'Não',
+        aluno: document.getElementById('seAluno').value.trim() || '—',
+        turma: document.getElementById('seTurma').value.trim() || '—',
+        ocorrencia: document.getElementById('seOcorrencia').value.trim() || 'Nenhuma ocorrência descrita.'
+      };
+
+      salaEstudosList.unshift(item);
+      localStorage.setItem('escola_sala_estudos', JSON.stringify(salaEstudosList));
+      e.target.reset();
+      alert('Relatório diário da Sala de Estudos salvo com sucesso!');
+      mudarSubAbaSala('relatorios');
+    }
+
+    function renderizarSalaEstudos() {
+      const container = document.getElementById('listaRelatoriosContainer');
+      if (!container) return;
+      container.innerHTML = '';
+
+      if (salaEstudosList.length === 0) {
+        container.innerHTML = `<p class="text-xs text-gray-500 italic">Nenhum relatório diário salvo ainda.</p>`;
+        return;
+      }
+
+      salaEstudosList.forEach(r => {
+        container.innerHTML += `
+          <div class="border rounded-lg p-4 bg-gray-50 text-xs space-y-2">
+            <div class="flex justify-between items-center border-b pb-2">
+              <p class="font-bold text-[#1b4332] text-sm">📅 Data: ${r.data} | Responsável: ${r.professor}</p>
+              <button onclick="excluirSalaEstudos(${r.id})" class="text-red-600 font-bold hover:underline no-print">Excluir Relatório</button>
+            </div>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-2 bg-white p-2.5 rounded border">
+              <p><strong>Silêncio:</strong> ${r.silencio}</p>
+              <p><strong>Foco:</strong> ${r.foco}</p>
+              <p><strong>Celular:</strong> ${r.celular}</p>
+              <p><strong>Organização:</strong> ${r.org}</p>
+            </div>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-2 bg-white p-2.5 rounded border text-[11px]">
+              <p>📖 Apostila Viva: ${r.apostila}</p>
+              <p>✍️ Respostas: ${r.respostas}</p>
+              <p>🔍 Correção do Erro: ${r.erro}</p>
+              <p>💡 Estudo Ativo: ${r.ativo}</p>
+            </div>
+            <p><strong>Aluno(a):</strong> ${r.aluno} (${r.turma})</p>
+            <p><strong>Observações / Ocorrência:</strong> ${r.ocorrencia}</p>
+          </div>
+        `;
+      });
+    }
+
+    function excluirSalaEstudos(id) {
+      if(confirm('Tem certeza de que deseja apagar este relatório?')) {
+        salaEstudosList = salaEstudosList.filter(s => s.id !== id);
+        localStorage.setItem('escola_sala_estudos', JSON.stringify(salaEstudosList));
+        renderizarSalaEstudos();
+      }
     }
 
     function atualizarListaProfessores() {
@@ -894,6 +936,47 @@
         inspetoresList = inspetoresList.filter(i => i.id !== id);
         localStorage.setItem('escola_inspetores', JSON.stringify(inspetoresList));
         renderizarInspetores();
+      }
+    }
+
+    function cadastrarUsuario(e) {
+      e.preventDefault();
+      const nome = document.getElementById('novoNome').value.trim();
+      const perfil = document.getElementById('novoPerfil').value;
+      const usuario = document.getElementById('novoLogin').value.trim().toLowerCase();
+      const senha = document.getElementById('novoSenha').value.trim();
+
+      usuariosLista.push({ id: Date.now(), nome, perfil, usuario, senha });
+      localStorage.setItem('escola_usuarios_db', JSON.stringify(usuariosLista));
+      e.target.reset();
+      renderizarUsuariosADM();
+      alert('Usuário cadastrado com sucesso!');
+    }
+
+    function renderizarUsuariosADM() {
+      const tbody = document.getElementById('listaUsuariosTbody');
+      if (!tbody) return;
+      tbody.innerHTML = '';
+      usuariosLista.forEach(u => {
+        tbody.innerHTML += `
+          <tr class="border-b hover:bg-gray-50">
+            <td class="p-2.5 border font-semibold">${u.nome}</td>
+            <td class="p-2.5 border">${u.usuario}</td>
+            <td class="p-2.5 border"><span class="px-2 py-0.5 rounded text-[11px] font-bold ${u.perfil === 'coordenador' ? 'bg-emerald-100 text-emerald-800' : 'bg-blue-100 text-blue-800'}">${u.perfil.toUpperCase()}</span></td>
+            <td class="p-2.5 border">${u.senha}</td>
+            <td class="p-2.5 border text-center">
+              ${usuariosLista.length > 1 ? `<button onclick="excluirUsuario(${u.id})" class="text-red-600 font-bold hover:underline">Excluir</button>` : '—'}
+            </td>
+          </tr>
+        `;
+      });
+    }
+
+    function excluirUsuario(id) {
+      if(confirm('Deseja excluir este usuário do sistema?')) {
+        usuariosLista = usuariosLista.filter(u => u.id !== id);
+        localStorage.setItem('escola_usuarios_db', JSON.stringify(usuariosLista));
+        renderizarUsuariosADM();
       }
     }
   </script>
