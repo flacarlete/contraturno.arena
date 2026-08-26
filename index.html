@@ -99,12 +99,7 @@
               <div>
                 <label class="block text-xs font-medium text-gray-700 mb-1">Espaço / Aula</label>
                 <select id="atrasoEspaco" class="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-[#1b4332]" required>
-                  <option value="">Selecione...</option>
-                  <option value="Nivelamentos">Nivelamentos</option>
-                  <option value="Sala de estudos">Sala de estudos</option>
-                  <option value="Biblioteca">Biblioteca</option>
-                  <option value="Modalidades diversas">Modalidades diversas</option>
-                  <option value="AEE">AEE</option>
+                  <!-- Preenchido dinamicamente via JS de acordo com o turno -->
                 </select>
               </div>
               <div>
@@ -584,6 +579,7 @@
       if(document.getElementById('inspHora')) document.getElementById('inspHora').value = hora;
 
       mudarAba('atrasos');
+      setAtrasoTurno('Matutino');
       atualizarListaProfessores();
       renderizarAtrasos();
       renderizarSalaEstudos();
@@ -630,13 +626,33 @@
 
     function setAtrasoTurno(turno) {
       turnoAtrasoAtual = turno;
+      const selectEspaco = document.getElementById('atrasoEspaco');
       if(document.getElementById('labelTurno')) document.getElementById('labelTurno').textContent = turno;
+      
       if(turno === 'Matutino') {
         if(document.getElementById('btn-turno-mat')) document.getElementById('btn-turno-mat').className = "px-4 py-1.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800";
         if(document.getElementById('btn-turno-vesp')) document.getElementById('btn-turno-vesp').className = "px-4 py-1.5 rounded-full text-xs font-semibold bg-gray-100 text-gray-600";
+        
+        // No Matutino, o espaço é EXCLUSIVAMENTE Sala de aula
+        if(selectEspaco) {
+          selectEspaco.innerHTML = `<option value="Sala de aula">Sala de aula</option>`;
+          selectEspaco.value = "Sala de aula";
+        }
       } else {
         if(document.getElementById('btn-turno-vesp')) document.getElementById('btn-turno-vesp').className = "px-4 py-1.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800";
         if(document.getElementById('btn-turno-mat')) document.getElementById('btn-turno-mat').className = "px-4 py-1.5 rounded-full text-xs font-semibold bg-gray-100 text-gray-600";
+        
+        // No Vespertino, exibe todas as opções de espaços
+        if(selectEspaco) {
+          selectEspaco.innerHTML = `
+            <option value="">Selecione...</option>
+            <option value="Nivelamentos">Nivelamentos</option>
+            <option value="Sala de estudos">Sala de estudos</option>
+            <option value="Biblioteca">Biblioteca</option>
+            <option value="Modalidades diversas">Modalidades diversas</option>
+            <option value="AEE">AEE</option>
+          `;
+        }
       }
     }
 
@@ -655,6 +671,7 @@
       atrasosList.unshift(item);
       localStorage.setItem('escola_atrasos', JSON.stringify(atrasosList));
       e.target.reset();
+      setAtrasoTurno(turnoAtrasoAtual); // Restaura o select de espaço após resetar
       renderizarAtrasos();
     }
 
