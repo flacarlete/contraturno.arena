@@ -642,10 +642,12 @@
         if(document.getElementById('btn-turno-vesp')) document.getElementById('btn-turno-vesp').className = "px-4 py-1.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800";
         if(document.getElementById('btn-turno-mat')) document.getElementById('btn-turno-mat').className = "px-4 py-1.5 rounded-full text-xs font-semibold bg-gray-100 text-gray-600";
         
-        // No Vespertino, exibe todas as opções de espaços
+        // No Vespertino, inclui Cambridge e as demais opções
         if(selectEspaco) {
           selectEspaco.innerHTML = `
             <option value="">Selecione...</option>
+            <option value="Sala de aula">Sala de aula</option>
+            <option value="Cambridge">Cambridge</option>
             <option value="Nivelamentos">Nivelamentos</option>
             <option value="Sala de estudos">Sala de estudos</option>
             <option value="Biblioteca">Biblioteca</option>
@@ -671,7 +673,7 @@
       atrasosList.unshift(item);
       localStorage.setItem('escola_atrasos', JSON.stringify(atrasosList));
       e.target.reset();
-      setAtrasoTurno(turnoAtrasoAtual); // Restaura o select de espaço após resetar
+      setAtrasoTurno(turnoAtrasoAtual);
       renderizarAtrasos();
     }
 
