@@ -253,21 +253,15 @@
               </div>
 
               <div>
-                <h3 class="text-xs font-bold text-gray-700 uppercase tracking-wider mb-2 flex items-center gap-2">
+                <h3 class="text-xs font-bold text-gray-700 uppercase tracking-wider mb-3 flex items-center gap-2">
                   <span class="bg-[#1b4332] text-white rounded-full w-5 h-5 flex items-center justify-center text-[10px]">3</span>
-                  Ocorrência de Aluno & Feedback para Coordenação
+                  Ocorrências de Alunos (20 Espaços Disponíveis)
                 </h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-3">
-                  <div>
-                    <label class="block text-xs font-medium text-gray-700 mb-1">Nome do Aluno</label>
-                    <input type="text" id="seAluno" placeholder="Nome do aluno..." class="w-full border border-gray-300 rounded px-3 py-2 text-xs font-bold text-[#1b4332]" />
-                  </div>
-                  <div>
-                    <label class="block text-xs font-medium text-gray-700 mb-1">Turma</label>
-                    <input type="text" id="seTurma" placeholder="Ex: 9ºD" class="w-full border border-gray-300 rounded px-3 py-2 text-xs font-semibold text-[#1b4332]" />
-                  </div>
+                <p class="text-[11px] text-gray-500 mb-3">Preencha os alunos que apresentaram ocorrências ou observações neste dia (deixe em branco os que não utilizar).</p>
+                
+                <div id="container20Espacos" class="space-y-3 bg-gray-50 p-4 rounded border">
+                  <!-- Gerado dinamicamente via JS -->
                 </div>
-                <textarea id="seOcorrencia" rows="3" placeholder="Descreva os tópicos ou acontecimentos observados..." class="w-full border border-gray-300 rounded p-3 text-xs focus:outline-none focus:border-[#1b4332]"></textarea>
               </div>
 
               <div class="flex justify-end gap-3 no-print">
@@ -498,9 +492,16 @@
     if (!usuariosLista || usuariosLista.length === 0) {
       usuariosLista = [
         { id: 1, nome: "Coordenação Geral", perfil: "coordenador", usuario: "coordenacao", senha: "123" },
-        { id: 2, nome: "Orientador Plantão", perfil: "orientador", usuario: "orientador", senha: "123" }
+        { id: 2, nome: "Tamires Coordenação", perfil: "coordenador", usuario: "tamires", senha: "123" },
+        { id: 3, nome: "Orientador Plantão", perfil: "orientador", usuario: "orientador", senha: "123" }
       ];
       localStorage.setItem('escola_usuarios_db', JSON.stringify(usuariosLista));
+    } else {
+      // Garante que a Tamires esteja cadastrada caso o banco local já exista
+      if (!usuariosLista.some(u => u.usuario.toLowerCase() === 'tamires')) {
+        usuariosLista.push({ id: Date.now(), nome: "Tamires", perfil: "coordenador", usuario: "tamires", senha: "123" });
+        localStorage.setItem('escola_usuarios_db', JSON.stringify(usuariosLista));
+      }
     }
 
     let usuarioLogadoAtual = null;
@@ -511,6 +512,7 @@
     let turnoAtrasoAtual = 'Matutino';
 
     window.addEventListener('DOMContentLoaded', () => {
+      montar20EspacosSalaEstudos();
       const salvo = localStorage.getItem('usuario_logado_arena_obj');
       if (salvo) {
         try {
@@ -522,6 +524,30 @@
         } catch(e) {}
       }
     });
+
+    // Gera os 20 espaços/linhas no item 3 da Sala de Estudos
+    function montar20EspacosSalaEstudos() {
+      const container = document.getElementById('container20Espacos');
+      if (!container) return;
+      let html = '';
+      for (let i = 1; i <= 20; i++) {
+        html += `
+          <div class="grid grid-cols-1 md:grid-cols-12 gap-2 items-center bg-white p-2 rounded border">
+            <span class="md:col-span-1 text-xs font-bold text-gray-500 text-center">#${i}</span>
+            <div class="md:col-span-4">
+              <input type="text" id="se_aluno_${i}" placeholder="Nome do aluno ${i}..." class="w-full border rounded px-2 py-1 text-xs font-bold text-[#1b4332]" />
+            </div>
+            <div class="md:col-span-2">
+              <input type="text" id="se_turma_${i}" placeholder="Turma" class="w-full border rounded px-2 py-1 text-xs font-semibold text-[#1b4332]" />
+            </div>
+            <div class="md:col-span-5">
+              <input type="text" id="se_desc_${i}" placeholder="Ocorrência / Observação..." class="w-full border rounded px-2 py-1 text-xs" />
+            </div>
+          </div>
+        `;
+      }
+      container.innerHTML = html;
+    }
 
     function entrarComoCoordDireto() {
       usuarioLogadoAtual = usuariosLista.find(u => u.perfil === 'coordenador') || usuariosLista[0];
@@ -633,7 +659,6 @@
         if(document.getElementById('btn-turno-mat')) document.getElementById('btn-turno-mat').className = "px-4 py-1.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800";
         if(document.getElementById('btn-turno-vesp')) document.getElementById('btn-turno-vesp').className = "px-4 py-1.5 rounded-full text-xs font-semibold bg-gray-100 text-gray-600";
         
-        // No Matutino, o espaço é EXCLUSIVAMENTE Sala de aula
         if(selectEspaco) {
           selectEspaco.innerHTML = `<option value="Sala de aula">Sala de aula</option>`;
           selectEspaco.value = "Sala de aula";
@@ -642,7 +667,6 @@
         if(document.getElementById('btn-turno-vesp')) document.getElementById('btn-turno-vesp').className = "px-4 py-1.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800";
         if(document.getElementById('btn-turno-mat')) document.getElementById('btn-turno-mat').className = "px-4 py-1.5 rounded-full text-xs font-semibold bg-gray-100 text-gray-600";
         
-        // No Vespertino, inclui Cambridge e as demais opções
         if(selectEspaco) {
           selectEspaco.innerHTML = `
             <option value="">Selecione...</option>
@@ -714,27 +738,48 @@
 
     function salvarSalaEstudos(e) {
       e.preventDefault();
-      const item = {
-        id: Date.now(),
-        data: document.getElementById('seData').value,
-        professor: document.getElementById('seProfessor').value,
-        silencio: document.querySelector('input[name="ind_silencio"]:checked')?.value || '—',
-        foco: document.querySelector('input[name="ind_foco"]:checked')?.value || '—',
-        celular: document.querySelector('input[name="ind_celular"]:checked')?.value || '—',
-        org: document.querySelector('input[name="ind_org"]:checked')?.value || '—',
-        apostila: document.getElementById('chkApostila').checked ? 'Sim' : 'Não',
-        respostas: document.getElementById('chkRespostas').checked ? 'Sim' : 'Não',
-        erro: document.getElementById('chkErro').checked ? 'Sim' : 'Não',
-        ativo: document.getElementById('chkAtivo').checked ? 'Sim' : 'Não',
-        aluno: document.getElementById('seAluno').value.trim().toUpperCase() || 'ALUNO NÃO INFORMADO',
-        turma: document.getElementById('seTurma').value.trim() || '—',
-        ocorrencia: document.getElementById('seOcorrencia').value.trim() || 'Nenhuma ocorrência descrita.'
-      };
+      const dataRel = document.getElementById('seData').value;
+      const profRel = document.getElementById('seProfessor').value;
+      const silencio = document.querySelector('input[name="ind_silencio"]:checked')?.value || '—';
+      const foco = document.querySelector('input[name="ind_foco"]:checked')?.value || '—';
+      const celular = document.querySelector('input[name="ind_celular"]:checked')?.value || '—';
+      const org = document.querySelector('input[name="ind_org"]:checked')?.value || '—';
+      const apostila = document.getElementById('chkApostila').checked ? 'Sim' : 'Não';
+      const respostas = document.getElementById('chkRespostas').checked ? 'Sim' : 'Não';
+      const erro = document.getElementById('chkErro').checked ? 'Sim' : 'Não';
+      const ativo = document.getElementById('chkAtivo').checked ? 'Sim' : 'Não';
 
-      salaEstudosList.unshift(item);
+      // Coleta os preenchidos nos 20 espaços
+      let preenchidosCount = 0;
+      for (let i = 1; i <= 20; i++) {
+        const nomeAluno = document.getElementById(`se_aluno_${i}`).value.trim();
+        if (nomeAluno) {
+          preenchidosCount++;
+          const turmaAluno = document.getElementById(`se_turma_${i}`).value.trim() || '—';
+          const descAluno = document.getElementById(`se_desc_${i}`).value.trim() || 'Nenhuma ocorrência descrita.';
+
+          const item = {
+            id: Date.now() + i,
+            data: dataRel,
+            professor: profRel,
+            silencio, foco, celular, org, apostila, respostas, erro, ativo,
+            aluno: nomeAluno.toUpperCase(),
+            turma: turmaAluno,
+            ocorrencia: descAluno
+          };
+          salaEstudosList.unshift(item);
+        }
+      }
+
+      if (preenchidosCount === 0) {
+        alert('Por favor, preencha pelo menos um aluno nos espaços do Item 3.');
+        return;
+      }
+
       localStorage.setItem('escola_sala_estudos', JSON.stringify(salaEstudosList));
       e.target.reset();
-      alert('Relatório diário da Sala de Estudos salvo com sucesso!');
+      montar20EspacosSalaEstudos();
+      alert(`Relatório salvo com sucesso (${preenchidosCount} ocorrência(s) registrada(s))!`);
       mudarSubAbaSala('relatorios');
     }
 
@@ -767,12 +812,6 @@
                 <button onclick="excluirSalaEstudos(${occ.id})" class="text-red-600 font-bold hover:underline text-[11px] no-print">Apagar este registro</button>
               </div>
               <p><strong>Descrição / Feedback:</strong> ${occ.ocorrencia}</p>
-              <div class="mt-2 grid grid-cols-2 md:grid-cols-4 gap-1 text-[11px] text-gray-600 bg-gray-50 p-1.5 rounded">
-                <span>Silêncio: ${occ.silencio}</span>
-                <span>Foco: ${occ.foco}</span>
-                <span>Celular: ${occ.celular}</span>
-                <span>Organização: ${occ.org}</span>
-              </div>
             </div>
           `;
         });
