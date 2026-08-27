@@ -430,7 +430,7 @@
             </div>
             <div class="flex justify-end gap-2">
               <button type="button" id="btnCancelaEditInsp" onclick="cancelarEdicaoInspetor()" class="hidden bg-gray-500 text-white px-4 py-2 rounded text-xs font-medium">Cancelar</button>
-              <button type="submit" id="btnSalvaInsp" class="bg-[#1b4332] text-white px-5 py-2 rounded text-xs font-semibold">Salvar Orientação</button>
+              <button type="submit" id="btnSalvaInsp" class="bg-[#1b4332] text-white px-5 py-2 rounded text-sm font-semibold">Salvar Orientação</button>
             </div>
           </form>
         </div>
@@ -502,18 +502,25 @@
     };
 
     let usuariosLista = JSON.parse(localStorage.getItem('escola_usuarios_db') || 'null');
+    
+    // Lista padrão garantindo a Tamires e todos os acessos essenciais
+    const USUARIOS_PADRAO_INICIAIS = [
+      { id: 1, nome: "Coordenação Geral", perfil: "coordenador", usuario: "coordenacao", senha: "123" },
+      { id: 2, nome: "Tamires", perfil: "coordenador", usuario: "tamires", senha: "123" },
+      { id: 3, nome: "Orientador Plantão", perfil: "orientador", usuario: "orientador", senha: "123" }
+    ];
+
     if (!usuariosLista || usuariosLista.length === 0) {
-      usuariosLista = [
-        { id: 1, nome: "Coordenação Geral", perfil: "coordenador", usuario: "coordenacao", senha: "123" },
-        { id: 2, nome: "Tamires", perfil: "coordenador", usuario: "tamires", senha: "123" },
-        { id: 3, nome: "Orientador Plantão", perfil: "orientador", usuario: "orientador", senha: "123" }
-      ];
+      usuariosLista = USUARIOS_PADRAO_INICIAIS;
       localStorage.setItem('escola_usuarios_db', JSON.stringify(usuariosLista));
     } else {
-      if (!usuariosLista.some(u => u.usuario.toLowerCase() === 'tamires')) {
-        usuariosLista.push({ id: Date.now(), nome: "Tamires", perfil: "coordenador", usuario: "tamires", senha: "123" });
-        localStorage.setItem('escola_usuarios_db', JSON.stringify(usuariosLista));
-      }
+      // Garante que a Tamires e a Coordenação estejam sempre presentes independente do cache antigo
+      USUARIOS_PADRAO_INICIAIS.forEach(padrao => {
+        if (!usuariosLista.some(u => u.usuario.toLowerCase() === padrao.usuario.toLowerCase())) {
+          usuariosLista.push(padrao);
+        }
+      });
+      localStorage.setItem('escola_usuarios_db', JSON.stringify(usuariosLista));
     }
 
     let usuarioLogadoAtual = null;
@@ -561,7 +568,7 @@
     }
 
     function entrarComoCoordDireto() {
-      usuarioLogadoAtual = usuariosLista.find(u => u.perfil === 'coordenador') || usuariosLista[0];
+      usuarioLogadoAtual = usuariosLista.find(u => u.perfil.toLowerCase() === 'coordenador') || usuariosLista[0];
       localStorage.setItem('usuario_logado_arena_obj', JSON.stringify(usuarioLogadoAtual));
       aplicarSessao();
     }
@@ -571,13 +578,14 @@
       const user = document.getElementById('loginUsuario').value.trim().toLowerCase();
       const pass = document.getElementById('loginSenha').value.trim();
 
-      const encontrado = usuariosLista.find(u => u.usuario.toLowerCase() === user && u.senha === pass);
+      // Busca insensível a maiúsculas/minúsculas e espaços
+      const encontrado = usuariosLista.find(u => u.usuario.trim().toLowerCase() === user && u.senha.trim() === pass);
       if (encontrado) {
         usuarioLogadoAtual = encontrado;
         localStorage.setItem('usuario_logado_arena_obj', JSON.stringify(encontrado));
         aplicarSessao();
       } else {
-        alert('Usuário ou senha incorretos.');
+        alert('Usuário ou senha incorretos. Verifique as credenciais cadastradas.');
       }
     }
 
@@ -598,7 +606,7 @@
       const btnAdm = document.getElementById('btn-aba-adm');
       const btnProf = document.getElementById('btn-aba-professores');
 
-      if (usuarioLogadoAtual.perfil === 'orientador') {
+      if (usuarioLogadoAtual.perfil.toLowerCase() === 'orientador') {
         if(btnAdm) btnAdm.style.display = 'none';
         if(btnProf) btnProf.style.display = 'none';
       } else {
@@ -1164,7 +1172,7 @@
           <tr class="border-b hover:bg-gray-50">
             <td class="p-2.5 border font-semibold">${u.nome}</td>
             <td class="p-2.5 border">${u.usuario}</td>
-            <td class="p-2.5 border"><span class="px-2 py-0.5 rounded text-[11px] font-bold ${u.perfil === 'coordenador' ? 'bg-emerald-100 text-emerald-800' : 'bg-blue-100 text-blue-800'}">${u.perfil.toUpperCase()}</span></td>
+            <td class="p-2.5 border"><span class="px-2 py-0.5 rounded text-[11px] font-bold ${u.perfil.toLowerCase() === 'coordenador' ? 'bg-emerald-100 text-emerald-800' : 'bg-blue-100 text-blue-800'}">${u.perfil.toUpperCase()}</span></td>
             <td class="p-2.5 border">${u.senha}</td>
             <td class="p-2.5 border text-center">
               ${usuariosLista.length > 1 ? `<button onclick="excluirUsuario(${u.id})" class="text-red-600 font-bold hover:underline">Excluir</button>` : '—'}
@@ -1182,7 +1190,6 @@
       }
     }
 
-    // FUNÇÕES DE BACKUP E RESTAURAÇÃO
     function baixarBackupDados() {
       const backupObj = {
         atrasos: atrasosList,
