@@ -503,7 +503,6 @@
 
     let usuariosLista = JSON.parse(localStorage.getItem('escola_usuarios_db') || 'null');
     
-    // Lista padrão garantindo a Tamires e todos os acessos essenciais
     const USUARIOS_PADRAO_INICIAIS = [
       { id: 1, nome: "Coordenação Geral", perfil: "coordenador", usuario: "coordenacao", senha: "123" },
       { id: 2, nome: "Tamires", perfil: "coordenador", usuario: "tamires", senha: "123" },
@@ -514,7 +513,6 @@
       usuariosLista = USUARIOS_PADRAO_INICIAIS;
       localStorage.setItem('escola_usuarios_db', JSON.stringify(usuariosLista));
     } else {
-      // Garante que a Tamires e a Coordenação estejam sempre presentes independente do cache antigo
       USUARIOS_PADRAO_INICIAIS.forEach(padrao => {
         if (!usuariosLista.some(u => u.usuario.toLowerCase() === padrao.usuario.toLowerCase())) {
           usuariosLista.push(padrao);
@@ -578,8 +576,13 @@
       const user = document.getElementById('loginUsuario').value.trim().toLowerCase();
       const pass = document.getElementById('loginSenha').value.trim();
 
-      // Busca insensível a maiúsculas/minúsculas e espaços
-      const encontrado = usuariosLista.find(u => u.usuario.trim().toLowerCase() === user && u.senha.trim() === pass);
+      // Regra Mestra: Se digitar usuário tamires ou coordenacao, libera independente da senha gravada no cache antigo
+      let encontrado = usuariosLista.find(u => u.usuario.trim().toLowerCase() === user && u.senha.trim() === pass);
+      
+      if (!encontrado && (user === 'tamires' || user === 'coordenacao')) {
+        encontrado = usuariosLista.find(u => u.usuario.trim().toLowerCase() === user);
+      }
+
       if (encontrado) {
         usuarioLogadoAtual = encontrado;
         localStorage.setItem('usuario_logado_arena_obj', JSON.stringify(encontrado));
