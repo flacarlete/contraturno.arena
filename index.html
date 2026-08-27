@@ -323,7 +323,7 @@
               </div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2 border-t text-xs">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 pt-2 border-t text-xs">
               <div class="flex items-center gap-2">
                 <input type="checkbox" id="profChamada" />
                 <label class="font-medium text-gray-700">Não fez chamada</label>
@@ -341,6 +341,13 @@
                   Atraso após o intervalo
                 </label>
                 <input type="number" id="profMinutosInterv" placeholder="Minutos de atraso" disabled class="w-full border border-gray-300 rounded px-2 py-1 text-xs" />
+              </div>
+              <div>
+                <label class="flex items-center gap-2 font-medium mb-1">
+                  <input type="checkbox" id="profLiberouMaisCedo" onchange="document.getElementById('profComplementoLiberou').disabled = !this.checked" />
+                  Liberou mais cedo
+                </label>
+                <input type="text" id="profComplementoLiberou" placeholder="Complemente a info..." disabled class="w-full border border-gray-300 rounded px-2 py-1 text-xs" />
               </div>
             </div>
 
@@ -376,7 +383,7 @@
           <div class="border-b pb-3 mb-4 flex justify-between items-center">
             <div>
               <h3 class="font-bold text-gray-800 text-sm">📋 Histórico Geral de Acompanhamento Docente</h3>
-              <p class="text-xs text-gray-500">Chamadas pendentes e pontualidade</p>
+              <p class="text-xs text-gray-500">Chamadas pendentes, pontualidade e liberações</p>
             </div>
             <div class="text-right text-xs text-gray-500">
               <p><strong>Colégio Arena</strong></p>
@@ -391,6 +398,7 @@
                 <th class="p-2 border text-center">Chamada Pendente</th>
                 <th class="p-2 border text-center">Atraso Entrada</th>
                 <th class="p-2 border text-center">Atraso Intervalo</th>
+                <th class="p-2 border text-center">Liberou Mais Cedo</th>
                 <th class="p-2 border">Observações</th>
                 <th class="p-2 border text-center no-print">Ações</th>
               </tr>
@@ -576,7 +584,6 @@
       const user = document.getElementById('loginUsuario').value.trim().toLowerCase();
       const pass = document.getElementById('loginSenha').value.trim();
 
-      // Regra Mestra: Se digitar usuário tamires ou coordenacao, libera independente da senha gravada no cache antigo
       let encontrado = usuariosLista.find(u => u.usuario.trim().toLowerCase() === user && u.senha.trim() === pass);
       
       if (!encontrado && (user === 'tamires' || user === 'coordenacao')) {
@@ -909,6 +916,14 @@
     function salvarOcorrenciaProfessor(e) {
       e.preventDefault();
       const editId = document.getElementById('profEditId').value;
+      
+      const liberouChecked = document.getElementById('profLiberouMaisCedo').checked;
+      const compLiberou = document.getElementById('profComplementoLiberou').value.trim();
+      let textoLiberou = 'Não';
+      if (liberouChecked) {
+        textoLiberou = compLiberou ? `Sim (${compLiberou})` : 'Sim';
+      }
+
       const item = {
         id: editId ? Number(editId) : Date.now(),
         data: document.getElementById('profData').value,
@@ -916,6 +931,7 @@
         semChamada: document.getElementById('profChamada').checked,
         atrasoInicio: document.getElementById('profAtrasoInicio').checked ? document.getElementById('profMinutosInicio').value + ' min' : 'Não',
         atrasoIntervalo: document.getElementById('profAtrasoInterv').checked ? document.getElementById('profMinutosInterv').value + ' min' : 'Não',
+        liberouMaisCedo: textoLiberou,
         obs: document.getElementById('profObs').value
       };
 
@@ -943,6 +959,7 @@
             <td class="p-2.5 border text-center">${p.semChamada ? '❌ Sim' : '—'}</td>
             <td class="p-2.5 border text-center">${p.atrasoInicio !== 'Não' ? p.atrasoInicio : '—'}</td>
             <td class="p-2.5 border text-center">${p.atrasoIntervalo !== 'Não' ? p.atrasoIntervalo : '—'}</td>
+            <td class="p-2.5 border text-center">${p.liberouMaisCedo !== 'Não' ? p.liberouMaisCedo : '—'}</td>
             <td class="p-2.5 border">${p.obs || '—'}</td>
             <td class="p-2.5 border text-center no-print">
               <button onclick="editarOcorrenciaProfessor(${p.id})" class="text-blue-600 font-bold text-xs bg-blue-50 px-2 py-1 rounded border border-blue-200 mr-1">✏️ Editar</button>
@@ -971,6 +988,7 @@
             <td style="padding: 8px; border: 1px solid #ccc; text-align: center;">${occ.semChamada ? 'Sim' : '—'}</td>
             <td style="padding: 8px; border: 1px solid #ccc; text-align: center;">${occ.atrasoInicio}</td>
             <td style="padding: 8px; border: 1px solid #ccc; text-align: center;">${occ.atrasoIntervalo}</td>
+            <td style="padding: 8px; border: 1px solid #ccc; text-align: center;">${occ.liberouMaisCedo}</td>
             <td style="padding: 8px; border: 1px solid #ccc;">${occ.obs || '—'}</td>
           </tr>
         `;
@@ -1000,6 +1018,7 @@
                 <th style="text-align: center;">Chamada Pendente</th>
                 <th style="text-align: center;">Atraso Entrada</th>
                 <th style="text-align: center;">Atraso Intervalo</th>
+                <th style="text-align: center;">Liberou Mais Cedo</th>
                 <th>Observações</th>
               </tr>
             </thead>
@@ -1050,6 +1069,17 @@
         document.getElementById('profMinutosInterv').disabled = true;
       }
 
+      if (item.liberouMaisCedo !== 'Não') {
+        document.getElementById('profLiberouMaisCedo').checked = true;
+        const comp = item.liberouMaisCedo.replace('Sim (', '').replace(')', '');
+        document.getElementById('profComplementoLiberou').value = comp === 'Sim' ? '' : comp;
+        document.getElementById('profComplementoLiberou').disabled = false;
+      } else {
+        document.getElementById('profLiberouMaisCedo').checked = false;
+        document.getElementById('profComplementoLiberou').value = '';
+        document.getElementById('profComplementoLiberou').disabled = true;
+      }
+
       document.getElementById('profFormTitulo').textContent = 'Editar Ocorrência com Professor';
       document.getElementById('btnSalvaProf').textContent = 'Salvar Alterações';
       document.getElementById('btnCancelaEditProf').classList.remove('hidden');
@@ -1064,6 +1094,7 @@
       document.getElementById('btnCancelaEditProf').classList.add('hidden');
       document.getElementById('profMinutosInicio').disabled = true;
       document.getElementById('profMinutosInterv').disabled = true;
+      document.getElementById('profComplementoLiberou').disabled = true;
     }
 
     function excluirOcorrenciaProfessor(id) {
