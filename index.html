@@ -10,8 +10,8 @@
     .aba-btn.active { border-bottom: 3px solid #1b4332; color: #1b4332; font-weight: 700; background-color: #f0fdf4; }
     @media print {
       body * { visibility: hidden; }
-      #printableArea, #printableArea *, #printableProfArea, #printableProfArea *, #printableRelatorioArea, #printableRelatorioArea * { visibility: visible; }
-      #printableArea, #printableProfArea, #printableRelatorioArea { 
+      #printableArea, #printableArea *, #printableProfIndividualArea, #printableProfIndividualArea *, #printableRelatorioArea, #printableRelatorioArea * { visibility: visible; }
+      #printableArea, #printableProfIndividualArea, #printableRelatorioArea { 
         position: absolute; left: 0; top: 0; width: 100%; background: white !important; padding: 0 !important; margin: 0 !important;
       }
       .no-print { display: none !important; }
@@ -77,7 +77,7 @@
       <button onclick="mudarAba('sala-estudos')" id="btn-aba-sala-estudos" class="aba-btn py-3 px-4 border-b-2 text-gray-600 flex items-center gap-2">📚 Sala de Estudos</button>
       <button onclick="mudarAba('professores')" id="btn-aba-professores" class="aba-btn py-3 px-4 border-b-2 text-gray-600 flex items-center gap-2">👨‍🏫 Professores</button>
       <button onclick="mudarAba('inspetores')" id="btn-aba-inspetores" class="aba-btn py-3 px-4 border-b-2 text-gray-600 flex items-center gap-2">📋 Inspetores</button>
-      <button onclick="mudarAba('adm')" id="btn-aba-adm" class="aba-btn py-3 px-4 border-b-2 text-gray-600 flex items-center gap-2 bg-emerald-50 text-[#1b4332]">⚙️ ADM (Acessos)</button>
+      <button onclick="mudarAba('adm')" id="btn-aba-adm" class="aba-btn py-3 px-4 border-b-2 text-gray-600 flex items-center gap-2 bg-emerald-50 text-[#1b4332]">⚙️ ADM (Acessos & Backup)</button>
     </nav>
 
     <main class="p-6 max-w-6xl w-full mx-auto flex-1">
@@ -437,12 +437,25 @@
         <div id="listaInspetoresCards" class="space-y-3"></div>
       </section>
 
-      <!-- ==================== ABA 5: ADM (CONTROLE DE ACESSOS) ==================== -->
+      <!-- ==================== ABA 5: ADM (CONTROLE DE ACESSOS & BACKUP) ==================== -->
       <section id="aba-adm" class="aba-conteudo">
         <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
-          <h2 class="text-base font-bold text-[#1b4332] mb-4">⚙️ Painel ADM — Controle de Acessos</h2>
-          <p class="text-xs text-gray-600 mb-4">Cadastre os profissionais e defina se o perfil é de <strong>Coordenador</strong> (acesso total) ou <strong>Orientador</strong> (acesso a Atrasos, Sala de Estudos e Inspetores).</p>
+          <h2 class="text-base font-bold text-[#1b4332] mb-4">⚙️ Painel ADM — Controle de Acessos & Backup</h2>
           
+          <div class="bg-emerald-50 border border-emerald-200 rounded p-4 mb-6 flex flex-col md:flex-row items-center justify-between gap-3 no-print">
+            <div>
+              <h3 class="font-bold text-emerald-900 text-sm">💾 Backup e Segurança dos Dados</h3>
+              <p class="text-xs text-emerald-700">Baixe um arquivo de segurança com todas as ocorrências ou restaure seus dados a qualquer momento.</p>
+            </div>
+            <div class="flex gap-2">
+              <button onclick="baixarBackupDados()" class="bg-[#1b4332] text-white px-4 py-2 rounded text-xs font-semibold hover:bg-emerald-900">⬇️ Baixar Backup</button>
+              <label class="bg-blue-800 text-white px-4 py-2 rounded text-xs font-semibold hover:bg-blue-700 cursor-pointer">
+                ⬆️ Restaurar Backup
+                <input type="file" id="inputRestaurar" accept=".json" onchange="restaurarBackupDados(event)" class="hidden" />
+              </label>
+            </div>
+          </div>
+
           <form id="formNovoUsuario" onsubmit="cadastrarUsuario(event)" class="bg-gray-50 p-4 rounded border mb-6 space-y-4">
             <h3 class="text-xs font-bold text-gray-700 uppercase">Adicionar Novo Usuário</h3>
             <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
@@ -929,7 +942,6 @@
       });
     }
 
-    // IMPRESSÃO INDIVIDUAL CORRIGIDA (GARANTINDO CONTEÚDO NATIVO VISÍVEL)
     function imprimirRelatorioProfessorIndividual() {
       const profSelecionado = document.getElementById('selectProfessorFiltro').value;
       const ocorrenciasProf = profOcorrenciasList.filter(p => p.professor === profSelecionado);
@@ -1168,6 +1180,61 @@
         localStorage.setItem('escola_usuarios_db', JSON.stringify(usuariosLista));
         renderizarUsuariosADM();
       }
+    }
+
+    // FUNÇÕES DE BACKUP E RESTAURAÇÃO
+    function baixarBackupDados() {
+      const backupObj = {
+        atrasos: atrasosList,
+        salaEstudos: salaEstudosList,
+        professores: profOcorrenciasList,
+        inspetores: inspetoresList,
+        usuarios: usuariosLista,
+        dataBackup: new Date().toISOString()
+      };
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backupObj, null, 2));
+      const downloadAnchor = document.createElement('a');
+      downloadAnchor.setAttribute("href", dataStr);
+      downloadAnchor.setAttribute("download", `backup_escola_arena_${new Date().toISOString().split('T')[0]}.json`);
+      document.body.appendChild(downloadAnchor);
+      downloadAnchor.click();
+      downloadAnchor.remove();
+    }
+
+    function restaurarBackupDados(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const json = JSON.parse(e.target.result);
+          if (json.atrasos && json.salaEstudos) {
+            atrasosList = json.atrasos;
+            salaEstudosList = json.salaEstudos;
+            profOcorrenciasList = json.professores || [];
+            inspetoresList = json.inspetores || [];
+            if (json.usuarios) usuariosLista = json.usuarios;
+
+            localStorage.setItem('escola_atrasos', JSON.stringify(atrasosList));
+            localStorage.setItem('escola_sala_estudos', JSON.stringify(salaEstudosList));
+            localStorage.setItem('escola_prof_ocorrencias', JSON.stringify(profOcorrenciasList));
+            localStorage.setItem('escola_inspetores', JSON.stringify(inspetoresList));
+            localStorage.setItem('escola_usuarios_db', JSON.stringify(usuariosLista));
+
+            renderizarAtrasos();
+            renderizarSalaEstudos();
+            renderizarProfOcorrencias();
+            renderizarInspetores();
+            renderizarUsuariosADM();
+            alert('Backup restaurado com sucesso!');
+          } else {
+            alert('Arquivo de backup inválido.');
+          }
+        } catch (err) {
+          alert('Erro ao ler o arquivo JSON de backup.');
+        }
+      };
+      reader.readAsText(file);
     }
   </script>
 </body>
