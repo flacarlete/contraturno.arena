@@ -529,24 +529,11 @@
       "vespertino": ["João Leonardo + Fernando (MAT)", "Cléssia (LP)", "Carolina Ferraz Bucar Paredes (INGLÊS)", "Caroline Baylão Silva Araújo Gedda (CAMBRIDGE)", "Amanda Bueno Godinho Pancieri (BEO)", "Lajla Katherine Rocha Simião (MONITORIA REDAÇÃO)", "Gustavo Coutinho (ED. FÍSICA)", "Marcelo (VÔLEI)", "Fellipe Gustavo (JUDÔ)", "Dênis (FUTSAL)", "Ananda (DANÇAS)", "Fhellipe Augusto (XADREZ)", "Renato (HANDEBOL)", "Nívea (MEDITAÇÃO)", "Nayara (FUNCIONAL)", "Rodolfo (ED. FINANCEIRA)", "Robótica", "André Arantes (TEATRO/PINTURA)", "André Mols (SONANTE)", "Marco Túlio (EAGLE+BEO)"]
     };
 
-    let usuariosLista = JSON.parse(localStorage.getItem('escola_usuarios_db') || 'null');
-    const USUARIOS_PADRAO_INICIAIS = [
+    let usuariosLista = [
       { id: 1, nome: "Coordenação Geral", perfil: "coordenador", usuario: "coordenacao", senha: "123" },
       { id: 2, nome: "Tamires", perfil: "coordenador", usuario: "tamires", senha: "123" },
       { id: 3, nome: "Orientador Plantão", perfil: "orientador", usuario: "orientador", senha: "123" }
     ];
-
-    if (!usuariosLista || usuariosLista.length === 0) {
-      usuariosLista = USUARIOS_PADRAO_INICIAIS;
-      localStorage.setItem('escola_usuarios_db', JSON.stringify(usuariosLista));
-    } else {
-      USUARIOS_PADRAO_INICIAIS.forEach(padrao => {
-        if (!usuariosLista.some(u => u.usuario.toLowerCase() === padrao.usuario.toLowerCase())) {
-          usuariosLista.push(padrao);
-        }
-      });
-      localStorage.setItem('escola_usuarios_db', JSON.stringify(usuariosLista));
-    }
 
     let usuarioLogadoAtual = null;
     let atrasosList = [];
@@ -585,19 +572,12 @@
           renderizarProfOcorrencias();
           renderizarInspetores();
         });
-      } else {
-        atrasosList = JSON.parse(localStorage.getItem('escola_atrasos') || '[]');
-        salaEstudosList = JSON.parse(localStorage.getItem('escola_sala_estudos') || '[]');
-        profOcorrenciasList = JSON.parse(localStorage.getItem('escola_prof_ocorrencias') || '[]');
-        inspetoresList = JSON.parse(localStorage.getItem('escola_inspetores') || '[]');
       }
     }
 
     function salvarNaBase(no, lista) {
       if (usaNuvem) {
         db.ref('escola_arena/' + no).set(lista);
-      } else {
-        localStorage.setItem('escola_' + no, JSON.stringify(lista));
       }
     }
 
@@ -1296,13 +1276,6 @@
         renderizarInspetores();
       }
     }
-
-    // LISTA DE USUÁRIOS EMBUTIDA PARA GARANTIR LOGIN IMEDIATO
-    let usuariosLista = [
-      { id: 1, nome: "Coordenação Geral", perfil: "coordenador", usuario: "coordenacao", senha: "123" },
-      { id: 2, nome: "Tamires", perfil: "coordenador", usuario: "tamires", senha: "123" },
-      { id: 3, nome: "Orientador Plantão", perfil: "orientador", usuario: "orientador", senha: "123" }
-    ];
 
     function cadastrarUsuario(e) {
       e.preventDefault();
