@@ -164,10 +164,10 @@
       <section id="aba-sala-estudos" class="aba-conteudo">
         <div class="flex gap-3 mb-4 no-print">
           <button onclick="mudarSubAbaSala('novo')" id="subbtn-novo" class="px-4 py-2 bg-[#1b4332] text-white rounded text-xs font-semibold">Novo Relatório Diário</button>
-          <button onclick="mudarSubAbaSala('relatorios')" id="subbtn-relatorios" class="px-4 py-2 bg-gray-200 text-gray-700 rounded text-xs font-semibold hover:bg-gray-300">📋 Relatórios por Dia & Busca por Aluno</button>
+          <button onclick="mudarSubAbaSala('relatorios')" id="subbtn-relatorios" class="px-4 py-2 bg-gray-200 text-gray-700 rounded text-xs font-semibold hover:bg-gray-300">📋 Relatório por Aluno (Ocorrências Agrupadas)</button>
         </div>
 
-        <!-- Sub-aba 2A: Novo Relatório / Editar Relatório -->
+        <!-- Sub-aba 2A: Novo Relatório -->
         <div id="subaba-novo" class="subaba-sala-conteudo">
           <div id="printableArea" class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
             <div class="flex justify-between items-center mb-4">
@@ -826,7 +826,6 @@
       const ativo = document.getElementById('chkAtivo').checked ? 'Sim' : 'Não';
 
       if (editId) {
-        // Modo Edição de um registro específico
         const index = salaEstudosList.findIndex(s => s.id === Number(editId));
         if (index !== -1) {
           salaEstudosList[index] = {
@@ -843,8 +842,8 @@
         document.getElementById('seTituloForm').textContent = 'Controle Diário — Sala de Estudos e Biblioteca';
         document.getElementById('btnSalvaSe').textContent = '💾 Salvar Relatório Diário';
         document.getElementById('btnCancelaEditSe').classList.add('hidden');
+        alert('Registro atualizado com sucesso!');
       } else {
-        // Modo Inserção Normal (20 espaços)
         let preenchidosCount = 0;
         for (let i = 1; i <= 20; i++) {
           const nomeAluno = document.getElementById(`se_aluno_${i}`).value.trim();
@@ -890,7 +889,6 @@
         return;
       }
 
-      // Filtra por aluno se houver texto digitado na busca
       let listaFiltrada = salaEstudosList;
       if (filtroAluno) {
         listaFiltrada = salaEstudosList.filter(r => r.aluno.toLowerCase().includes(filtroAluno));
@@ -900,7 +898,6 @@
         }
       }
 
-      // Agrupa relatórios por Data (Dia a Dia)
       const agrupadoPorData = {};
       listaFiltrada.forEach(r => {
         const dataKey = r.data || 'Data não informada';
@@ -910,7 +907,6 @@
         agrupadoPorData[dataKey].push(r);
       });
 
-      // Ordena as datas decrescente
       const datasOrdenadas = Object.keys(agrupadoPorData).sort().reverse();
 
       datasOrdenadas.forEach(data => {
