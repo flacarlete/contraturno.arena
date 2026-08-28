@@ -150,6 +150,7 @@
                   <th class="p-2 border">Turma</th>
                   <th class="p-2 border">Espaço</th>
                   <th class="p-2 border">Justificativa</th>
+                  <th class="p-2 border text-center">Lançado TOTVS</th>
                   <th class="p-2 border text-center no-print">Ações</th>
                 </tr>
               </thead>
@@ -438,7 +439,7 @@
             </div>
             <div class="flex justify-end gap-2">
               <button type="button" id="btnCancelaEditInsp" onclick="cancelarEdicaoInspetor()" class="hidden bg-gray-500 text-white px-4 py-2 rounded text-xs font-medium">Cancelar</button>
-              <button type="submit" id="btnSalvaInsp" class="bg-[#1b4332] text-white px-5 py-2 rounded text-sm font-semibold">Salvar Orientação</button>
+              <button type="submit" id="btnSalvaInsp" class="bg-[#1b4332] text-white px-5 py-2 rounded text-xs font-semibold">Salvar Orientação</button>
             </div>
           </form>
         </div>
@@ -721,7 +722,8 @@
         data: document.getElementById('atrasoData').value,
         aluno: document.getElementById('atrasoAluno').value.trim().toUpperCase(),
         turma: document.getElementById('atrasoTurma').value.trim(),
-        justificativa: document.getElementById('atrasoJustificativa').value
+        justificativa: document.getElementById('atrasoJustificativa').value,
+        lancadoTotvs: false
       };
       atrasosList.unshift(item);
       localStorage.setItem('escola_atrasos', JSON.stringify(atrasosList));
@@ -751,6 +753,10 @@
           corLinha = 'bg-red-50/40';
         }
 
+        if (a.lancadoTotvs) {
+          corLinha = 'bg-emerald-50/70';
+        }
+
         tbody.innerHTML += `
           <tr class="border-b hover:bg-gray-50 ${corLinha}">
             <td class="p-2 border font-medium">${a.data} às ${a.hora}</td>
@@ -759,12 +765,24 @@
             <td class="p-2 border font-semibold text-[#1b4332]">${a.turma}</td>
             <td class="p-2 border">${a.espaco}</td>
             <td class="p-2 border text-gray-600">${a.justificativa || '—'}</td>
+            <td class="p-2 border text-center">
+              <input type="checkbox" ${a.lancadoTotvs ? 'checked' : ''} onchange="toggleTotvs(${a.id}, this.checked)" class="w-4 h-4 accent-[#1b4332] cursor-pointer" title="Marcar como lançado no TOTVS" />
+            </td>
             <td class="p-2 border text-center no-print">
               <button onclick="excluirAtraso(${a.id})" class="text-red-600 font-bold hover:underline">Apagar</button>
             </td>
           </tr>
         `;
       });
+    }
+
+    function toggleTotvs(id, status) {
+      const item = atrasosList.find(a => a.id === id);
+      if (item) {
+        item.lancadoTotvs = status;
+        localStorage.setItem('escola_atrasos', JSON.stringify(atrasosList));
+        renderizarAtrasos();
+      }
     }
 
     function excluirAtraso(id) {
