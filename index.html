@@ -164,20 +164,21 @@
       <section id="aba-sala-estudos" class="aba-conteudo">
         <div class="flex gap-3 mb-4 no-print">
           <button onclick="mudarSubAbaSala('novo')" id="subbtn-novo" class="px-4 py-2 bg-[#1b4332] text-white rounded text-xs font-semibold">Novo Relatório Diário</button>
-          <button onclick="mudarSubAbaSala('relatorios')" id="subbtn-relatorios" class="px-4 py-2 bg-gray-200 text-gray-700 rounded text-xs font-semibold hover:bg-gray-300">📋 Relatório por Aluno (Ocorrências Agrupadas)</button>
+          <button onclick="mudarSubAbaSala('relatorios')" id="subbtn-relatorios" class="px-4 py-2 bg-gray-200 text-gray-700 rounded text-xs font-semibold hover:bg-gray-300">📋 Relatórios por Dia & Busca por Aluno</button>
         </div>
 
-        <!-- Sub-aba 2A: Novo Relatório -->
+        <!-- Sub-aba 2A: Novo Relatório / Editar Relatório -->
         <div id="subaba-novo" class="subaba-sala-conteudo">
           <div id="printableArea" class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
             <div class="flex justify-between items-center mb-4">
-              <h2 class="text-base font-bold text-[#1b4332]">Controle Diário — Sala de Estudos e Biblioteca</h2>
+              <h2 id="seTituloForm" class="text-base font-bold text-[#1b4332]">Controle Diário — Sala de Estudos e Biblioteca</h2>
               <button onclick="window.print()" class="bg-gray-800 text-white px-3 py-1.5 rounded text-xs hover:bg-black flex items-center gap-1.5 no-print">
                 🖨️ Imprimir Formulário
               </button>
             </div>
 
             <form id="formSalaEstudos" onsubmit="salvarSalaEstudos(event)" class="space-y-6">
+              <input type="hidden" id="seEditId" value="" />
               <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label class="block text-xs font-medium text-gray-700 mb-1">Data</label>
@@ -266,7 +267,8 @@
               </div>
 
               <div class="flex justify-end gap-3 no-print">
-                <button type="submit" class="bg-[#1b4332] text-white px-6 py-2.5 rounded text-sm font-semibold hover:bg-emerald-900">
+                <button type="button" id="btnCancelaEditSe" onclick="cancelarEdicaoSalaEstudos()" class="hidden bg-gray-500 text-white px-4 py-2.5 rounded text-sm font-semibold">Cancelar Edição</button>
+                <button type="submit" id="btnSalvaSe" class="bg-[#1b4332] text-white px-6 py-2.5 rounded text-sm font-semibold hover:bg-emerald-900">
                   💾 Salvar Relatório Diário
                 </button>
               </div>
@@ -274,19 +276,26 @@
           </div>
         </div>
 
-        <!-- Sub-aba 2B: Relatório Agrupado por Aluno -->
+        <!-- Sub-aba 2B: Relatório por Dia & Busca por Aluno -->
         <div id="subaba-relatorios" class="subaba-sala-conteudo" style="display: none;">
           <div id="printableRelatorioArea" class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
-            <div class="flex justify-between items-center mb-4">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-3">
               <div>
-                <h2 class="text-base font-bold text-[#1b4332]">📋 Relatório Consolidado por Aluno — Sala de Estudos</h2>
-                <p class="text-xs text-gray-500">Ocorrências do mesmo aluno agrupadas com suas respectivas datas</p>
+                <h2 class="text-base font-bold text-[#1b4332]">📋 Relatórios de Sala de Estudos</h2>
+                <p class="text-xs text-gray-500">Histórico mantido por dia e busca rápida por aluno</p>
               </div>
               <button onclick="window.print()" class="bg-gray-800 text-white px-3 py-1.5 rounded text-xs hover:bg-black no-print">
-                🖨️ Imprimir Relatório Consolidado
+                🖨️ Imprimir Visualização Atual
               </button>
             </div>
-            <div id="listaRelatoriosContainer" class="space-y-4"></div>
+
+            <!-- CAMPO DE BUSCA POR ALUNO -->
+            <div class="bg-emerald-50 border border-emerald-200 rounded-lg p-4 mb-6 no-print">
+              <label class="block text-xs font-bold text-emerald-900 mb-1">🔍 Procurar informações registradas por Aluno:</label>
+              <input type="text" id="filtroAlunoSala" oninput="renderizarSalaEstudos()" placeholder="Digite o nome do aluno para buscar ocorrências em todos os dias..." class="w-full bg-white border border-emerald-300 rounded px-3 py-2 text-xs font-semibold focus:outline-none focus:border-[#1b4332]" />
+            </div>
+
+            <div id="listaRelatoriosContainer" class="space-y-6"></div>
           </div>
         </div>
       </section>
@@ -658,6 +667,9 @@
       if (abaId === 'adm') {
         renderizarUsuariosADM();
       }
+      if (abaId === 'sala-estudos') {
+        renderizarSalaEstudos();
+      }
     }
 
     function mudarSubAbaSala(sub) {
@@ -801,6 +813,7 @@
 
     function salvarSalaEstudos(e) {
       e.preventDefault();
+      const editId = document.getElementById('seEditId').value;
       const dataRel = document.getElementById('seData').value;
       const profRel = document.getElementById('seProfessor').value;
       const silencio = document.querySelector('input[name="ind_silencio"]:checked')?.value || '—';
@@ -812,41 +825,63 @@
       const erro = document.getElementById('chkErro').checked ? 'Sim' : 'Não';
       const ativo = document.getElementById('chkAtivo').checked ? 'Sim' : 'Não';
 
-      let preenchidosCount = 0;
-      for (let i = 1; i <= 20; i++) {
-        const nomeAluno = document.getElementById(`se_aluno_${i}`).value.trim();
-        if (nomeAluno) {
-          preenchidosCount++;
-          const turmaAluno = document.getElementById(`se_turma_${i}`).value.trim() || '—';
-          const descAluno = document.getElementById(`se_desc_${i}`).value.trim() || 'Nenhuma ocorrência descrita.';
-
-          const item = {
-            id: Date.now() + i,
+      if (editId) {
+        // Modo Edição de um registro específico
+        const index = salaEstudosList.findIndex(s => s.id === Number(editId));
+        if (index !== -1) {
+          salaEstudosList[index] = {
+            id: Number(editId),
             data: dataRel,
             professor: profRel,
             silencio, foco, celular, org, apostila, respostas, erro, ativo,
-            aluno: nomeAluno.toUpperCase(),
-            turma: turmaAluno,
-            ocorrencia: descAluno
+            aluno: document.getElementById('se_aluno_1').value.trim().toUpperCase() || 'ALUNO NÃO INFORMADO',
+            turma: document.getElementById('se_turma_1').value.trim() || '—',
+            ocorrencia: document.getElementById('se_desc_1').value.trim() || 'Nenhuma ocorrência descrita.'
           };
-          salaEstudosList.unshift(item);
         }
-      }
+        document.getElementById('seEditId').value = '';
+        document.getElementById('seTituloForm').textContent = 'Controle Diário — Sala de Estudos e Biblioteca';
+        document.getElementById('btnSalvaSe').textContent = '💾 Salvar Relatório Diário';
+        document.getElementById('btnCancelaEditSe').classList.add('hidden');
+      } else {
+        // Modo Inserção Normal (20 espaços)
+        let preenchidosCount = 0;
+        for (let i = 1; i <= 20; i++) {
+          const nomeAluno = document.getElementById(`se_aluno_${i}`).value.trim();
+          if (nomeAluno) {
+            preenchidosCount++;
+            const turmaAluno = document.getElementById(`se_turma_${i}`).value.trim() || '—';
+            const descAluno = document.getElementById(`se_desc_${i}`).value.trim() || 'Nenhuma ocorrência descrita.';
 
-      if (preenchidosCount === 0) {
-        alert('Por favor, preencha pelo menos um aluno nos espaços do Item 3.');
-        return;
+            const item = {
+              id: Date.now() + i,
+              data: dataRel,
+              professor: profRel,
+              silencio, foco, celular, org, apostila, respostas, erro, ativo,
+              aluno: nomeAluno.toUpperCase(),
+              turma: turmaAluno,
+              ocorrencia: descAluno
+            };
+            salaEstudosList.unshift(item);
+          }
+        }
+
+        if (preenchidosCount === 0) {
+          alert('Por favor, preencha pelo menos um aluno nos espaços do Item 3.');
+          return;
+        }
+        alert(`Relatório salvo com sucesso (${preenchidosCount} ocorrência(s) registrada(s))!`);
       }
 
       localStorage.setItem('escola_sala_estudos', JSON.stringify(salaEstudosList));
       e.target.reset();
       montar20EspacosSalaEstudos();
-      alert(`Relatório salvo com sucesso (${preenchidosCount} ocorrência(s) registrada(s))!`);
       mudarSubAbaSala('relatorios');
     }
 
     function renderizarSalaEstudos() {
       const container = document.getElementById('listaRelatoriosContainer');
+      const filtroAluno = document.getElementById('filtroAlunoSala')?.value.toLowerCase().trim() || '';
       if (!container) return;
       container.innerHTML = '';
 
@@ -855,44 +890,91 @@
         return;
       }
 
-      const agrupado = {};
-      salaEstudosList.forEach(r => {
-        const nomeAluno = r.aluno;
-        if (!agrupado[nomeAluno]) {
-          agrupado[nomeAluno] = { turma: r.turma, ocorrencias: [] };
+      // Filtra por aluno se houver texto digitado na busca
+      let listaFiltrada = salaEstudosList;
+      if (filtroAluno) {
+        listaFiltrada = salaEstudosList.filter(r => r.aluno.toLowerCase().includes(filtroAluno));
+        if (listaFiltrada.length === 0) {
+          container.innerHTML = `<p class="text-xs text-red-600 font-semibold italic">Nenhum registro encontrado para o aluno "${filtroAluno}".</p>`;
+          return;
         }
-        agrupado[nomeAluno].ocorrencias.push(r);
+      }
+
+      // Agrupa relatórios por Data (Dia a Dia)
+      const agrupadoPorData = {};
+      listaFiltrada.forEach(r => {
+        const dataKey = r.data || 'Data não informada';
+        if (!agrupadoPorData[dataKey]) {
+          agrupadoPorData[dataKey] = [];
+        }
+        agrupadoPorData[dataKey].push(r);
       });
 
-      for (const [aluno, dados] of Object.entries(agrupado)) {
-        let htmlOcorrencias = '';
-        dados.ocorrencias.forEach((occ) => {
-          htmlOcorrencias += `
-            <div class="bg-white p-3 rounded border mb-2 text-xs">
-              <div class="flex justify-between items-center text-emerald-800 font-bold mb-1">
-                <span>📅 Data da Ocorrência: ${occ.data} (Responsável: ${occ.professor})</span>
-                <button onclick="excluirSalaEstudos(${occ.id})" class="text-red-600 font-bold hover:underline text-[11px] no-print">Apagar este registro</button>
+      // Ordena as datas decrescente
+      const datasOrdenadas = Object.keys(agrupadoPorData).sort().reverse();
+
+      datasOrdenadas.forEach(data => {
+        let htmlItensDia = '';
+        agrupadoPorData[data].forEach(occ => {
+          htmlItensDia += `
+            <div class="bg-white p-3.5 rounded border mb-3 text-xs space-y-1.5 shadow-sm">
+              <div class="flex justify-between items-center text-[#1b4332] font-bold">
+                <span>👤 Aluno(a): ${occ.aluno} <span class="text-gray-500 font-normal">(${occ.turma})</span></span>
+                <div class="flex gap-2 no-print">
+                  <button onclick="editarSalaEstudos(${occ.id})" class="text-blue-600 font-bold hover:underline">✏️ Editar</button>
+                  <button onclick="excluirSalaEstudos(${occ.id})" class="text-red-600 font-bold hover:underline">🗑️ Apagar</button>
+                </div>
               </div>
-              <p><strong>Descrição / Feedback:</strong> ${occ.ocorrencia}</p>
+              <p><strong>Ocorrência:</strong> ${occ.ocorrencia}</p>
+              <div class="grid grid-cols-2 md:grid-cols-4 gap-1 text-[11px] text-gray-600 bg-gray-50 p-1.5 rounded mt-1">
+                <span>Silêncio: ${occ.silencio}</span>
+                <span>Foco: ${occ.foco}</span>
+                <span>Celular: ${occ.celular}</span>
+                <span>Organização: ${occ.org}</span>
+              </div>
             </div>
           `;
         });
 
-        const qtdTotal = dados.ocorrencias.length;
-        const badgeReincidenteSala = qtdTotal > 1 ? `<span class="bg-red-100 text-red-800 text-[10px] font-bold px-2 py-0.5 rounded-full border border-red-300 ml-2">⚠️ REINCIDENTE (${qtdTotal}x)</span>` : '';
-
         container.innerHTML += `
-          <div class="border rounded-lg p-4 bg-gray-50 mb-4">
+          <div class="border rounded-lg p-4 bg-emerald-50/40 mb-4 border-emerald-900/20">
             <div class="border-b pb-2 mb-3 flex justify-between items-center">
-              <h3 class="font-bold text-[#1b4332] text-sm">👤 Aluno(a): ${aluno} <span class="text-gray-500 font-normal">(${dados.turma})</span> ${badgeReincidenteSala}</h3>
-              <span class="bg-emerald-100 text-emerald-800 text-[11px] font-bold px-2 py-0.5 rounded-full">${qtdTotal} ocorrência(s)</span>
+              <h3 class="font-bold text-[#1b4332] text-sm">📅 Data: ${data}</h3>
+              <span class="bg-[#1b4332] text-white text-[11px] font-bold px-2.5 py-0.5 rounded-full">${agrupadoPorData[data].length} registro(s)</span>
             </div>
             <div class="space-y-2">
-              ${htmlOcorrencias}
+              ${htmlItensDia}
             </div>
           </div>
         `;
-      }
+      });
+    }
+
+    function editarSalaEstudos(id) {
+      const item = salaEstudosList.find(s => s.id === id);
+      if (!item) return;
+
+      mudarSubAbaSala('novo');
+      document.getElementById('seEditId').value = item.id;
+      document.getElementById('seData').value = item.data;
+      document.getElementById('seProfessor').value = item.professor;
+      document.getElementById('se_aluno_1').value = item.aluno;
+      document.getElementById('se_turma_1').value = item.turma;
+      document.getElementById('se_desc_1').value = item.ocorrencia;
+
+      document.getElementById('seTituloForm').textContent = 'Editar Relatório de Sala de Estudos';
+      document.getElementById('btnSalvaSe').textContent = '💾 Salvar Alterações';
+      document.getElementById('btnCancelaEditSe').classList.remove('hidden');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function cancelarEdicaoSalaEstudos() {
+      document.getElementById('formSalaEstudos').reset();
+      document.getElementById('seEditId').value = '';
+      document.getElementById('seTituloForm').textContent = 'Controle Diário — Sala de Estudos e Biblioteca';
+      document.getElementById('btnSalvaSe').textContent = '💾 Salvar Relatório Diário';
+      document.getElementById('btnCancelaEditSe').classList.add('hidden');
+      montar20EspacosSalaEstudos();
     }
 
     function excluirSalaEstudos(id) {
