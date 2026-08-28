@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Controle de Gestão Escolar — Arena</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
   <style>
@@ -22,6 +23,7 @@
 </head>
 <body class="bg-gray-100 text-gray-800 font-sans min-h-screen flex flex-col">
 
+  <!-- ==================== TELA DE LOGIN ==================== -->
   <div id="tela-login" class="fixed inset-0 bg-[#1b4332] z-50 flex items-center justify-center p-4">
     <div class="bg-white rounded-xl shadow-2xl p-8 max-w-md w-full border border-emerald-900/20">
       <div class="text-center mb-6">
@@ -51,6 +53,7 @@
     </div>
   </div>
 
+  <!-- ==================== SISTEMA PRINCIPAL ==================== -->
   <div id="sistema-principal" class="hidden flex flex-col flex-1 min-h-screen">
     
     <header class="bg-[#1b4332] text-white px-6 py-3.5 shadow flex flex-col md:flex-row justify-between items-start md:items-center no-print gap-3">
@@ -82,7 +85,1263 @@
 
     <main class="p-6 max-w-6xl w-full mx-auto flex-1">
 
+      <!-- ==================== ABA 1: ATRASOS ==================== -->
       <section id="aba-atrasos" class="aba-conteudo" style="display: block;">
         <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
           <div class="flex gap-4 border-b border-gray-200 pb-3 mb-4">
-            <button onclick="setAtrasoTurno('Matutino')" id="btn-turno-mat" class="px-4 py-1.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-8
+            <button onclick="setAtrasoTurno('Matutino')" id="btn-turno-mat" class="px-4 py-1.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800">Período Matutino</button>
+            <button onclick="setAtrasoTurno('Vespertino')" id="btn-turno-vesp" class="px-4 py-1.5 rounded-full text-xs font-semibold bg-gray-100 text-gray-600">Período Vespertino</button>
+          </div>
+
+          <div class="bg-[#1b4332] text-white p-3 rounded-t-md font-semibold text-sm flex items-center gap-2">
+            ⏰ Registrar Atrasos — <span id="labelTurno">Matutino</span>
+          </div>
+
+          <form id="formAtraso" onsubmit="salvarAtraso(event)" class="border border-gray-200 border-t-0 p-4 rounded-b-md bg-gray-50/50 space-y-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <label class="block text-xs font-medium text-gray-700 mb-1">Espaço / Aula</label>
+                <select id="atrasoEspaco" class="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-[#1b4332]" required></select>
+              </div>
+              <div>
+                <label class="block text-xs font-medium text-gray-700 mb-1">Horário de Chegada</label>
+                <input type="time" id="atrasoHora" class="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-[#1b4332]" required />
+              </div>
+              <div>
+                <label class="block text-xs font-medium text-gray-700 mb-1">Data</label>
+                <input type="date" id="atrasoData" class="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-[#1b4332]" required />
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <label class="block text-xs font-medium text-gray-700 mb-1">Nome do Aluno</label>
+                <input type="text" id="atrasoAluno" placeholder="Nome completo do aluno..." class="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm font-bold text-[#1b4332] focus:outline-none focus:border-[#1b4332]" required />
+              </div>
+              <div>
+                <label class="block text-xs font-medium text-gray-700 mb-1">Turma</label>
+                <input type="text" id="atrasoTurma" placeholder="Ex: 8ºG" class="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm font-semibold text-[#1b4332] focus:outline-none focus:border-[#1b4332]" required />
+              </div>
+              <div>
+                <label class="block text-xs font-medium text-gray-700 mb-1">Justificativa</label>
+                <input type="text" id="atrasoJustificativa" placeholder="Motivo do atraso..." class="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-[#1b4332]" />
+              </div>
+            </div>
+
+            <div class="flex justify-end">
+              <button type="submit" class="bg-[#1b4332] text-white px-5 py-2 rounded text-sm font-medium hover:bg-emerald-900 flex items-center gap-1.5">
+                ✓ Registrar atraso
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+          <div class="flex justify-between items-center mb-3">
+            <h3 class="font-bold text-gray-700 text-sm">Histórico de Atrasos (Sincronizado na Nuvem)</h3>
+            <button onclick="limparAtrasos()" class="text-xs text-red-600 hover:underline">Limpar Histórico</button>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs border border-gray-200">
+              <thead class="bg-gray-100 font-semibold text-gray-700">
+                <tr>
+                  <th class="p-2 border">Data/Hora</th>
+                  <th class="p-2 border">Turno</th>
+                  <th class="p-2 border">Aluno</th>
+                  <th class="p-2 border">Turma</th>
+                  <th class="p-2 border">Espaço</th>
+                  <th class="p-2 border">Justificativa</th>
+                  <th class="p-2 border text-center">Lançado TOTVS</th>
+                  <th class="p-2 border text-center no-print">Ações</th>
+                </tr>
+              </thead>
+              <tbody id="listaAtrasosTbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================== ABA 2: SALA DE ESTUDOS ==================== -->
+      <section id="aba-sala-estudos" class="aba-conteudo">
+        <div class="flex gap-3 mb-4 no-print">
+          <button onclick="mudarSubAbaSala('novo')" id="subbtn-novo" class="px-4 py-2 bg-[#1b4332] text-white rounded text-xs font-semibold">Novo Relatório Diário</button>
+          <button onclick="mudarSubAbaSala('relatorios')" id="subbtn-relatorios" class="px-4 py-2 bg-gray-200 text-gray-700 rounded text-xs font-semibold hover:bg-gray-300">📋 Relatório por Aluno (Ocorrências Agrupadas)</button>
+        </div>
+
+        <!-- Sub-aba 2A: Novo Relatório -->
+        <div id="subaba-novo" class="subaba-sala-conteudo">
+          <div id="printableArea" class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+            <div class="flex justify-between items-center mb-4">
+              <h2 id="seTituloForm" class="text-base font-bold text-[#1b4332]">Controle Diário — Sala de Estudos e Biblioteca</h2>
+              <button onclick="window.print()" class="bg-gray-800 text-white px-3 py-1.5 rounded text-xs hover:bg-black flex items-center gap-1.5 no-print">
+                🖨️ Imprimir Formulário
+              </button>
+            </div>
+
+            <form id="formSalaEstudos" onsubmit="salvarSalaEstudos(event)" class="space-y-6">
+              <input type="hidden" id="seEditId" value="" />
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-xs font-medium text-gray-700 mb-1">Data</label>
+                  <input type="date" id="seData" class="w-full border border-gray-300 rounded px-3 py-2 text-sm" required />
+                </div>
+                <div>
+                  <label class="block text-xs font-medium text-gray-700 mb-1">Professor / Inspetor Responsável</label>
+                  <input type="text" id="seProfessor" class="w-full border border-gray-300 rounded px-3 py-2 text-sm" placeholder="Nome do avaliador..." required />
+                </div>
+              </div>
+
+              <div class="space-y-3">
+                <h3 class="text-xs font-bold text-gray-700 uppercase tracking-wider mb-3 flex items-center gap-2">
+                  <span class="bg-[#1b4332] text-white rounded-full w-5 h-5 flex items-center justify-center text-[10px]">1</span>
+                  Controle de Ambiente e Ciclo de Foco
+                </h3>
+                <div class="flex flex-col md:flex-row justify-between md:items-center border-b pb-2 text-xs">
+                  <div>
+                    <p class="font-bold">A) SILÊNCIO / RUÍDO PRODUTIVO</p>
+                    <p class="text-gray-500 text-[11px]">Sussurros / assuntos pertinentes</p>
+                  </div>
+                  <div class="flex gap-2 mt-2 md:mt-0">
+                    <label class="flex items-center gap-1"><input type="radio" name="ind_silencio" value="Excelente" checked /> Excelente</label>
+                    <label class="flex items-center gap-1"><input type="radio" name="ind_silencio" value="Regular" /> Regular</label>
+                    <label class="flex items-center gap-1"><input type="radio" name="ind_silencio" value="Crítico" /> Crítico</label>
+                  </div>
+                </div>
+                <div class="flex flex-col md:flex-row justify-between md:items-center border-b pb-2 text-xs">
+                  <div>
+                    <p class="font-bold">B) CICLO DE FOCO</p>
+                    <p class="text-gray-500 text-[11px]">Tempo de foco + tempo de descanso</p>
+                  </div>
+                  <div class="flex gap-2 mt-2 md:mt-0">
+                    <label class="flex items-center gap-1"><input type="radio" name="ind_foco" value="Excelente" checked /> Excelente</label>
+                    <label class="flex items-center gap-1"><input type="radio" name="ind_foco" value="Regular" /> Regular</label>
+                    <label class="flex items-center gap-1"><input type="radio" name="ind_foco" value="Crítico" /> Crítico</label>
+                  </div>
+                </div>
+                <div class="flex flex-col md:flex-row justify-between md:items-center border-b pb-2 text-xs">
+                  <div>
+                    <p class="font-bold">C) CELULAR</p>
+                    <p class="text-gray-500 text-[11px]">Devem estar guardados</p>
+                  </div>
+                  <div class="flex gap-2 mt-2 md:mt-0">
+                    <label class="flex items-center gap-1"><input type="radio" name="ind_celular" value="Excelente" checked /> Excelente</label>
+                    <label class="flex items-center gap-1"><input type="radio" name="ind_celular" value="Regular" /> Regular</label>
+                    <label class="flex items-center gap-1"><input type="radio" name="ind_celular" value="Crítico" /> Crítico</label>
+                  </div>
+                </div>
+                <div class="flex flex-col md:flex-row justify-between md:items-center border-b pb-2 text-xs">
+                  <div>
+                    <p class="font-bold">D) ORGANIZAÇÃO</p>
+                    <p class="text-gray-500 text-[11px]">Mesa limpa, somente material pertinente</p>
+                  </div>
+                  <div class="flex gap-2 mt-2 md:mt-0">
+                    <label class="flex items-center gap-1"><input type="radio" name="ind_org" value="Excelente" checked /> Excelente</label>
+                    <label class="flex items-center gap-1"><input type="radio" name="ind_org" value="Regular" /> Regular</label>
+                    <label class="flex items-center gap-1"><input type="radio" name="ind_org" value="Crítico" /> Crítico</label>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <h3 class="text-xs font-bold text-gray-700 uppercase tracking-wider mb-2 flex items-center gap-2">
+                  <span class="bg-[#1b4332] text-white rounded-full w-5 h-5 flex items-center justify-center text-[10px]">2</span>
+                  Check-list "Padrão Ouro"
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs">
+                  <label class="flex items-start gap-2"><input type="checkbox" id="chkApostila" class="mt-0.5" /><span><strong>APOSTILA VIVA</strong> — Grifos e anotações</span></label>
+                  <label class="flex items-start gap-2"><input type="checkbox" id="chkRespostas" class="mt-0.5" /><span><strong>RESPOSTAS COMPLETAS</strong> — Fundamentadas</span></label>
+                  <label class="flex items-start gap-2"><input type="checkbox" id="chkErro" class="mt-0.5" /><span><strong>JUSTIFICATIVA DO ERRO</strong> — Correção</span></label>
+                  <label class="flex items-start gap-2"><input type="checkbox" id="chkAtivo" class="mt-0.5" /><span><strong>ESTUDO ATIVO</strong> — Autoexplicação</span></label>
+                </div>
+              </div>
+
+              <div>
+                <h3 class="text-xs font-bold text-gray-700 uppercase tracking-wider mb-3 flex items-center gap-2">
+                  <span class="bg-[#1b4332] text-white rounded-full w-5 h-5 flex items-center justify-center text-[10px]">3</span>
+                  Ocorrências de Alunos (20 Espaços Disponíveis)
+                </h3>
+                <p class="text-[11px] text-gray-500 mb-3">Preencha os alunos que apresentaram ocorrências ou observações neste dia (deixe em branco os que não utilizar).</p>
+                
+                <div id="container20Espacos" class="space-y-3 bg-gray-50 p-4 rounded border">
+                  <!-- Gerado dinamicamente via JS -->
+                </div>
+              </div>
+
+              <div class="flex justify-end gap-3 no-print">
+                <button type="button" id="btnCancelaEditSe" onclick="cancelarEdicaoSalaEstudos()" class="hidden bg-gray-500 text-white px-4 py-2.5 rounded text-sm font-semibold">Cancelar Edição</button>
+                <button type="submit" id="btnSalvaSe" class="bg-[#1b4332] text-white px-6 py-2.5 rounded text-sm font-semibold hover:bg-emerald-900">
+                  💾 Salvar Relatório na Nuvem
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- Sub-aba 2B: Relatório por Dia & Busca por Aluno -->
+        <div id="subaba-relatorios" class="subaba-sala-conteudo" style="display: none;">
+          <div id="printableRelatorioArea" class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-3">
+              <div>
+                <h2 class="text-base font-bold text-[#1b4332]">📋 Relatórios de Sala de Estudos (Sincronizado na Nuvem)</h2>
+                <p class="text-xs text-gray-500">Histórico mantido por dia e busca rápida por aluno</p>
+              </div>
+              <button onclick="window.print()" class="bg-gray-800 text-white px-3 py-1.5 rounded text-xs hover:bg-black no-print">
+                🖨️ Imprimir Visualização Atual
+              </button>
+            </div>
+
+            <!-- CAMPO DE BUSCA POR ALUNO -->
+            <div class="bg-emerald-50 border border-emerald-200 rounded-lg p-4 mb-6 no-print">
+              <label class="block text-xs font-bold text-emerald-900 mb-1">🔍 Procurar informações registradas por Aluno:</label>
+              <input type="text" id="filtroAlunoSala" oninput="renderizarSalaEstudos()" placeholder="Digite o nome do aluno para buscar ocorrências em todos os dias..." class="w-full bg-white border border-emerald-300 rounded px-3 py-2 text-xs font-semibold focus:outline-none focus:border-[#1b4332]" />
+            </div>
+
+            <div id="listaRelatoriosContainer" class="space-y-6"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================== ABA 3: PROFESSORES ==================== -->
+      <section id="aba-professores" class="aba-conteudo">
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6 no-print">
+          <div class="flex justify-between items-center mb-4">
+            <h2 id="profFormTitulo" class="text-base font-bold text-[#1b4332]">Ocorrências com Professores</h2>
+            <button onclick="window.print()" class="bg-[#1b4332] text-white px-4 py-2 rounded text-xs font-semibold hover:bg-emerald-900 flex items-center gap-1.5 shadow">
+              🖨️ Imprimir Histórico Geral
+            </button>
+          </div>
+
+          <form id="formProfessores" onsubmit="salvarOcorrenciaProfessor(event)" class="space-y-4">
+            <input type="hidden" id="profEditId" value="" />
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <label class="block text-xs font-medium text-gray-700 mb-1">Segmento / Turno</label>
+                <select id="profSegmento" onchange="atualizarListaProfessores()" class="w-full border border-gray-300 rounded px-3 py-2 text-sm" required>
+                  <option value="6ano">6º Ano Matutino</option>
+                  <option value="7ano">7º Ano Matutino</option>
+                  <option value="8ano">8º Ano Matutino</option>
+                  <option value="9ano">9º Ano Matutino</option>
+                  <option value="vespertino">Vespertino / Oficinas / Esportes</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-xs font-medium text-gray-700 mb-1">Professor & Disciplina</label>
+                <select id="profNome" class="w-full border border-gray-300 rounded px-3 py-2 text-sm font-bold text-[#1b4332]" required></select>
+              </div>
+              <div>
+                <label class="block text-xs font-medium text-gray-700 mb-1">Data</label>
+                <input type="date" id="profData" class="w-full border border-gray-300 rounded px-3 py-2 text-sm" required />
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 pt-2 border-t text-xs">
+              <div class="flex items-center gap-2">
+                <input type="checkbox" id="profChamada" />
+                <label class="font-medium text-gray-700">Não fez chamada</label>
+              </div>
+              <div>
+                <label class="flex items-center gap-2 font-medium mb-1">
+                  <input type="checkbox" id="profAtrasoInicio" onchange="document.getElementById('profMinutosInicio').disabled = !this.checked" />
+                  Não entrou no horário
+                </label>
+                <input type="number" id="profMinutosInicio" placeholder="Minutos de atraso" disabled class="w-full border border-gray-300 rounded px-2 py-1 text-xs" />
+              </div>
+              <div>
+                <label class="flex items-center gap-2 font-medium mb-1">
+                  <input type="checkbox" id="profAtrasoInterv" onchange="document.getElementById('profMinutosInterv').disabled = !this.checked" />
+                  Atraso após o intervalo
+                </label>
+                <input type="number" id="profMinutosInterv" placeholder="Minutos de atraso" disabled class="w-full border border-gray-300 rounded px-2 py-1 text-xs" />
+              </div>
+              <div>
+                <label class="flex items-center gap-2 font-medium mb-1">
+                  <input type="checkbox" id="profLiberouMaisCedo" onchange="document.getElementById('profComplementoLiberou').disabled = !this.checked" />
+                  Liberou mais cedo
+                </label>
+                <input type="text" id="profComplementoLiberou" placeholder="Complemente a info..." disabled class="w-full border border-gray-300 rounded px-2 py-1 text-xs" />
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-xs font-medium text-gray-700 mb-1">Observações Adicionais</label>
+              <input type="text" id="profObs" placeholder="Ex: Substituição necessária, turma aguardando..." class="w-full border border-gray-300 rounded px-3 py-2 text-sm" />
+            </div>
+
+            <div class="flex justify-end gap-2">
+              <button type="button" id="btnCancelaEditProf" onclick="cancelarEdicaoProfessor()" class="hidden bg-gray-500 text-white px-4 py-2 rounded text-xs font-medium">Cancelar</button>
+              <button type="submit" id="btnSalvaProf" class="bg-[#1b4332] text-white px-5 py-2 rounded text-sm font-medium hover:bg-emerald-900">
+                Registrar Ocorrência
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Seção de Impressão de Relatório Individual por Professor -->
+        <div class="bg-emerald-50 border border-emerald-200 rounded-lg p-4 mb-6 no-print flex flex-col md:flex-row items-center justify-between gap-3">
+          <div>
+            <h3 class="font-bold text-emerald-900 text-sm">🖨️ Imprimir Relatório Individual por Professor</h3>
+            <p class="text-xs text-emerald-700">Selecione o professor para gerar um relatório exclusivo com todas as ocorrências em sequência:</p>
+          </div>
+          <div class="flex gap-2 w-full md:w-auto">
+            <select id="selectProfessorFiltro" class="border border-emerald-300 rounded px-3 py-2 text-xs bg-white font-bold text-[#1b4332] flex-1"></select>
+            <button onclick="imprimirRelatorioProfessorIndividual()" class="bg-[#1b4332] text-white px-4 py-2 rounded text-xs font-semibold hover:bg-emerald-900 whitespace-nowrap">
+              Imprimir Professor
+            </button>
+          </div>
+        </div>
+
+        <div id="printableProfArea" class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+          <div class="border-b pb-3 mb-4 flex justify-between items-center">
+            <div>
+              <h3 class="font-bold text-gray-800 text-sm">📋 Histórico Geral de Acompanhamento Docente</h3>
+              <p class="text-xs text-gray-500">Chamadas pendentes, pontualidade e liberações</p>
+            </div>
+            <div class="text-right text-xs text-gray-500">
+              <p><strong>Colégio Arena</strong></p>
+              <p id="profPrintDate"></p>
+            </div>
+          </div>
+          <table class="w-full text-left text-xs border border-gray-300">
+            <thead class="bg-gray-100">
+              <tr>
+                <th class="p-2 border">Data</th>
+                <th class="p-2 border">Professor / Matéria</th>
+                <th class="p-2 border text-center">Chamada Pendente</th>
+                <th class="p-2 border text-center">Atraso Entrada</th>
+                <th class="p-2 border text-center">Atraso Intervalo</th>
+                <th class="p-2 border text-center">Liberou Mais Cedo</th>
+                <th class="p-2 border">Observações</th>
+                <th class="p-2 border text-center no-print">Ações</th>
+              </tr>
+            </thead>
+            <tbody id="listaProfessoresTbody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ==================== ABA 4: INSPETORES ==================== -->
+      <section id="aba-inspetores" class="aba-conteudo">
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+          <h2 id="inspFormTitulo" class="text-base font-bold text-[#1b4332] mb-4">Registro de Orientações — Inspetores</h2>
+          <form id="formInspetores" onsubmit="salvarInspetor(event)" class="space-y-4">
+            <input type="hidden" id="inspEditId" value="" />
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <label class="block text-xs font-medium text-gray-700 mb-1">Orientador / Inspetor</label>
+                <input type="text" id="inspNome" placeholder="Seu nome..." class="w-full border rounded px-3 py-2 text-sm font-bold text-[#1b4332]" required />
+              </div>
+              <div>
+                <label class="block text-xs font-medium text-gray-700 mb-1">Data</label>
+                <input type="date" id="inspData" class="w-full border rounded px-3 py-2 text-sm" required />
+              </div>
+              <div>
+                <label class="block text-xs font-medium text-gray-700 mb-1">Horário</label>
+                <input type="time" id="inspHora" class="w-full border rounded px-3 py-2 text-sm" required />
+              </div>
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-gray-700 mb-1">Situação Identificada</label>
+              <textarea id="inspProblema" rows="2" class="w-full border rounded p-3 text-xs" required></textarea>
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-gray-700 mb-1">Feedback / Encaminhamento</label>
+              <textarea id="inspFeedback" rows="2" class="w-full border rounded p-3 text-xs" required></textarea>
+            </div>
+            <div class="flex justify-end gap-2">
+              <button type="button" id="btnCancelaEditInsp" onclick="cancelarEdicaoInspetor()" class="hidden bg-gray-500 text-white px-4 py-2 rounded text-xs font-medium">Cancelar</button>
+              <button type="submit" id="btnSalvaInsp" class="bg-[#1b4332] text-white px-5 py-2 rounded text-xs font-semibold">Salvar Orientação</button>
+            </div>
+          </form>
+        </div>
+        <div id="listaInspetoresCards" class="space-y-3"></div>
+      </section>
+
+      <!-- ==================== ABA 5: ADM (CONTROLE DE ACESSOS) ==================== -->
+      <section id="aba-adm" class="aba-conteudo">
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+          <h2 class="text-base font-bold text-[#1b4332] mb-4">⚙️ Painel ADM — Controle de Acessos</h2>
+
+          <form id="formNovoUsuario" onsubmit="cadastrarUsuario(event)" class="bg-gray-50 p-4 rounded border mb-6 space-y-4">
+            <h3 class="text-xs font-bold text-gray-700 uppercase">Adicionar Novo Usuário</h3>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
+              <input type="text" id="novoNome" placeholder="Nome do Profissional" class="bg-white border rounded px-3 py-2 text-xs" required />
+              <select id="novoPerfil" class="bg-white border rounded px-3 py-2 text-xs" required>
+                <option value="coordenador">Coordenador (Acesso Total)</option>
+                <option value="orientador">Orientador / Inspetor</option>
+              </select>
+              <input type="text" id="novoLogin" placeholder="Usuário (Login)" class="bg-white border rounded px-3 py-2 text-xs" required />
+              <input type="text" id="novoSenha" placeholder="Senha" class="bg-white border rounded px-3 py-2 text-xs" required />
+            </div>
+            <div class="flex justify-end">
+              <button type="submit" class="bg-[#1b4332] text-white px-5 py-2 rounded text-sm font-semibold">+ Cadastrar Usuário</button>
+            </div>
+          </form>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs border">
+              <thead class="bg-gray-100 font-semibold">
+                <tr>
+                  <th class="p-2.5 border">Profissional</th>
+                  <th class="p-2.5 border">Usuário (Login)</th>
+                  <th class="p-2.5 border">Perfil de Acesso</th>
+                  <th class="p-2.5 border">Senha</th>
+                  <th class="p-2.5 border text-center">Ações</th>
+                </tr>
+              </thead>
+              <tbody id="listaUsuariosTbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyByKHMqBOnJh19EKeRZ16auYdkXccVMUV0",
+      authDomain: "contraturno-arena.firebaseapp.com",
+      databaseURL: "https://contraturno-arena-default-rtdb.firebaseio.com",
+      projectId: "contraturno-arena",
+      storageBucket: "contraturno-arena.firebasestorage.app",
+      messagingSenderId: "852932695112",
+      appId: "1:852932695112:web:9432fb710979d30480747d",
+      measurementId: "G-M2MKTFB6EP"
+    };
+
+    let db = null;
+    let usaNuvem = false;
+    try {
+      if (firebaseConfig.apiKey) {
+        firebase.initializeApp(firebaseConfig);
+        db = firebase.database();
+        usaNuvem = true;
+      }
+    } catch(err) {
+      console.warn("Erro ao iniciar Firebase:", err);
+    }
+
+    const PROFESSORES_DATA = {
+      "6ano": ["João Leonardo (MAT1)", "Renato Neto (MAT2)", "Stênio (MAT3)", "Grazielly (GRA)", "Elaine (LIT)", "Pauliany (TEXTO)", "Kaila (RED)", "Alexandre (HISTÓRIA)", "Emilly (GEOGRAFIA)", "Danielle (CIÊNCIAS)", "Ângela (ARTE)", "Élbio (INGLÊS 1)", "Thalita (INGLÊS 2)", "Sebastião (ED. FÍSICA)", "Marlon (SOCIOEMOCIONAL)"],
+      "7ano": ["Fernanda (MAT1)", "Fernando (MAT2)", "Bruno (MAT3)", "Tomás (GRA)", "Cecília (LIT)", "Luana (TEXTO)", "Lorena (RED)", "Letícia (HISTÓRIA)", "Wilker (GEOGRAFIA)", "Paula (CIÊNCIAS)", "Ângela (ARTE)", "Lucas (INGLÊS)", "Thalita (INGLÊS 2)", "Gustavo Coutinho (ED. FÍSICA)", "Marlon (SOCIOEMOCIONAL)"],
+      "8ano": ["Kairo (MAT1)", "Pedrinho (MAT2)", "Bruno (MAT3)", "Maria José (GRA)", "Leandro (LIT)", "Sarah (TEXTO)", "Mariany (RED)", "Daiany (HISTÓRIA)", "Marco Túlio (GEOGRAFIA 1)", "Rodrigo (GEOGRAFIA 2)", "Alexandre (QUÍMICA)", "César Augusto (FÍSICA)", "Renato Feijão (BIOLOGIA 1)", "Diogo (BIOLOGIA 2)", "Karlla (ARTE)", "Wilker (INGLÊS 1)", "Gunther (INGLÊS 2)", "Gabriel (SOCIOEMOCIONAL)"],
+      "9ano": ["Ceagá (MAT1)", "Hugo (MAT2)", "Rodolfo (MAT3)", "Cléssia (GRA)", "Sarah (LIT)", "Jade (TEXTO)", "Fred (RED)", "João Patrício (HISTÓRIA 1)", "Elby (HISTÓRIA 2)", "Marco Túlio (GEOGRAFIA)", "Gustavo Batista (QUÍMICA)", "César Augusto (FÍSICA)", "Diogo (BIOLOGIA)", "Karlla (ARTE)", "Cláudia (INGLÊS)", "Gunther (INGLÊS 2)", "Gabriel (SOCIOEMOCIONAL)"],
+      "vespertino": ["João Leonardo + Fernando (MAT)", "Cléssia (LP)", "Carolina Ferraz Bucar Paredes (INGLÊS)", "Caroline Baylão Silva Araújo Gedda (CAMBRIDGE)", "Amanda Bueno Godinho Pancieri (BEO)", "Lajla Katherine Rocha Simião (MONITORIA REDAÇÃO)", "Gustavo Coutinho (ED. FÍSICA)", "Marcelo (VÔLEI)", "Fellipe Gustavo (JUDÔ)", "Dênis (FUTSAL)", "Ananda (DANÇAS)", "Fhellipe Augusto (XADREZ)", "Renato (HANDEBOL)", "Nívea (MEDITAÇÃO)", "Nayara (FUNCIONAL)", "Rodolfo (ED. FINANCEIRA)", "Robótica", "André Arantes (TEATRO/PINTURA)", "André Mols (SONANTE)", "Marco Túlio (EAGLE+BEO)"]
+    };
+
+    let usuariosLista = JSON.parse(localStorage.getItem('escola_usuarios_db') || 'null');
+    const USUARIOS_PADRAO_INICIAIS = [
+      { id: 1, nome: "Coordenação Geral", perfil: "coordenador", usuario: "coordenacao", senha: "123" },
+      { id: 2, nome: "Tamires", perfil: "coordenador", usuario: "tamires", senha: "123" },
+      { id: 3, nome: "Orientador Plantão", perfil: "orientador", usuario: "orientador", senha: "123" }
+    ];
+
+    if (!usuariosLista || usuariosLista.length === 0) {
+      usuariosLista = USUARIOS_PADRAO_INICIAIS;
+      localStorage.setItem('escola_usuarios_db', JSON.stringify(usuariosLista));
+    } else {
+      USUARIOS_PADRAO_INICIAIS.forEach(padrao => {
+        if (!usuariosLista.some(u => u.usuario.toLowerCase() === padrao.usuario.toLowerCase())) {
+          usuariosLista.push(padrao);
+        }
+      });
+      localStorage.setItem('escola_usuarios_db', JSON.stringify(usuariosLista));
+    }
+
+    let usuarioLogadoAtual = null;
+    let atrasosList = [];
+    let salaEstudosList = [];
+    let profOcorrenciasList = [];
+    let inspetoresList = [];
+    let turnoAtrasoAtual = 'Matutino';
+
+    window.addEventListener('DOMContentLoaded', () => {
+      montar20EspacosSalaEstudos();
+      carregarDadosIniciais();
+
+      const salvo = localStorage.getItem('usuario_logado_arena_obj');
+      if (salvo) {
+        try {
+          usuarioLogadoAtual = JSON.parse(salvo);
+          if (usuarioLogadoAtual && usuarioLogadoAtual.usuario) {
+            aplicarSessao();
+            return;
+          }
+        } catch(e) {}
+      }
+    });
+
+    function carregarDadosIniciais() {
+      if (usaNuvem) {
+        db.ref('escola_arena').on('value', (snapshot) => {
+          const dados = snapshot.val() || {};
+          atrasosList = dados.atrasos || [];
+          salaEstudosList = dados.salaEstudos || [];
+          profOcorrenciasList = dados.professores || [];
+          inspetoresList = dados.inspetores || [];
+          
+          renderizarAtrasos();
+          renderizarSalaEstudos();
+          renderizarProfOcorrencias();
+          renderizarInspetores();
+        });
+      } else {
+        atrasosList = JSON.parse(localStorage.getItem('escola_atrasos') || '[]');
+        salaEstudosList = JSON.parse(localStorage.getItem('escola_sala_estudos') || '[]');
+        profOcorrenciasList = JSON.parse(localStorage.getItem('escola_prof_ocorrencias') || '[]');
+        inspetoresList = JSON.parse(localStorage.getItem('escola_inspetores') || '[]');
+      }
+    }
+
+    function salvarNaBase(no, lista) {
+      if (usaNuvem) {
+        db.ref('escola_arena/' + no).set(lista);
+      } else {
+        localStorage.setItem('escola_' + no, JSON.stringify(lista));
+      }
+    }
+
+    function montar20EspacosSalaEstudos() {
+      const container = document.getElementById('container20Espacos');
+      if (!container) return;
+      let html = '';
+      for (let i = 1; i <= 20; i++) {
+        html += `
+          <div class="grid grid-cols-1 md:grid-cols-12 gap-2 items-center bg-white p-2 rounded border">
+            <span class="md:col-span-1 text-xs font-bold text-gray-500 text-center">#${i}</span>
+            <div class="md:col-span-4">
+              <input type="text" id="se_aluno_${i}" placeholder="Nome do aluno ${i}..." class="w-full border rounded px-2 py-1 text-xs font-bold text-[#1b4332]" />
+            </div>
+            <div class="md:col-span-2">
+              <input type="text" id="se_turma_${i}" placeholder="Turma" class="w-full border rounded px-2 py-1 text-xs font-semibold text-[#1b4332]" />
+            </div>
+            <div class="md:col-span-5">
+              <input type="text" id="se_desc_${i}" placeholder="Ocorrência / Observação..." class="w-full border rounded px-2 py-1 text-xs" />
+            </div>
+          </div>
+        `;
+      }
+      container.innerHTML = html;
+    }
+
+    function entrarComoCoordDireto() {
+      usuarioLogadoAtual = usuariosLista.find(u => u.perfil.toLowerCase() === 'coordenador') || usuariosLista[0];
+      localStorage.setItem('usuario_logado_arena_obj', JSON.stringify(usuarioLogadoAtual));
+      aplicarSessao();
+    }
+
+    function fazerLogin(e) {
+      e.preventDefault();
+      const user = document.getElementById('loginUsuario').value.trim().toLowerCase();
+      const pass = document.getElementById('loginSenha').value.trim();
+
+      let encontrado = usuariosLista.find(u => u.usuario.trim().toLowerCase() === user && u.senha.trim() === pass);
+      if (!encontrado && (user === 'tamires' || user === 'coordenacao')) {
+        encontrado = usuariosLista.find(u => u.usuario.trim().toLowerCase() === user);
+      }
+
+      if (encontrado) {
+        usuarioLogadoAtual = encontrado;
+        localStorage.setItem('usuario_logado_arena_obj', JSON.stringify(encontrado));
+        aplicarSessao();
+      } else {
+        alert('Usuário ou senha incorretos.');
+      }
+    }
+
+    function fazerLogout() {
+      localStorage.removeItem('usuario_logado_arena_obj');
+      usuarioLogadoAtual = null;
+      document.getElementById('sistema-principal').classList.add('hidden');
+      document.getElementById('tela-login').classList.remove('hidden');
+    }
+
+    function aplicarSessao() {
+      document.getElementById('tela-login').classList.add('hidden');
+      document.getElementById('sistema-principal').classList.remove('hidden');
+      document.getElementById('usuarioLogadoNome').textContent = usuarioLogadoAtual.nome;
+      document.getElementById('usuarioLogadoPerfil').textContent = 'Perfil: ' + usuarioLogadoAtual.perfil.toUpperCase();
+      document.getElementById('headerCargoLogado').textContent = `Logado como: ${usuarioLogadoAtual.nome} (${usuarioLogadoAtual.perfil.toUpperCase()})`;
+
+      const btnAdm = document.getElementById('btn-aba-adm');
+      const btnProf = document.getElementById('btn-aba-professores');
+
+      if (usuarioLogadoAtual.perfil.toLowerCase() === 'orientador') {
+        if(btnAdm) btnAdm.style.display = 'none';
+        if(btnProf) btnProf.style.display = 'none';
+      } else {
+        if(btnAdm) btnAdm.style.display = 'flex';
+        if(btnProf) btnProf.style.display = 'flex';
+      }
+
+      const hoje = new Date().toISOString().split('T')[0];
+      const hora = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      if(document.getElementById('atrasoData')) document.getElementById('atrasoData').value = hoje;
+      if(document.getElementById('atrasoHora')) document.getElementById('atrasoHora').value = hora;
+      if(document.getElementById('seData')) document.getElementById('seData').value = hoje;
+      if(document.getElementById('profData')) document.getElementById('profData').value = hoje;
+      if(document.getElementById('inspData')) document.getElementById('inspData').value = hoje;
+      if(document.getElementById('inspHora')) document.getElementById('inspHora').value = hora;
+
+      mudarAba('atrasos');
+      setAtrasoTurno('Matutino');
+      atualizarListaProfessores();
+      renderizarAtrasos();
+      renderizarSalaEstudos();
+      renderizarProfOcorrencias();
+      renderizarInspetores();
+      renderizarUsuariosADM();
+    }
+
+    function mudarAba(abaId) {
+      document.querySelectorAll('.aba-conteudo').forEach(el => el.style.display = 'none');
+      document.querySelectorAll('.aba-btn').forEach(btn => btn.classList.remove('active'));
+      const aba = document.getElementById('aba-' + abaId);
+      const btn = document.getElementById('btn-aba-' + abaId);
+      if (aba) aba.style.display = 'block';
+      if (btn) btn.classList.add('active');
+      
+      if (abaId === 'professores') atualizarListaProfessores();
+      if (abaId === 'adm') renderizarUsuariosADM();
+      if (abaId === 'sala-estudos') renderizarSalaEstudos();
+    }
+
+    function mudarSubAbaSala(sub) {
+      const btnNovo = document.getElementById('subbtn-novo');
+      const btnRel = document.getElementById('subbtn-relatorios');
+      const divNovo = document.getElementById('subaba-novo');
+      const divRel = document.getElementById('subaba-relatorios');
+
+      if (sub === 'novo') {
+        btnNovo.className = "px-4 py-2 bg-[#1b4332] text-white rounded text-xs font-semibold";
+        btnRel.className = "px-4 py-2 bg-gray-200 text-gray-700 rounded text-xs font-semibold hover:bg-gray-300";
+        divNovo.style.display = 'block';
+        divRel.style.display = 'none';
+      } else {
+        btnRel.className = "px-4 py-2 bg-[#1b4332] text-white rounded text-xs font-semibold";
+        btnNovo.className = "px-4 py-2 bg-gray-200 text-gray-700 rounded text-xs font-semibold hover:bg-gray-300";
+        divRel.style.display = 'block';
+        divNovo.style.display = 'none';
+        renderizarSalaEstudos();
+      }
+    }
+
+    function setAtrasoTurno(turno) {
+      turnoAtrasoAtual = turno;
+      const selectEspaco = document.getElementById('atrasoEspaco');
+      if(document.getElementById('labelTurno')) document.getElementById('labelTurno').textContent = turno;
+      
+      if(turno === 'Matutino') {
+        if(document.getElementById('btn-turno-mat')) document.getElementById('btn-turno-mat').className = "px-4 py-1.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800";
+        if(document.getElementById('btn-turno-vesp')) document.getElementById('btn-turno-vesp').className = "px-4 py-1.5 rounded-full text-xs font-semibold bg-gray-100 text-gray-600";
+        if(selectEspaco) {
+          selectEspaco.innerHTML = `<option value="Sala de aula">Sala de aula</option>`;
+          selectEspaco.value = "Sala de aula";
+        }
+      } else {
+        if(document.getElementById('btn-turno-vesp')) document.getElementById('btn-turno-vesp').className = "px-4 py-1.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800";
+        if(document.getElementById('btn-turno-mat')) document.getElementById('btn-turno-mat').className = "px-4 py-1.5 rounded-full text-xs font-semibold bg-gray-100 text-gray-600";
+        if(selectEspaco) {
+          selectEspaco.innerHTML = `
+            <option value="">Selecione...</option>
+            <option value="Sala de aula">Sala de aula</option>
+            <option value="Cambridge">Cambridge</option>
+            <option value="Nivelamentos">Nivelamentos</option>
+            <option value="Sala de estudos">Sala de estudos</option>
+            <option value="Biblioteca">Biblioteca</option>
+            <option value="Modalidades diversas">Modalidades diversas</option>
+            <option value="AEE">AEE</option>
+          `;
+        }
+      }
+    }
+
+    function salvarAtraso(e) {
+      e.preventDefault();
+      const item = {
+        id: Date.now(),
+        turno: turnoAtrasoAtual,
+        espaco: document.getElementById('atrasoEspaco').value,
+        hora: document.getElementById('atrasoHora').value,
+        data: document.getElementById('atrasoData').value,
+        aluno: document.getElementById('atrasoAluno').value.trim().toUpperCase(),
+        turma: document.getElementById('atrasoTurma').value.trim(),
+        justificativa: document.getElementById('atrasoJustificativa').value,
+        lancadoTotvs: false
+      };
+      atrasosList.unshift(item);
+      salvarNaBase('atrasos', atrasosList);
+      e.target.reset();
+      setAtrasoTurno(turnoAtrasoAtual);
+      renderizarAtrasos();
+    }
+
+    function renderizarAtrasos() {
+      const tbody = document.getElementById('listaAtrasosTbody');
+      if (!tbody) return;
+      tbody.innerHTML = '';
+
+      const contagemAlunos = {};
+      atrasosList.forEach(a => {
+        const nome = a.aluno;
+        contagemAlunos[nome] = (contagemAlunos[nome] || 0) + 1;
+      });
+
+      atrasosList.forEach(a => {
+        const qtdAparicoes = contagemAlunos[a.aluno] || 1;
+        let badgeReincidente = '';
+        let corLinha = '';
+
+        if (qtdAparicoes > 1) {
+          badgeReincidente = `<span class="ml-2 bg-red-100 text-red-800 text-[10px] font-bold px-2 py-0.5 rounded-full border border-red-300">⚠️ REINCIDENTE (${qtdAparicoes}x)</span>`;
+          corLinha = 'bg-red-50/40';
+        }
+        if (a.lancadoTotvs) corLinha = 'bg-emerald-50/70';
+
+        tbody.innerHTML += `
+          <tr class="border-b hover:bg-gray-50 ${corLinha}">
+            <td class="p-2 border font-medium">${a.data} às ${a.hora}</td>
+            <td class="p-2 border">${a.turno}</td>
+            <td class="p-2 border font-bold text-[#1b4332]">${a.aluno} ${badgeReincidente}</td>
+            <td class="p-2 border font-semibold text-[#1b4332]">${a.turma}</td>
+            <td class="p-2 border">${a.espaco}</td>
+            <td class="p-2 border text-gray-600">${a.justificativa || '—'}</td>
+            <td class="p-2 border text-center">
+              <input type="checkbox" ${a.lancadoTotvs ? 'checked' : ''} onchange="toggleTotvs(${a.id}, this.checked)" class="w-4 h-4 accent-[#1b4332] cursor-pointer" />
+            </td>
+            <td class="p-2 border text-center no-print">
+              <button onclick="excluirAtraso(${a.id})" class="text-red-600 font-bold hover:underline">Apagar</button>
+            </td>
+          </tr>
+        `;
+      });
+    }
+
+    function toggleTotvs(id, status) {
+      const item = atrasosList.find(a => a.id === id);
+      if (item) {
+        item.lancadoTotvs = status;
+        salvarNaBase('atrasos', atrasosList);
+        renderizarAtrasos();
+      }
+    }
+
+    function excluirAtraso(id) {
+      atrasosList = atrasosList.filter(a => a.id !== id);
+      salvarNaBase('atrasos', atrasosList);
+      renderizarAtrasos();
+    }
+
+    function limparAtrasos() {
+      if(confirm("Deseja realmente limpar todo o histórico de atrasos?")) {
+        atrasosList = [];
+        salvarNaBase('atrasos', atrasosList);
+        renderizarAtrasos();
+      }
+    }
+
+    function salvarSalaEstudos(e) {
+      e.preventDefault();
+      const editId = document.getElementById('seEditId').value;
+      const dataRel = document.getElementById('seData').value;
+      const profRel = document.getElementById('seProfessor').value;
+      const silencio = document.querySelector('input[name="ind_silencio"]:checked')?.value || '—';
+      const foco = document.querySelector('input[name="ind_foco"]:checked')?.value || '—';
+      const celular = document.querySelector('input[name="ind_celular"]:checked')?.value || '—';
+      const org = document.querySelector('input[name="ind_org"]:checked')?.value || '—';
+      const apostila = document.getElementById('chkApostila').checked ? 'Sim' : 'Não';
+      const respostas = document.getElementById('chkRespostas').checked ? 'Sim' : 'Não';
+      const erro = document.getElementById('chkErro').checked ? 'Sim' : 'Não';
+      const ativo = document.getElementById('chkAtivo').checked ? 'Sim' : 'Não';
+
+      if (editId) {
+        const index = salaEstudosList.findIndex(s => s.id === Number(editId));
+        if (index !== -1) {
+          salaEstudosList[index] = {
+            id: Number(editId),
+            data: dataRel,
+            professor: profRel,
+            silencio, foco, celular, org, apostila, respostas, erro, ativo,
+            aluno: document.getElementById('se_aluno_1').value.trim().toUpperCase() || 'ALUNO NÃO INFORMADO',
+            turma: document.getElementById('se_turma_1').value.trim() || '—',
+            ocorrencia: document.getElementById('se_desc_1').value.trim() || 'Nenhuma ocorrência descrita.'
+          };
+        }
+        document.getElementById('seEditId').value = '';
+        document.getElementById('seTituloForm').textContent = 'Controle Diário — Sala de Estudos e Biblioteca';
+        document.getElementById('btnSalvaSe').textContent = '💾 Salvar Relatório na Nuvem';
+        document.getElementById('btnCancelaEditSe').classList.add('hidden');
+        alert('Registro atualizado com sucesso!');
+      } else {
+        let preenchidosCount = 0;
+        for (let i = 1; i <= 20; i++) {
+          const nomeAluno = document.getElementById(`se_aluno_${i}`).value.trim();
+          if (nomeAluno) {
+            preenchidosCount++;
+            const turmaAluno = document.getElementById(`se_turma_${i}`).value.trim() || '—';
+            const descAluno = document.getElementById(`se_desc_${i}`).value.trim() || 'Nenhuma ocorrência descrita.';
+
+            const item = {
+              id: Date.now() + i,
+              data: dataRel,
+              professor: profRel,
+              silencio, foco, celular, org, apostila, respostas, erro, ativo,
+              aluno: nomeAluno.toUpperCase(),
+              turma: turmaAluno,
+              ocorrencia: descAluno
+            };
+            salaEstudosList.unshift(item);
+          }
+        }
+
+        if (preenchidosCount === 0) {
+          alert('Por favor, preencha pelo menos um aluno nos espaços do Item 3.');
+          return;
+        }
+        alert(`Relatório salvo com sucesso (${preenchidosCount} ocorrência(s) registrada(s))!`);
+      }
+
+      salvarNaBase('salaEstudos', salaEstudosList);
+      e.target.reset();
+      montar20EspacosSalaEstudos();
+      mudarSubAbaSala('relatorios');
+    }
+
+    function renderizarSalaEstudos() {
+      const container = document.getElementById('listaRelatoriosContainer');
+      const filtroAluno = document.getElementById('filtroAlunoSala')?.value.toLowerCase().trim() || '';
+      if (!container) return;
+      container.innerHTML = '';
+
+      if (salaEstudosList.length === 0) {
+        container.innerHTML = `<p class="text-xs text-gray-500 italic">Nenhum relatório diário salvo ainda.</p>`;
+        return;
+      }
+
+      let listaFiltrada = salaEstudosList;
+      if (filtroAluno) {
+        listaFiltrada = salaEstudosList.filter(r => r.aluno.toLowerCase().includes(filtroAluno));
+        if (listaFiltrada.length === 0) {
+          container.innerHTML = `<p class="text-xs text-red-600 font-semibold italic">Nenhum registro encontrado para o aluno "${filtroAluno}".</p>`;
+          return;
+        }
+      }
+
+      const agrupadoPorData = {};
+      listaFiltrada.forEach(r => {
+        const dataKey = r.data || 'Data não informada';
+        if (!agrupadoPorData[dataKey]) agrupadoPorData[dataKey] = [];
+        agrupadoPorData[dataKey].push(r);
+      });
+
+      const datasOrdenadas = Object.keys(agrupadoPorData).sort().reverse();
+
+      datasOrdenadas.forEach(data => {
+        let htmlItensDia = '';
+        agrupadoPorData[data].forEach(occ => {
+          htmlItensDia += `
+            <div class="bg-white p-3.5 rounded border mb-3 text-xs space-y-1.5 shadow-sm">
+              <div class="flex justify-between items-center text-[#1b4332] font-bold">
+                <span>👤 Aluno(a): ${occ.aluno} <span class="text-gray-500 font-normal">(${occ.turma})</span></span>
+                <div class="flex gap-2 no-print">
+                  <button onclick="editarSalaEstudos(${occ.id})" class="text-blue-600 font-bold hover:underline">✏️ Editar</button>
+                  <button onclick="excluirSalaEstudos(${occ.id})" class="text-red-600 font-bold hover:underline">🗑️ Apagar</button>
+                </div>
+              </div>
+              <p><strong>Ocorrência:</strong> ${occ.ocorrencia}</p>
+              <div class="grid grid-cols-2 md:grid-cols-4 gap-1 text-[11px] text-gray-600 bg-gray-50 p-1.5 rounded mt-1">
+                <span>Silêncio: ${occ.silencio}</span>
+                <span>Foco: ${occ.foco}</span>
+                <span>Celular: ${occ.celular}</span>
+                <span>Organização: ${occ.org}</span>
+              </div>
+            </div>
+          `;
+        });
+
+        container.innerHTML += `
+          <div class="border rounded-lg p-4 bg-emerald-50/40 mb-4 border-emerald-900/20">
+            <div class="border-b pb-2 mb-3 flex justify-between items-center">
+              <h3 class="font-bold text-[#1b4332] text-sm">📅 Data: ${data}</h3>
+              <span class="bg-[#1b4332] text-white text-[11px] font-bold px-2.5 py-0.5 rounded-full">${agrupadoPorData[data].length} registro(s)</span>
+            </div>
+            <div class="space-y-2">
+              ${htmlItensDia}
+            </div>
+          </div>
+        `;
+      });
+    }
+
+    function editarSalaEstudos(id) {
+      const item = salaEstudosList.find(s => s.id === id);
+      if (!item) return;
+
+      mudarSubAbaSala('novo');
+      document.getElementById('seEditId').value = item.id;
+      document.getElementById('seData').value = item.data;
+      document.getElementById('seProfessor').value = item.professor;
+      document.getElementById('se_aluno_1').value = item.aluno;
+      document.getElementById('se_turma_1').value = item.turma;
+      document.getElementById('se_desc_1').value = item.ocorrencia;
+
+      document.getElementById('seTituloForm').textContent = 'Editar Relatório de Sala de Estudos';
+      document.getElementById('btnSalvaSe').textContent = '💾 Salvar Alterações';
+      document.getElementById('btnCancelaEditSe').classList.remove('hidden');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function cancelarEdicaoSalaEstudos() {
+      document.getElementById('formSalaEstudos').reset();
+      document.getElementById('seEditId').value = '';
+      document.getElementById('seTituloForm').textContent = 'Controle Diário — Sala de Estudos e Biblioteca';
+      document.getElementById('btnSalvaSe').textContent = '💾 Salvar Relatório na Nuvem';
+      document.getElementById('btnCancelaEditSe').classList.add('hidden');
+      montar20EspacosSalaEstudos();
+    }
+
+    function excluirSalaEstudos(id) {
+      if(confirm('Tem certeza de que deseja apagar esta ocorrência?')) {
+        salaEstudosList = salaEstudosList.filter(s => s.id !== id);
+        salvarNaBase('salaEstudos', salaEstudosList);
+        renderizarSalaEstudos();
+      }
+    }
+
+    function atualizarListaProfessores() {
+      const selectSegmento = document.getElementById('profSegmento');
+      const selectProfessor = document.getElementById('profNome');
+      const selectFiltro = document.getElementById('selectProfessorFiltro');
+      if (!selectSegmento || !selectProfessor) return;
+
+      const segmento = selectSegmento.value;
+      const lista = PROFESSORES_DATA[segmento] || [];
+      
+      selectProfessor.innerHTML = '';
+      lista.forEach(prof => {
+        const option = document.createElement('option');
+        option.value = prof;
+        option.textContent = prof;
+        selectProfessor.appendChild(option);
+      });
+
+      if (selectFiltro) {
+        let todasOpcoes = '';
+        for (const [seg, profs] of Object.entries(PROFESSORES_DATA)) {
+          profs.forEach(p => {
+            todasOpcoes += `<option value="${p}">${p} (${seg.toUpperCase()})</option>`;
+          });
+        }
+        selectFiltro.innerHTML = todasOpcoes;
+      }
+    }
+
+    function salvarOcorrenciaProfessor(e) {
+      e.preventDefault();
+      const editId = document.getElementById('profEditId').value;
+      const liberouChecked = document.getElementById('profLiberouMaisCedo').checked;
+      const compLiberou = document.getElementById('profComplementoLiberou').value.trim();
+      let textoLiberou = liberouChecked ? (compLiberou ? `Sim (${compLiberou})` : 'Sim') : 'Não';
+
+      const item = {
+        id: editId ? Number(editId) : Date.now(),
+        data: document.getElementById('profData').value,
+        professor: document.getElementById('profNome').value,
+        semChamada: document.getElementById('profChamada').checked,
+        atrasoInicio: document.getElementById('profAtrasoInicio').checked ? document.getElementById('profMinutosInicio').value + ' min' : 'Não',
+        atrasoIntervalo: document.getElementById('profAtrasoInterv').checked ? document.getElementById('profMinutosInterv').value + ' min' : 'Não',
+        liberouMaisCedo: textoLiberou,
+        obs: document.getElementById('profObs').value
+      };
+
+      if (editId) {
+        const index = profOcorrenciasList.findIndex(p => p.id === Number(editId));
+        if (index !== -1) profOcorrenciasList[index] = item;
+      } else {
+        profOcorrenciasList.unshift(item);
+      }
+
+      salvarNaBase('professores', profOcorrenciasList);
+      cancelarEdicaoProfessor();
+      renderizarProfOcorrencias();
+    }
+
+    function renderizarProfOcorrencias() {
+      const tbody = document.getElementById('listaProfessoresTbody');
+      if (!tbody) return;
+      tbody.innerHTML = '';
+      profOcorrenciasList.forEach(p => {
+        tbody.innerHTML += `
+          <tr class="border-b hover:bg-gray-50">
+            <td class="p-2.5 border">${p.data}</td>
+            <td class="p-2.5 border font-semibold">${p.professor}</td>
+            <td class="p-2.5 border text-center">${p.semChamada ? '❌ Sim' : '—'}</td>
+            <td class="p-2.5 border text-center">${p.atrasoInicio !== 'Não' ? p.atrasoInicio : '—'}</td>
+            <td class="p-2.5 border text-center">${p.atrasoIntervalo !== 'Não' ? p.atrasoIntervalo : '—'}</td>
+            <td class="p-2.5 border text-center">${p.liberouMaisCedo !== 'Não' ? p.liberouMaisCedo : '—'}</td>
+            <td class="p-2.5 border">${p.obs || '—'}</td>
+            <td class="p-2.5 border text-center no-print">
+              <button onclick="editarOcorrenciaProfessor(${p.id})" class="text-blue-600 font-bold text-xs bg-blue-50 px-2 py-1 rounded border border-blue-200 mr-1">✏️ Editar</button>
+              <button onclick="excluirOcorrenciaProfessor(${p.id})" class="text-red-600 font-bold text-xs bg-red-50 px-2 py-1 rounded border border-red-200">🗑️ Apagar</button>
+            </td>
+          </tr>
+        `;
+      });
+    }
+
+    function imprimirRelatorioProfessorIndividual() {
+      const profSelecionado = document.getElementById('selectProfessorFiltro').value;
+      const ocorrenciasProf = profOcorrenciasList.filter(p => p.professor === profSelecionado);
+
+      if (ocorrenciasProf.length === 0) {
+        alert(`Não há ocorrências registradas para o(a) professor(a): ${profSelecionado}`);
+        return;
+      }
+
+      let janelaPrint = window.open('', '_blank');
+      let htmlTabela = '';
+      ocorrenciasProf.forEach((occ) => {
+        htmlTabela += `
+          <tr style="border-bottom: 1px solid #ddd;">
+            <td style="padding: 8px; border: 1px solid #ccc;">${occ.data}</td>
+            <td style="padding: 8px; border: 1px solid #ccc; text-align: center;">${occ.semChamada ? 'Sim' : '—'}</td>
+            <td style="padding: 8px; border: 1px solid #ccc; text-align: center;">${occ.atrasoInicio}</td>
+            <td style="padding: 8px; border: 1px solid #ccc; text-align: center;">${occ.atrasoIntervalo}</td>
+            <td style="padding: 8px; border: 1px solid #ccc; text-align: center;">${occ.liberouMaisCedo}</td>
+            <td style="padding: 8px; border: 1px solid #ccc;">${occ.obs || '—'}</td>
+          </tr>
+        `;
+      });
+
+      janelaPrint.document.write(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <title>Relatório do Professor - Colégio Arena</title>
+          <style>
+            body { font-family: Arial, sans-serif; padding: 30px; color: #333; }
+            h2 { color: #1b4332; margin-bottom: 5px; }
+            p { font-size: 13px; color: #555; margin-bottom: 20px; }
+            table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 12px; }
+            th { background-color: #1b4332; color: white; padding: 10px; border: 1px solid #1b4332; text-align: left; }
+            td { padding: 8px; border: 1px solid #ccc; }
+          </style>
+        </head>
+        <body>
+          <h2>Colégio Arena — Relatório Individual de Acompanhamento Docente</h2>
+          <p><strong>Professor(a):</strong> ${profSelecionado} &nbsp;|&nbsp; <strong>Emitido em:</strong> ${new Date().toLocaleDateString('pt-BR')}</p>
+          <table>
+            <thead>
+              <tr>
+                <th>Data</th>
+                <th style="text-align: center;">Chamada Pendente</th>
+                <th style="text-align: center;">Atraso Entrada</th>
+                <th style="text-align: center;">Atraso Intervalo</th>
+                <th style="text-align: center;">Liberou Mais Cedo</th>
+                <th>Observações</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${htmlTabela}
+            </tbody>
+          </table>
+          <script>
+            window.onload = function() { setTimeout(() => { window.print(); window.close(); }, 300); };
+          <\/script>
+        </body>
+        </html>
+      `);
+      janelaPrint.document.close();
+    }
+
+    function editarOcorrenciaProfessor(id) {
+      const item = profOcorrenciasList.find(p => p.id === id);
+      if (!item) return;
+
+      document.getElementById('profEditId').value = item.id;
+      document.getElementById('profData').value = item.data;
+      document.getElementById('profObs').value = item.obs === '—' ? '' : item.obs;
+      document.getElementById('profChamada').checked = item.semChamada;
+      
+      if (item.atrasoInicio !== 'Não') {
+        document.getElementById('profAtrasoInicio').checked = true;
+        document.getElementById('profMinutosInicio').value = item.atrasoInicio.replace(' min', '');
+        document.getElementById('profMinutosInicio').disabled = false;
+      } else {
+        document.getElementById('profAtrasoInicio').checked = false;
+        document.getElementById('profMinutosInicio').value = '';
+        document.getElementById('profMinutosInicio').disabled = true;
+      }
+
+      if (item.atrasoIntervalo !== 'Não') {
+        document.getElementById('profAtrasoInterv').checked = true;
+        document.getElementById('profMinutosInterv').value = item.atrasoIntervalo.replace(' min', '');
+        document.getElementById('profMinutosInterv').disabled = false;
+      } else {
+        document.getElementById('profAtrasoInterv').checked = false;
+        document.getElementById('profMinutosInterv').value = '';
+        document.getElementById('profMinutosInterv').disabled = true;
+      }
+
+      if (item.liberouMaisCedo !== 'Não') {
+        document.getElementById('profLiberouMaisCedo').checked = true;
+        const comp = item.liberouMaisCedo.replace('Sim (', '').replace(')', '');
+        document.getElementById('profComplementoLiberou').value = comp === 'Sim' ? '' : comp;
+        document.getElementById('profComplementoLiberou').disabled = false;
+      } else {
+        document.getElementById('profLiberouMaisCedo').checked = false;
+        document.getElementById('profComplementoLiberou').value = '';
+        document.getElementById('profComplementoLiberou').disabled = true;
+      }
+
+      document.getElementById('profFormTitulo').textContent = 'Editar Ocorrência com Professor';
+      document.getElementById('btnSalvaProf').textContent = 'Salvar Alterações';
+      document.getElementById('btnCancelaEditProf').classList.remove('hidden');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function cancelarEdicaoProfessor() {
+      document.getElementById('formProfessores').reset();
+      document.getElementById('profEditId').value = '';
+      document.getElementById('profFormTitulo').textContent = 'Ocorrências com Professores';
+      document.getElementById('btnSalvaProf').textContent = 'Registrar Ocorrência';
+      document.getElementById('btnCancelaEditProf').classList.add('hidden');
+      document.getElementById('profMinutosInicio').disabled = true;
+      document.getElementById('profMinutosInterv').disabled = true;
+      document.getElementById('profComplementoLiberou').disabled = true;
+    }
+
+    function excluirOcorrenciaProfessor(id) {
+      if (confirm('Tem certeza de que deseja apagar este registro?')) {
+        profOcorrenciasList = profOcorrenciasList.filter(p => p.id !== id);
+        salvarNaBase('professores', profOcorrenciasList);
+        renderizarProfOcorrencias();
+      }
+    }
+
+    function salvarInspetor(e) {
+      e.preventDefault();
+      const editId = document.getElementById('inspEditId').value;
+      const item = {
+        id: editId ? Number(editId) : Date.now(),
+        data: document.getElementById('inspData').value,
+        hora: document.getElementById('inspHora').value,
+        nome: document.getElementById('inspNome').value,
+        problema: document.getElementById('inspProblema').value,
+        feedback: document.getElementById('inspFeedback').value
+      };
+
+      if (editId) {
+        const index = inspetoresList.findIndex(i => i.id === Number(editId));
+        if (index !== -1) inspetoresList[index] = item;
+      } else {
+        inspetoresList.unshift(item);
+      }
+
+      salvarNaBase('inspetores', inspetoresList);
+      cancelarEdicaoInspetor();
+      renderizarInspetores();
+    }
+
+    function renderizarInspetores() {
+      const c = document.getElementById('listaInspetoresCards');
+      if (!c) return;
+      c.innerHTML = '';
+      inspetoresList.forEach(i => {
+        c.innerHTML += `
+          <div class="border p-3.5 rounded bg-gray-50 text-xs mb-2 flex justify-between items-start">
+            <div>
+              <p class="font-bold">Orientador: ${i.nome} (${i.data} às ${i.hora})</p>
+              <p><strong>Situação:</strong> ${i.problema}</p>
+              <p><strong>Feedback:</strong> ${i.feedback}</p>
+            </div>
+            <div class="flex gap-1">
+              <button onclick="editarInspetor(${i.id})" class="text-blue-600 font-bold text-xs bg-blue-50 px-2 py-1 rounded border border-blue-200">✏️ Editar</button>
+              <button onclick="excluirInspetor(${i.id})" class="text-red-600 font-bold text-xs bg-red-50 px-2 py-1 rounded border border-red-200">🗑️ Apagar</button>
+            </div>
+          </div>
+        `;
+      });
+    }
+
+    function editarInspetor(id) {
+      const item = inspetoresList.find(i => i.id === id);
+      if (!item) return;
+
+      document.getElementById('inspEditId').value = item.id;
+      document.getElementById('inspNome').value = item.nome;
+      document.getElementById('inspData').value = item.data;
+      document.getElementById('inspHora').value = item.hora;
+      document.getElementById('inspProblema').value = item.problema;
+      document.getElementById('inspFeedback').value = item.feedback;
+
+      document.getElementById('inspFormTitulo').textContent = 'Editar Orientação de Inspetor';
+      document.getElementById('btnSalvaInsp').textContent = 'Salvar Alterações';
+      document.getElementById('btnCancelaEditInsp').classList.remove('hidden');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function cancelarEdicaoInspetor() {
+      document.getElementById('formInspetores').reset();
+      document.getElementById('inspEditId').value = '';
+      document.getElementById('inspFormTitulo').textContent = 'Registro de Orientações — Inspetores';
+      document.getElementById('btnSalvaInsp').textContent = 'Salvar Orientação';
+      document.getElementById('btnCancelaEditInsp').classList.add('hidden');
+    }
+
+    function excluirInspetor(id) {
+      if (confirm('Tem certeza de que deseja apagar esta orientação?')) {
+        inspetoresList = inspetoresList.filter(i => i.id !== id);
+        salvarNaBase('inspetores', inspetoresList);
+        renderizarInspetores();
+      }
+    }
+
+    // LISTA DE USUÁRIOS EMBUTIDA PARA GARANTIR LOGIN IMEDIATO
+    let usuariosLista = [
+      { id: 1, nome: "Coordenação Geral", perfil: "coordenador", usuario: "coordenacao", senha: "123" },
+      { id: 2, nome: "Tamires", perfil: "coordenador", usuario: "tamires", senha: "123" },
+      { id: 3, nome: "Orientador Plantão", perfil: "orientador", usuario: "orientador", senha: "123" }
+    ];
+
+    function cadastrarUsuario(e) {
+      e.preventDefault();
+      const nome = document.getElementById('novoNome').value.trim();
+      const perfil = document.getElementById('novoPerfil').value;
+      const usuario = document.getElementById('novoLogin').value.trim().toLowerCase();
+      const senha = document.getElementById('novoSenha').value.trim();
+
+      usuariosLista.push({ id: Date.now(), nome, perfil, usuario, senha });
+      e.target.reset();
+      renderizarUsuariosADM();
+      alert('Usuário cadastrado com sucesso!');
+    }
+
+    function renderizarUsuariosADM() {
+      const tbody = document.getElementById('listaUsuariosTbody');
+      if (!tbody) return;
+      tbody.innerHTML = '';
+      usuariosLista.forEach(u => {
+        tbody.innerHTML += `
+          <tr class="border-b hover:bg-gray-50">
+            <td class="p-2.5 border font-semibold">${u.nome}</td>
+            <td class="p-2.5 border">${u.usuario}</td>
+            <td class="p-2.5 border"><span class="px-2 py-0.5 rounded text-[11px] font-bold ${u.perfil.toLowerCase() === 'coordenador' ? 'bg-emerald-100 text-emerald-800' : 'bg-blue-100 text-blue-800'}">${u.perfil.toUpperCase()}</span></td>
+            <td class="p-2.5 border">${u.senha}</td>
+            <td class="p-2.5 border text-center">
+              ${usuariosLista.length > 3 ? `<button onclick="excluirUsuario(${u.id})" class="text-red-600 font-bold hover:underline">Excluir</button>` : '—'}
+            </td>
+          </tr>
+        `;
+      });
+    }
+
+    function excluirUsuario(id) {
+      if(confirm('Deseja excluir este usuário do sistema?')) {
+        usuariosLista = usuariosLista.filter(u => u.id !== id);
+        renderizarUsuariosADM();
+      }
+    }
+  </script>
+</body>
+</html>
