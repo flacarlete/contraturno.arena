@@ -449,7 +449,7 @@
             </div>
             <div class="flex justify-end gap-2">
               <button type="button" id="btnCancelaEditInsp" onclick="cancelarEdicaoInspetor()" class="hidden bg-gray-500 text-white px-4 py-2 rounded text-xs font-medium">Cancelar</button>
-              <button type="submit" id="btnSalvaInsp" class="bg-[#1b4332] text-white px-5 py-2 rounded text-xs font-semibold">Salvar Orientação</button>
+              <button type="submit" id="btnSalvaInsp" class="bg-[#1b4332] text-white px-5 py-2 rounded text-sm font-semibold">Salvar Orientação</button>
             </div>
           </form>
         </div>
@@ -522,7 +522,7 @@
     }
 
     const PROFESSORES_DATA = {
-      "6ano": ["João Leonardo (MAT1)", "Renato Neto (MAT2)", "Stênio (MAT3)", "Grazielly (GRA)", "Elaine (LIT)", "Pauliany (TEXTO)", "Kaila (RED)", "Alexandre (HISTÓRIA)", "Emilly (GEOGRAFIA)", "Danielle (CIÊNCIAS)", "Ângela (ARTE)", "Élbio (INGLÊS 1)", "Thalita (INGLÊS 2)", "Sebastião (ED. FÍSICA)", "Marlon (SOCIOEMOCIONAL)"],
+      "6ano": ["Julio Cesar (INGLÊS)", "João Leonardo (MAT1)", "Renato Neto (MAT2)", "Stênio (MAT3)", "Grazielly (GRA)", "Elaine (LIT)", "Pauliany (TEXTO)", "Kaila (RED)", "Alexandre (HISTÓRIA)", "Emilly (GEOGRAFIA)", "Danielle (CIÊNCIAS)", "Ângela (ARTE)", "Élbio (INGLÊS 1)", "Thalita (INGLÊS 2)", "Sebastião (ED. FÍSICA)", "Marlon (SOCIOEMOCIONAL)"],
       "7ano": ["Fernanda (MAT1)", "Fernando (MAT2)", "Bruno (MAT3)", "Tomás (GRA)", "Cecília (LIT)", "Luana (TEXTO)", "Lorena (RED)", "Letícia (HISTÓRIA)", "Wilker (GEOGRAFIA)", "Paula (CIÊNCIAS)", "Ângela (ARTE)", "Lucas (INGLÊS)", "Thalita (INGLÊS 2)", "Gustavo Coutinho (ED. FÍSICA)", "Marlon (SOCIOEMOCIONAL)"],
       "8ano": ["Kairo (MAT1)", "Pedrinho (MAT2)", "Bruno (MAT3)", "Maria José (GRA)", "Leandro (LIT)", "Sarah (TEXTO)", "Mariany (RED)", "Daiany (HISTÓRIA)", "Marco Túlio (GEOGRAFIA 1)", "Rodrigo (GEOGRAFIA 2)", "Alexandre (QUÍMICA)", "César Augusto (FÍSICA)", "Renato Feijão (BIOLOGIA 1)", "Diogo (BIOLOGIA 2)", "Karlla (ARTE)", "Wilker (INGLÊS 1)", "Gunther (INGLÊS 2)", "Gabriel (SOCIOEMOCIONAL)"],
       "9ano": ["Ceagá (MAT1)", "Hugo (MAT2)", "Rodolfo (MAT3)", "Cléssia (GRA)", "Sarah (LIT)", "Jade (TEXTO)", "Fred (RED)", "João Patrício (HISTÓRIA 1)", "Elby (HISTÓRIA 2)", "Marco Túlio (GEOGRAFIA)", "Gustavo Batista (QUÍMICA)", "César Augusto (FÍSICA)", "Diogo (BIOLOGIA)", "Karlla (ARTE)", "Cláudia (INGLÊS)", "Gunther (INGLÊS 2)", "Gabriel (SOCIOEMOCIONAL)"],
@@ -568,13 +568,11 @@
             profOcorrenciasList = dados.professores || [];
             inspetoresList = dados.inspetores || [];
           } else {
-            // Se o Firebase estiver vazio, resgata do localStorage antigo para não perder nada
             atrasosList = JSON.parse(localStorage.getItem('escola_atrasos') || '[]');
             salaEstudosList = JSON.parse(localStorage.getItem('escola_sala_estudos') || '[]');
             profOcorrenciasList = JSON.parse(localStorage.getItem('escola_prof_ocorrencias') || '[]');
             inspetoresList = JSON.parse(localStorage.getItem('escola_inspetores') || '[]');
             
-            // Envia para a nuvem para salvar permanentemente
             if (atrasosList.length || salaEstudosList.length || profOcorrenciasList.length || inspetoresList.length) {
               db.ref('escola_arena').set({
                 atrasos: atrasosList,
@@ -605,7 +603,6 @@
       if (usaNuvem) {
         db.ref('escola_arena/' + no).set(lista);
       }
-      // Salva cópia de segurança local também
       localStorage.setItem('escola_' + no, JSON.stringify(lista));
     }
 
