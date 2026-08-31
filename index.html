@@ -561,17 +561,43 @@
     function carregarDadosIniciais() {
       if (usaNuvem) {
         db.ref('escola_arena').on('value', (snapshot) => {
-          const dados = snapshot.val() || {};
-          atrasosList = dados.atrasos || [];
-          salaEstudosList = dados.salaEstudos || [];
-          profOcorrenciasList = dados.professores || [];
-          inspetoresList = dados.inspetores || [];
-          
+          const dados = snapshot.val();
+          if (dados) {
+            atrasosList = dados.atrasos || [];
+            salaEstudosList = dados.salaEstudos || [];
+            profOcorrenciasList = dados.professores || [];
+            inspetoresList = dados.inspetores || [];
+          } else {
+            // Se o Firebase estiver vazio, resgata do localStorage antigo para não perder nada
+            atrasosList = JSON.parse(localStorage.getItem('escola_atrasos') || '[]');
+            salaEstudosList = JSON.parse(localStorage.getItem('escola_sala_estudos') || '[]');
+            profOcorrenciasList = JSON.parse(localStorage.getItem('escola_prof_ocorrencias') || '[]');
+            inspetoresList = JSON.parse(localStorage.getItem('escola_inspetores') || '[]');
+            
+            // Envia para a nuvem para salvar permanentemente
+            if (atrasosList.length || salaEstudosList.length || profOcorrenciasList.length || inspetoresList.length) {
+              db.ref('escola_arena').set({
+                atrasos: atrasosList,
+                salaEstudos: salaEstudosList,
+                professores: profOcorrenciasList,
+                inspetores: inspetoresList
+              });
+            }
+          }
           renderizarAtrasos();
           renderizarSalaEstudos();
           renderizarProfOcorrencias();
           renderizarInspetores();
         });
+      } else {
+        atrasosList = JSON.parse(localStorage.getItem('escola_atrasos') || '[]');
+        salaEstudosList = JSON.parse(localStorage.getItem('escola_sala_estudos') || '[]');
+        profOcorrenciasList = JSON.parse(localStorage.getItem('escola_prof_ocorrencias') || '[]');
+        inspetoresList = JSON.parse(localStorage.getItem('escola_inspetores') || '[]');
+        renderizarAtrasos();
+        renderizarSalaEstudos();
+        renderizarProfOcorrencias();
+        renderizarInspetores();
       }
     }
 
@@ -579,6 +605,8 @@
       if (usaNuvem) {
         db.ref('escola_arena/' + no).set(lista);
       }
+      // Salva cópia de segurança local também
+      localStorage.setItem('escola_' + no, JSON.stringify(lista));
     }
 
     function montar20EspacosSalaEstudos() {
