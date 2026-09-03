@@ -13,8 +13,8 @@
     .aba-btn.active { border-bottom: 3px solid #1b4332; color: #1b4332; font-weight: 700; background-color: #f0fdf4; }
     @media print {
       body * { visibility: hidden; }
-      #printableArea, #printableArea *, #printableProfArea, #printableProfArea *, #printableRelatorioArea, #printableRelatorioArea * { visibility: visible; }
-      #printableArea, #printableProfArea, #printableRelatorioArea { 
+      #printableArea, #printableArea *, #printableProfArea, #printableProfArea *, #printableRelatorioArea, #printableRelatorioArea *, #printableInspArea, #printableInspArea * { visibility: visible; }
+      #printableArea, #printableProfArea, #printableRelatorioArea, #printableInspArea { 
         position: absolute; left: 0; top: 0; width: 100%; background: white !important; padding: 0 !important; margin: 0 !important;
       }
       .no-print { display: none !important; }
@@ -80,7 +80,7 @@
       <button onclick="mudarAba('sala-estudos')" id="btn-aba-sala-estudos" class="aba-btn py-3 px-4 border-b-2 text-gray-600 flex items-center gap-2">📚 Sala de Estudos</button>
       <button onclick="mudarAba('professores')" id="btn-aba-professores" class="aba-btn py-3 px-4 border-b-2 text-gray-600 flex items-center gap-2">👨‍🏫 Professores</button>
       <button onclick="mudarAba('inspetores')" id="btn-aba-inspetores" class="aba-btn py-3 px-4 border-b-2 text-gray-600 flex items-center gap-2">📋 Inspetores</button>
-      <button onclick="mudarAba('adm')" id="btn-aba-adm" class="aba-btn py-3 px-4 border-b-2 text-gray-600 flex items-center gap-2 bg-emerald-50 text-[#1b4332]">⚙️ ADM (Acessos)</button>
+      <button onclick="mudarAba('adm')" id="btn-aba-adm" class="aba-btn py-3 px-4 border-b-2 text-gray-600 flex items-center gap-2 bg-emerald-50 text-[#1b4332]">⚙️ ADM (Acessos & Backup)</button>
     </nav>
 
     <main class="p-6 max-w-6xl w-full mx-auto flex-1">
@@ -453,13 +453,42 @@
             </div>
           </form>
         </div>
+
+        <!-- Relatório Individual por Inspetor -->
+        <div class="bg-emerald-50 border border-emerald-200 rounded-lg p-4 mb-6 no-print flex flex-col md:flex-row items-center justify-between gap-3">
+          <div>
+            <h3 class="font-bold text-emerald-900 text-sm">🖨️ Relatório Individual por Inspetor</h3>
+            <p class="text-xs text-emerald-700">Selecione o inspetor/orientador para gerar um relatório compilado com todas as orientações:</p>
+          </div>
+          <div class="flex gap-2 w-full md:w-auto">
+            <select id="selectInspetorFiltro" class="border border-emerald-300 rounded px-3 py-2 text-xs bg-white font-bold text-[#1b4332] flex-1"></select>
+            <button onclick="imprimirRelatorioInspetorIndividual()" class="bg-[#1b4332] text-white px-4 py-2 rounded text-xs font-semibold hover:bg-emerald-900 whitespace-nowrap">
+              Imprimir Inspetor
+            </button>
+          </div>
+        </div>
+
         <div id="listaInspetoresCards" class="space-y-3"></div>
       </section>
 
-      <!-- ==================== ABA 5: ADM (CONTROLE DE ACESSOS) ==================== -->
+      <!-- ==================== ABA 5: ADM (CONTROLE DE ACESSOS & BACKUP) ==================== -->
       <section id="aba-adm" class="aba-conteudo">
         <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
-          <h2 class="text-base font-bold text-[#1b4332] mb-4">⚙️ Painel ADM — Controle de Acessos</h2>
+          <h2 class="text-base font-bold text-[#1b4332] mb-4">⚙️ Painel ADM — Controle de Acessos & Backup</h2>
+          
+          <div class="bg-emerald-50 border border-emerald-200 rounded p-4 mb-6 flex flex-col md:flex-row items-center justify-between gap-3 no-print">
+            <div>
+              <h3 class="font-bold text-emerald-900 text-sm">💾 Backup e Segurança dos Dados (Nuvem)</h3>
+              <p class="text-xs text-emerald-700">Baixe um arquivo de segurança com todas as ocorrências atuais ou restaure dados antigos de um arquivo .json.</p>
+            </div>
+            <div class="flex gap-2">
+              <button onclick="baixarBackupDados()" class="bg-[#1b4332] text-white px-4 py-2 rounded text-xs font-semibold hover:bg-emerald-900">⬇️ Baixar Backup</button>
+              <label class="bg-blue-800 text-white px-4 py-2 rounded text-xs font-semibold hover:bg-blue-700 cursor-pointer">
+                ⬆️ Restaurar Backup
+                <input type="file" id="inputRestaurar" accept=".json" onchange="restaurarBackupDados(event)" class="hidden" />
+              </label>
+            </div>
+          </div>
 
           <form id="formNovoUsuario" onsubmit="cadastrarUsuario(event)" class="bg-gray-50 p-4 rounded border mb-6 space-y-4">
             <h3 class="text-xs font-bold text-gray-700 uppercase">Adicionar Novo Usuário</h3>
@@ -709,6 +738,7 @@
       if (abaId === 'professores') atualizarListaProfessores();
       if (abaId === 'adm') renderizarUsuariosADM();
       if (abaId === 'sala-estudos') renderizarSalaEstudos();
+      if (abaId === 'inspetores') renderizarInspetores();
     }
 
     function mudarSubAbaSala(sub) {
@@ -919,7 +949,7 @@
       container.innerHTML = '';
 
       if (salaEstudosList.length === 0) {
-        container.innerHTML = `<p class="text-xs text-gray-500 italic">Nenhum relatório diário salvo ainda.</p>`;
+        container.innerHTML = `<p class="text-xs text-gray-500 italic">Nenhum relatório diário salvo ainda na nuvem.</p>`;
         return;
       }
 
@@ -1231,7 +1261,7 @@
         id: editId ? Number(editId) : Date.now(),
         data: document.getElementById('inspData').value,
         hora: document.getElementById('inspHora').value,
-        nome: document.getElementById('inspNome').value,
+        nome: document.getElementById('inspNome').value.trim(),
         problema: document.getElementById('inspProblema').value,
         feedback: document.getElementById('inspFeedback').value
       };
@@ -1250,23 +1280,94 @@
 
     function renderizarInspetores() {
       const c = document.getElementById('listaInspetoresCards');
+      const selectFiltro = document.getElementById('selectInspetorFiltro');
       if (!c) return;
       c.innerHTML = '';
+
+      const nomesUnicos = [...new Set(inspetoresList.map(i => i.nome))].filter(Boolean).sort();
+      
+      if (selectFiltro) {
+        selectFiltro.innerHTML = '';
+        if (nomesUnicos.length === 0) {
+          selectFiltro.innerHTML = `<option value="">Nenhum inspetor cadastrado</option>`;
+        } else {
+          nomesUnicos.forEach(nome => {
+            selectFiltro.innerHTML += `<option value="${nome}">${nome}</option>`;
+          });
+        }
+      }
+
+      if (inspetoresList.length === 0) {
+        c.innerHTML = `<p class="text-xs text-gray-500 italic">Nenhuma orientação de inspetor registrada ainda.</p>`;
+        return;
+      }
+
       inspetoresList.forEach(i => {
         c.innerHTML += `
           <div class="border p-3.5 rounded bg-gray-50 text-xs mb-2 flex justify-between items-start">
             <div>
-              <p class="font-bold">Orientador: ${i.nome} (${i.data} às ${i.hora})</p>
+              <p class="font-bold text-[#1b4332]">Orientador: ${i.nome} (${i.data} às ${i.hora})</p>
               <p><strong>Situação:</strong> ${i.problema}</p>
               <p><strong>Feedback:</strong> ${i.feedback}</p>
             </div>
-            <div class="flex gap-1">
+            <div class="flex gap-1 no-print">
               <button onclick="editarInspetor(${i.id})" class="text-blue-600 font-bold text-xs bg-blue-50 px-2 py-1 rounded border border-blue-200">✏️ Editar</button>
               <button onclick="excluirInspetor(${i.id})" class="text-red-600 font-bold text-xs bg-red-50 px-2 py-1 rounded border border-red-200">🗑️ Apagar</button>
             </div>
           </div>
         `;
       });
+    }
+
+    function imprimirRelatorioInspetorIndividual() {
+      const inspSelecionado = document.getElementById('selectInspetorFiltro').value;
+      if (!inspSelecionado) {
+        alert("Selecione um inspetor válido.");
+        return;
+      }
+
+      const orientacoesInsp = inspetoresList.filter(i => i.nome === inspSelecionado);
+
+      if (orientacoesInsp.length === 0) {
+        alert(`Não há orientações registradas para o(a) inspetor(a): ${inspSelecionado}`);
+        return;
+      }
+
+      let janelaPrint = window.open('', '_blank');
+      let htmlCards = '';
+      orientacoesInsp.forEach((occ) => {
+        htmlCards += `
+          <div style="border: 1px solid #ccc; padding: 12px; margin-bottom: 12px; border-radius: 6px; font-size: 12px; background: #f9f9f9;">
+            <p style="margin: 0 0 6px 0; font-weight: bold; color: #1b4332;">Data/Hora: ${occ.data} às ${occ.hora}</p>
+            <p style="margin: 0 0 6px 0;"><strong>Situação Identificada:</strong> ${occ.problema}</p>
+            <p style="margin: 0;"><strong>Feedback / Encaminhamento:</strong> ${occ.feedback}</p>
+          </div>
+        `;
+      });
+
+      janelaPrint.document.write(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <title>Relatório do Inspetor - Colégio Arena</title>
+          <style>
+            body { font-family: Arial, sans-serif; padding: 30px; color: #333; }
+            h2 { color: #1b4332; margin-bottom: 5px; }
+            p { font-size: 13px; color: #555; margin-bottom: 20px; }
+          </style>
+        </head>
+        <body>
+          <h2>Colégio Arena — Relatório Individual de Orientações (Inspetores)</h2>
+          <p><strong>Inspetor(a) / Orientador(a):</strong> ${inspSelecionado} &nbsp;|&nbsp; <strong>Emitido em:</strong> ${new Date().toLocaleDateString('pt-BR')}</p>
+          <hr style="border: 0; border-top: 1px solid #ddd; margin-bottom: 20px;" />
+          ${htmlCards}
+          <script>
+            window.onload = function() { setTimeout(() => { window.print(); window.close(); }, 300); };
+          <\/script>
+        </body>
+        </html>
+      `);
+      janelaPrint.document.close();
     }
 
     function editarInspetor(id) {
@@ -1339,6 +1440,56 @@
         usuariosLista = usuariosLista.filter(u => u.id !== id);
         renderizarUsuariosADM();
       }
+    }
+
+    function baixarBackupDados() {
+      const backupObj = {
+        atrasos: atrasosList,
+        salaEstudos: salaEstudosList,
+        professores: profOcorrenciasList,
+        inspetores: inspetoresList,
+        dataBackup: new Date().toISOString()
+      };
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backupObj, null, 2));
+      const downloadAnchor = document.createElement('a');
+      downloadAnchor.setAttribute("href", dataStr);
+      downloadAnchor.setAttribute("download", `backup_escola_arena_${new Date().toISOString().split('T')[0]}.json`);
+      document.body.appendChild(downloadAnchor);
+      downloadAnchor.click();
+      downloadAnchor.remove();
+    }
+
+    function restaurarBackupDados(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const json = JSON.parse(e.target.result);
+          if (json.atrasos || json.salaEstudos || json.professores || json.inspetores) {
+            atrasosList = json.atrasos || [];
+            salaEstudosList = json.salaEstudos || [];
+            profOcorrenciasList = json.professores || [];
+            inspetoresList = json.inspetores || [];
+
+            salvarNaBase('atrasos', atrasosList);
+            salvarNaBase('salaEstudos', salaEstudosList);
+            salvarNaBase('professores', profOcorrenciasList);
+            salvarNaBase('inspetores', inspetoresList);
+
+            renderizarAtrasos();
+            renderizarSalaEstudos();
+            renderizarProfOcorrencias();
+            renderizarInspetores();
+            alert('Backup restaurado e enviado para a nuvem com sucesso!');
+          } else {
+            alert('Arquivo de backup inválido.');
+          }
+        } catch (err) {
+          alert('Erro ao ler o arquivo JSON de backup.');
+        }
+      };
+      reader.readAsText(file);
     }
   </script>
 </body>
