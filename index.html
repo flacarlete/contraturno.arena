@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Controle de Gestão Escolar — Arena</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
   <style>
     .aba-conteudo { display: none; }
     .aba-btn.active { border-bottom: 3px solid #1b4332; color: #1b4332; font-weight: 700; background-color: #f0fdf4; }
@@ -26,7 +29,7 @@
       <div class="text-center mb-6">
         <div class="inline-flex p-3 bg-emerald-100 text-[#1b4332] rounded-full mb-3 text-2xl">📋</div>
         <h1 class="text-xl font-bold text-gray-800">Arena Contraturno</h1>
-        <p class="text-xs text-gray-500 mt-1">Painel de Gestão e Ocorrências</p>
+        <p class="text-xs text-gray-500 mt-1">Painel de Gestão e Ocorrências (Sincronizado na Nuvem)</p>
       </div>
 
       <form onsubmit="fazerLogin(event)" class="space-y-4">
@@ -259,9 +262,7 @@
                 </h3>
                 <p class="text-[11px] text-gray-500 mb-3">Preencha os alunos que apresentaram ocorrências ou observações neste dia (deixe em branco os que não utilizar).</p>
                 
-                <div id="container20Espacos" class="space-y-3 bg-gray-50 p-4 rounded border">
-                  <!-- Gerado dinamicamente via JS -->
-                </div>
+                <div id="container20Espacos" class="space-y-3 bg-gray-50 p-4 rounded border"></div>
               </div>
 
               <div class="flex justify-end gap-3 no-print">
@@ -373,7 +374,6 @@
           </form>
         </div>
 
-        <!-- Seção de Impressão de Relatório Individual por Professor -->
         <div class="bg-emerald-50 border border-emerald-200 rounded-lg p-4 mb-6 no-print flex flex-col md:flex-row items-center justify-between gap-3">
           <div>
             <h3 class="font-bold text-emerald-900 text-sm">🖨️ Imprimir Relatório Individual por Professor</h3>
@@ -451,7 +451,6 @@
           </form>
         </div>
 
-        <!-- Relatório Individual por Inspetor -->
         <div class="bg-emerald-50 border border-emerald-200 rounded-lg p-4 mb-6 no-print flex flex-col md:flex-row items-center justify-between gap-3">
           <div>
             <h3 class="font-bold text-emerald-900 text-sm">🖨️ Relatório Individual por Inspetor</h3>
@@ -475,7 +474,7 @@
           
           <div class="bg-emerald-50 border border-emerald-200 rounded p-4 mb-6 flex flex-col md:flex-row items-center justify-between gap-3 no-print">
             <div>
-              <h3 class="font-bold text-emerald-900 text-sm">💾 Backup e Segurança dos Dados</h3>
+              <h3 class="font-bold text-emerald-900 text-sm">💾 Backup e Segurança dos Dados (Nuvem & Local)</h3>
               <p class="text-xs text-emerald-700">Baixe um arquivo de segurança com todas as ocorrências ou restaure seus dados a qualquer momento.</p>
             </div>
             <div class="flex gap-2">
@@ -524,6 +523,30 @@
   </div>
 
   <script>
+    // Configuração do Firebase para sincronização na nuvem
+    const firebaseConfig = {
+      apiKey: "AIzaSyCqF5LNFnHjSNPmWYg2zBb0CYJfn04FmEQ",
+      authDomain: "reserva-de-salas-50a48.firebaseapp.com",
+      databaseURL: "https://reserva-de-salas-50a48-default-rtdb.firebaseio.com",
+      projectId: "reserva-de-salas-50a48",
+      storageBucket: "reserva-de-salas-50a48.appspot.com",
+      messagingSenderId: "890750023723",
+      appId: "1:890750023723:web:d560b78a3dad06f060d26e",
+      measurementId: "G-C583XT3583"
+    };
+
+    let db = null;
+    let usaNuvem = false;
+    try {
+      if (firebaseConfig.apiKey) {
+        firebase.initializeApp(firebaseConfig);
+        db = firebase.database();
+        usaNuvem = true;
+      }
+    } catch(err) {
+      console.warn("Erro ao iniciar Firebase:", err);
+    }
+
     const PROFESSORES_DATA = {
       "6ano": ["Julio Cesar (INGLÊS)", "João Leonardo (MAT1)", "Renato Neto (MAT2)", "Stênio (MAT3)", "Grazielly (GRA)", "Elaine (LIT)", "Pauliany (TEXTO)", "Kaila (RED)", "Alexandre (HISTÓRIA)", "Emilly (GEOGRAFIA)", "Danielle (CIÊNCIAS)", "Ângela (ARTE)", "Élbio (INGLÊS 1)", "Thalita (INGLÊS 2)", "Sebastião (ED. FÍSICA)", "Marlon (SOCIOEMOCIONAL)"],
       "7ano": ["Fernanda (MAT1)", "Fernando (MAT2)", "Bruno (MAT3)", "Tomás (GRA)", "Cecília (LIT)", "Luana (TEXTO)", "Lorena (RED)", "Letícia (HISTÓRIA)", "Wilker (GEOGRAFIA)", "Paula (CIÊNCIAS)", "Ângela (ARTE)", "Lucas (INGLÊS)", "Thalita (INGLÊS 2)", "Gustavo Coutinho (ED. FÍSICA)", "Marlon (SOCIOEMOCIONAL)"],
@@ -543,13 +566,6 @@
     if (!usuariosLista || usuariosLista.length === 0) {
       usuariosLista = USUARIOS_PADRAO_INICIAIS;
       localStorage.setItem('escola_usuarios_db', JSON.stringify(usuariosLista));
-    } else {
-      USUARIOS_PADRAO_INICIAIS.forEach(padrao => {
-        if (!usuariosLista.some(u => u.usuario.toLowerCase() === padrao.usuario.toLowerCase())) {
-          usuariosLista.push(padrao);
-        }
-      });
-      localStorage.setItem('escola_usuarios_db', JSON.stringify(usuariosLista));
     }
 
     let usuarioLogadoAtual = null;
@@ -561,6 +577,8 @@
 
     window.addEventListener('DOMContentLoaded', () => {
       montar20EspacosSalaEstudos();
+      carregarDadosNuvem();
+
       const salvo = localStorage.getItem('usuario_logado_arena_obj');
       if (salvo) {
         try {
@@ -572,6 +590,51 @@
         } catch(e) {}
       }
     });
+
+    function carregarDadosNuvem() {
+      if (usaNuvem && db) {
+        db.ref('escola_arena_contraturno').on('value', (snapshot) => {
+          const dados = snapshot.val();
+          if (dados) {
+            if (dados.atrasos) { atrasosList = dados.atrasos; localStorage.setItem('escola_atrasos', JSON.stringify(atrasosList)); }
+            if (dados.salaEstudos) { salaEstudosList = dados.salaEstudos; localStorage.setItem('escola_sala_estudos', JSON.stringify(salaEstudosList)); }
+            if (dados.professores) { profOcorrenciasList = dados.professores; localStorage.setItem('escola_prof_ocorrencias', JSON.stringify(profOcorrenciasList)); }
+            if (dados.inspetores) { inspetoresList = dados.inspetores; localStorage.setItem('escola_inspetores', JSON.stringify(inspetoresList)); }
+            if (dados.usuarios) { usuariosLista = dados.usuarios; localStorage.setItem('escola_usuarios_db', JSON.stringify(usuariosLista)); }
+          }
+          renderizarTudoGeral();
+        });
+      } else {
+        renderizarTudoGeral();
+      }
+    }
+
+    function sincronizarNuvem() {
+      const payload = {
+        atrasos: atrasosList,
+        salaEstudos: salaEstudosList,
+        professores: profOcorrenciasList,
+        inspetores: inspetoresList,
+        usuarios: usuariosLista
+      };
+      localStorage.setItem('escola_atrasos', JSON.stringify(atrasosList));
+      localStorage.setItem('escola_sala_estudos', JSON.stringify(salaEstudosList));
+      localStorage.setItem('escola_prof_ocorrencias', JSON.stringify(profOcorrenciasList));
+      localStorage.setItem('escola_inspetores', JSON.stringify(inspetoresList));
+      localStorage.setItem('escola_usuarios_db', JSON.stringify(usuariosLista));
+
+      if (usaNuvem && db) {
+        db.ref('escola_arena_contraturno').set(payload);
+      }
+    }
+
+    function renderizarTudoGeral() {
+      renderizarAtrasos();
+      renderizarSalaEstudos();
+      renderizarProfOcorrencias();
+      renderizarInspetores();
+      renderizarUsuariosADM();
+    }
 
     function montar20EspacosSalaEstudos() {
       const container = document.getElementById('container20Espacos');
@@ -658,11 +721,7 @@
       mudarAba('atrasos');
       setAtrasoTurno('Matutino');
       atualizarListaProfessores();
-      renderizarAtrasos();
-      renderizarSalaEstudos();
-      renderizarProfOcorrencias();
-      renderizarInspetores();
-      renderizarUsuariosADM();
+      renderizarTudoGeral();
     }
 
     function mudarAba(abaId) {
@@ -743,7 +802,7 @@
         lancadoTotvs: false
       };
       atrasosList.unshift(item);
-      localStorage.setItem('escola_atrasos', JSON.stringify(atrasosList));
+      sincronizarNuvem();
       e.target.reset();
       setAtrasoTurno(turnoAtrasoAtual);
       renderizarAtrasos();
@@ -794,21 +853,21 @@
       const item = atrasosList.find(a => a.id === id);
       if (item) {
         item.lancadoTotvs = status;
-        localStorage.setItem('escola_atrasos', JSON.stringify(atrasosList));
+        sincronizarNuvem();
         renderizarAtrasos();
       }
     }
 
     function excluirAtraso(id) {
       atrasosList = atrasosList.filter(a => a.id !== id);
-      localStorage.setItem('escola_atrasos', JSON.stringify(atrasosList));
+      sincronizarNuvem();
       renderizarAtrasos();
     }
 
     function limparAtrasos() {
       if(confirm("Deseja realmente limpar todo o histórico de atrasos?")) {
         atrasosList = [];
-        localStorage.removeItem('escola_atrasos');
+        sincronizarNuvem();
         renderizarAtrasos();
       }
     }
@@ -874,7 +933,7 @@
         alert(`Relatório salvo com sucesso (${preenchidosCount} ocorrência(s) registrada(s))!`);
       }
 
-      localStorage.setItem('escola_sala_estudos', JSON.stringify(salaEstudosList));
+      sincronizarNuvem();
       e.target.reset();
       montar20EspacosSalaEstudos();
       mudarSubAbaSala('relatorios');
@@ -976,7 +1035,7 @@
     function excluirSalaEstudos(id) {
       if(confirm('Tem certeza de que deseja apagar esta ocorrência?')) {
         salaEstudosList = salaEstudosList.filter(s => s.id !== id);
-        localStorage.setItem('escola_sala_estudos', JSON.stringify(salaEstudosList));
+        sincronizarNuvem();
         renderizarSalaEstudos();
       }
     }
@@ -1034,7 +1093,7 @@
         profOcorrenciasList.unshift(item);
       }
 
-      localStorage.setItem('escola_prof_ocorrencias', JSON.stringify(profOcorrenciasList));
+      sincronizarNuvem();
       cancelarEdicaoProfessor();
       renderizarProfOcorrencias();
     }
@@ -1187,7 +1246,7 @@
     function excluirOcorrenciaProfessor(id) {
       if (confirm('Tem certeza de que deseja apagar este registro?')) {
         profOcorrenciasList = profOcorrenciasList.filter(p => p.id !== id);
-        localStorage.setItem('escola_prof_ocorrencias', JSON.stringify(profOcorrenciasList));
+        sincronizarNuvem();
         renderizarProfOcorrencias();
       }
     }
@@ -1211,7 +1270,7 @@
         inspetoresList.unshift(item);
       }
 
-      localStorage.setItem('escola_inspetores', JSON.stringify(inspetoresList));
+      sincronizarNuvem();
       cancelarEdicaoInspetor();
       renderizarInspetores();
     }
@@ -1336,7 +1395,7 @@
     function excluirInspetor(id) {
       if (confirm('Tem certeza de que deseja apagar esta orientação?')) {
         inspetoresList = inspetoresList.filter(i => i.id !== id);
-        localStorage.setItem('escola_inspetores', JSON.stringify(inspetoresList));
+        sincronizarNuvem();
         renderizarInspetores();
       }
     }
@@ -1349,7 +1408,7 @@
       const senha = document.getElementById('novoSenha').value.trim();
 
       usuariosLista.push({ id: Date.now(), nome, perfil, usuario, senha });
-      localStorage.setItem('escola_usuarios_db', JSON.stringify(usuariosLista));
+      sincronizarNuvem();
       e.target.reset();
       renderizarUsuariosADM();
       alert('Usuário cadastrado com sucesso!');
@@ -1377,7 +1436,7 @@
     function excluirUsuario(id) {
       if(confirm('Deseja excluir este usuário do sistema?')) {
         usuariosLista = usuariosLista.filter(u => u.id !== id);
-        localStorage.setItem('escola_usuarios_db', JSON.stringify(usuariosLista));
+        sincronizarNuvem();
         renderizarUsuariosADM();
       }
     }
@@ -1414,18 +1473,9 @@
             inspetoresList = json.inspetores || [];
             if (json.usuarios) usuariosLista = json.usuarios;
 
-            localStorage.setItem('escola_atrasos', JSON.stringify(atrasosList));
-            localStorage.setItem('escola_sala_estudos', JSON.stringify(salaEstudosList));
-            localStorage.setItem('escola_prof_ocorrencias', JSON.stringify(profOcorrenciasList));
-            localStorage.setItem('escola_inspetores', JSON.stringify(inspetoresList));
-            localStorage.setItem('escola_usuarios_db', JSON.stringify(usuariosLista));
-
-            renderizarAtrasos();
-            renderizarSalaEstudos();
-            renderizarProfOcorrencias();
-            renderizarInspetores();
-            renderizarUsuariosADM();
-            alert('Backup restaurado com sucesso!');
+            sincronizarNuvem();
+            renderizarTudoGeral();
+            alert('Backup restaurado e sincronizado na nuvem com sucesso!');
           } else {
             alert('Arquivo de backup inválido.');
           }
