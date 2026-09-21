@@ -374,16 +374,26 @@
           </form>
         </div>
 
-        <div class="bg-emerald-50 border border-emerald-200 rounded-lg p-4 mb-6 no-print flex flex-col md:flex-row items-center justify-between gap-3">
+        <!-- GERADOR DE RELATÓRIO INDIVIDUAL COM FILTRO DE MÊS -->
+        <div class="bg-emerald-50 border border-emerald-200 rounded-lg p-4 mb-6 no-print space-y-3">
           <div>
-            <h3 class="font-bold text-emerald-900 text-sm">🖨️ Imprimir Relatório Individual por Professor</h3>
-            <p class="text-xs text-emerald-700">Selecione o professor para gerar um relatório exclusivo com todas as ocorrências em sequência:</p>
+            <h3 class="font-bold text-emerald-900 text-sm">🖨️ Relatório Individual por Professor & Mês</h3>
+            <p class="text-xs text-emerald-700">Selecione o professor (apenas com lançamentos ativos) e o mês desejado para gerar o arquivo:</p>
           </div>
-          <div class="flex gap-2 w-full md:w-auto">
-            <select id="selectProfessorFiltro" class="border border-emerald-300 rounded px-3 py-2 text-xs bg-white font-bold text-[#1b4332] flex-1"></select>
-            <button onclick="imprimirRelatorioProfessorIndividual()" class="bg-[#1b4332] text-white px-4 py-2 rounded text-xs font-semibold hover:bg-emerald-900 whitespace-nowrap">
-              Imprimir Professor
-            </button>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <div>
+              <label class="block text-[11px] font-bold text-emerald-900 mb-1">Professor(a):</label>
+              <select id="selectProfessorFiltro" class="w-full border border-emerald-300 rounded px-3 py-2 text-xs bg-white font-bold text-[#1b4332]"></select>
+            </div>
+            <div>
+              <label class="block text-[11px] font-bold text-emerald-900 mb-1">Mês de Referência:</label>
+              <input type="month" id="selectMesFiltro" class="w-full border border-emerald-300 rounded px-3 py-2 text-xs bg-white font-bold text-[#1b4332]" />
+            </div>
+            <div class="flex items-end">
+              <button onclick="imprimirRelatorioProfessorIndividual()" class="w-full bg-[#1b4332] text-white px-4 py-2 rounded text-xs font-semibold hover:bg-emerald-900">
+                Gerar Relatório do Mês
+              </button>
+            </div>
           </div>
         </div>
 
@@ -523,7 +533,6 @@
   </div>
 
   <script>
-    // Configuração do Firebase para sincronização na nuvem
     const firebaseConfig = {
       apiKey: "AIzaSyCqF5LNFnHjSNPmWYg2zBb0CYJfn04FmEQ",
       authDomain: "reserva-de-salas-50a48.firebaseapp.com",
@@ -577,6 +586,13 @@
 
     window.addEventListener('DOMContentLoaded', () => {
       montar20EspacosSalaEstudos();
+      
+      // Define o mês atual como padrão no filtro de mês
+      const hoje = new Date();
+      const anoMesAtual = hoje.toISOString().slice(0, 7);
+      const inputMes = document.getElementById('selectMesFiltro');
+      if (inputMes) inputMes.value = anoMesAtual;
+
       carregarDadosNuvem();
 
       const salvo = localStorage.getItem('usuario_logado_arena_obj');
@@ -1057,14 +1073,17 @@
         selectProfessor.appendChild(option);
       });
 
+      // Popula o filtro de impressão APENAS com professores que possuem lançamentos cadastrados
       if (selectFiltro) {
-        let todasOpcoes = '';
-        for (const [seg, profs] of Object.entries(PROFESSORES_DATA)) {
-          profs.forEach(p => {
-            todasOpcoes += `<option value="${p}">${p} (${seg.toUpperCase()})</option>`;
+        const professoresComLancamento = [...new Set(profOcorrenciasList.map(p => p.professor))].filter(Boolean).sort();
+        selectFiltro.innerHTML = '';
+        if (professoresComLancamento.length === 0) {
+          selectFiltro.innerHTML = `<option value="">Nenhum professor com lançamento</option>`;
+        } else {
+          professoresComLancamento.forEach(nomeProf => {
+            selectFiltro.innerHTML += `<option value="${nomeProf}">${nomeProf}</option>`;
           });
         }
-        selectFiltro.innerHTML = todasOpcoes;
       }
     }
 
@@ -1119,23 +1138,43 @@
           </tr>
         `;
       });
+      atualizarListaProfessores();
     }
 
     function imprimirRelatorioProfessorIndividual() {
       const profSelecionado = document.getElementById('selectProfessorFiltro').value;
-      const ocorrenciasProf = profOcorrenciasList.filter(p => p.professor === profSelecionado);
+      const mesSelecionado = document.getElementById('selectMesFiltro').value; // Formato "AAAA-MM"
 
-      if (ocorrenciasProf.length === 0) {
-        alert(`Não há ocorrências registradas para o(a) professor(a): ${profSelecionado}`);
+      if (!profSelecionado) {
+        alert("Selecione um professor válido.");
         return;
       }
+      if (!mesSelecionado) {
+        alert("Selecione o mês de referência.");
+        return;
+      }
+
+      // Filtra por professor e pelo mês escolhido (ex: data começa com "2026-09")
+      const ocorrenciasProf = profOcorrenciasList.filter(p => {
+        return p.professor === profSelecionado && p.data && p.data.startsWith(mesSelecionado);
+      });
+
+      if (ocorrenciasProf.length === 0) {
+        alert(`Não há ocorrências registradas para o(a) professor(a) ${profSelecionado} no mês ${mesSelecionado.split('-').reverse().join('/')}.`);
+        return;
+      }
+
+      // Formata o mês para exibição (ex: Setembro de 2026)
+      const [anoF, mesF] = mesSelecionado.split('-');
+      const nomeMesAno = new Date(anoF, mesF - 1, 1).toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
 
       let janelaPrint = window.open('', '_blank');
       let htmlTabela = '';
       ocorrenciasProf.forEach((occ) => {
+        const dataFormatada = occ.data.split('-').reverse().join('/');
         htmlTabela += `
           <tr style="border-bottom: 1px solid #ddd;">
-            <td style="padding: 8px; border: 1px solid #ccc;">${occ.data}</td>
+            <td style="padding: 8px; border: 1px solid #ccc;">${dataFormatada}</td>
             <td style="padding: 8px; border: 1px solid #ccc; text-align: center;">${occ.semChamada ? 'Sim' : '—'}</td>
             <td style="padding: 8px; border: 1px solid #ccc; text-align: center;">${occ.atrasoInicio}</td>
             <td style="padding: 8px; border: 1px solid #ccc; text-align: center;">${occ.atrasoIntervalo}</td>
@@ -1153,15 +1192,15 @@
           <style>
             body { font-family: Arial, sans-serif; padding: 30px; color: #333; }
             h2 { color: #1b4332; margin-bottom: 5px; }
-            p { font-size: 13px; color: #555; margin-bottom: 20px; }
+            p { font-size: 13px; color: #555; margin-bottom: 20px; text-transform: capitalize; }
             table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 12px; }
             th { background-color: #1b4332; color: white; padding: 10px; border: 1px solid #1b4332; text-align: left; }
             td { padding: 8px; border: 1px solid #ccc; }
           </style>
         </head>
         <body>
-          <h2>Colégio Arena — Relatório Individual de Acompanhamento Docente</h2>
-          <p><strong>Professor(a):</strong> ${profSelecionado} &nbsp;|&nbsp; <strong>Emitido em:</strong> ${new Date().toLocaleDateString('pt-BR')}</p>
+          <h2>Colégio Arena — Relatório Mensal de Acompanhamento Docente</h2>
+          <p><strong>Professor(a):</strong> ${profSelecionado} &nbsp;|&nbsp; <strong>Mês Referência:</strong> ${nomeMesAno} &nbsp;|&nbsp; <strong>Emitido em:</strong> ${new Date().toLocaleDateString('pt-BR')}</p>
           <table>
             <thead>
               <tr>
