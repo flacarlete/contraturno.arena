@@ -275,7 +275,7 @@
           </div>
         </div>
 
-        <!-- Sub-aba 2B: Relatório por Dia & Busca por Aluno -->
+        <!-- Sub-aba 2B: Relatório por Aluno & Casos Urgentes -->
         <div id="subaba-relatorios" class="subaba-sala-conteudo" style="display: none;">
           <div id="printableRelatorioArea" class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-3">
@@ -287,6 +287,9 @@
                 🖨️ Imprimir Visualização Atual
               </button>
             </div>
+
+            <!-- QUADRO DE CASOS URGENTES (2+ OCORRÊNCIAS) -->
+            <div id="quadroCasosUrgentes" class="mb-6"></div>
 
             <!-- CAMPO DE BUSCA POR ALUNO -->
             <div class="bg-emerald-50 border border-emerald-200 rounded-lg p-4 mb-6 no-print">
@@ -374,7 +377,6 @@
           </form>
         </div>
 
-        <!-- GERADOR DE RELATÓRIO INDIVIDUAL COM FILTRO DE MÊS -->
         <div class="bg-emerald-50 border border-emerald-200 rounded-lg p-4 mb-6 no-print space-y-3">
           <div>
             <h3 class="font-bold text-emerald-900 text-sm">🖨️ Relatório Individual por Professor & Mês</h3>
@@ -587,7 +589,6 @@
     window.addEventListener('DOMContentLoaded', () => {
       montar20EspacosSalaEstudos();
       
-      // Define o mês atual como padrão no filtro de mês
       const hoje = new Date();
       const anoMesAtual = hoje.toISOString().slice(0, 7);
       const inputMes = document.getElementById('selectMesFiltro');
@@ -658,16 +659,24 @@
       let html = '';
       for (let i = 1; i <= 20; i++) {
         html += `
-          <div class="grid grid-cols-1 md:grid-cols-12 gap-2 items-center bg-white p-2 rounded border">
-            <span class="md:col-span-1 text-xs font-bold text-gray-500 text-center">#${i}</span>
-            <div class="md:col-span-4">
-              <input type="text" id="se_aluno_${i}" placeholder="Nome do aluno ${i}..." class="w-full border rounded px-2 py-1 text-xs font-bold text-[#1b4332]" />
+          <div class="bg-white p-3 rounded border space-y-2">
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-2 items-center">
+              <span class="md:col-span-1 text-xs font-bold text-gray-500 text-center">#${i}</span>
+              <div class="md:col-span-4">
+                <input type="text" id="se_aluno_${i}" placeholder="Nome do aluno ${i}..." class="w-full border rounded px-2 py-1 text-xs font-bold text-[#1b4332]" />
+              </div>
+              <div class="md:col-span-2">
+                <input type="text" id="se_turma_${i}" placeholder="Turma" class="w-full border rounded px-2 py-1 text-xs font-semibold text-[#1b4332]" />
+              </div>
+              <div class="md:col-span-5">
+                <input type="text" id="se_desc_${i}" placeholder="Ocorrência / Observação..." class="w-full border rounded px-2 py-1 text-xs" />
+              </div>
             </div>
-            <div class="md:col-span-2">
-              <input type="text" id="se_turma_${i}" placeholder="Turma" class="w-full border rounded px-2 py-1 text-xs font-semibold text-[#1b4332]" />
-            </div>
-            <div class="md:col-span-5">
-              <input type="text" id="se_desc_${i}" placeholder="Ocorrência / Observação..." class="w-full border rounded px-2 py-1 text-xs" />
+            <div class="flex flex-wrap gap-4 pl-8 text-[11px] text-gray-700 font-medium">
+              <label class="flex items-center gap-1 cursor-pointer"><input type="checkbox" id="se_improd_${i}" class="w-3.5 h-3.5 accent-[#1b4332]" /> Improdutividade</label>
+              <label class="flex items-center gap-1 cursor-pointer"><input type="checkbox" id="se_indisc_${i}" class="w-3.5 h-3.5 accent-[#1b4332]" /> Indisciplina</label>
+              <label class="flex items-center gap-1 cursor-pointer"><input type="checkbox" id="se_desresp_${i}" class="w-3.5 h-3.5 accent-[#1b4332]" /> Comportamento Desrespeitoso</label>
+              <label class="flex items-center gap-1 cursor-pointer"><input type="checkbox" id="se_conversa_${i}" class="w-3.5 h-3.5 accent-[#1b4332]" /> Conversa excessiva</label>
             </div>
           </div>
         `;
@@ -912,7 +921,11 @@
             silencio, foco, celular, org, apostila, respostas, erro, ativo,
             aluno: document.getElementById('se_aluno_1').value.trim().toUpperCase() || 'ALUNO NÃO INFORMADO',
             turma: document.getElementById('se_turma_1').value.trim() || '—',
-            ocorrencia: document.getElementById('se_desc_1').value.trim() || 'Nenhuma ocorrência descrita.'
+            ocorrencia: document.getElementById('se_desc_1').value.trim() || 'Nenhuma ocorrência descrita.',
+            improdutividade: document.getElementById('se_improd_1')?.checked || false,
+            indisciplina: document.getElementById('se_indisc_1')?.checked || false,
+            desrespeitoso: document.getElementById('se_desresp_1')?.checked || false,
+            conversa: document.getElementById('se_conversa_1')?.checked || false
           };
         }
         document.getElementById('seEditId').value = '';
@@ -928,6 +941,10 @@
             preenchidosCount++;
             const turmaAluno = document.getElementById(`se_turma_${i}`).value.trim() || '—';
             const descAluno = document.getElementById(`se_desc_${i}`).value.trim() || 'Nenhuma ocorrência descrita.';
+            const improd = document.getElementById(`se_improd_${i}`).checked;
+            const indisc = document.getElementById(`se_indisc_${i}`).checked;
+            const desresp = document.getElementById(`se_desresp_${i}`).checked;
+            const conversa = document.getElementById(`se_conversa_${i}`).checked;
 
             const item = {
               id: Date.now() + i,
@@ -936,7 +953,11 @@
               silencio, foco, celular, org, apostila, respostas, erro, ativo,
               aluno: nomeAluno.toUpperCase(),
               turma: turmaAluno,
-              ocorrencia: descAluno
+              ocorrencia: descAluno,
+              improdutividade: improd,
+              indisciplina: indisc,
+              desrespeitoso: desresp,
+              conversa: conversa
             };
             salaEstudosList.unshift(item);
           }
@@ -957,9 +978,52 @@
 
     function renderizarSalaEstudos() {
       const container = document.getElementById('listaRelatoriosContainer');
+      const quadroUrgentes = document.getElementById('quadroCasosUrgentes');
       const filtroAluno = document.getElementById('filtroAlunoSala')?.value.toLowerCase().trim() || '';
-      if (!container) return;
+      if (!container || !quadroUrgentes) return;
       container.innerHTML = '';
+      quadroUrgentes.innerHTML = '';
+
+      const contagemOcorrenciasAluno = {};
+      salaEstudosList.forEach(r => {
+        const nomeAl = r.aluno;
+        if (!contagemOcorrenciasAluno[nomeAl]) {
+          contagemOcorrenciasAluno[nomeAl] = { total: 0, turma: r.turma, datas: [] };
+        }
+        contagemOcorrenciasAluno[nomeAl].total++;
+        if (!contagemOcorrenciasAluno[nomeAl].datas.includes(r.data)) {
+          contagemOcorrenciasAluno[nomeAl].datas.push(r.data);
+        }
+      });
+
+      const alunosUrgentes = Object.entries(contagemOcorrenciasAluno).filter(([nome, dados]) => dados.total >= 2);
+
+      if (alunosUrgentes.length > 0) {
+        let htmlUrgentesCards = '';
+        alunosUrgentes.forEach(([nome, dados]) => {
+          htmlUrgentesCards += `
+            <div class="bg-white border border-red-200 p-2.5 rounded shadow-sm text-xs flex justify-between items-center">
+              <div>
+                <strong class="text-red-900 font-bold">${nome}</strong> <span class="text-gray-500">(${dados.turma})</span>
+                <p class="text-[11px] text-red-700 mt-0.5">⚠️ <strong>${dados.total} registros</strong> acumulados.</p>
+              </div>
+              <button onclick="document.getElementById('filtroAlunoSala').value='${nome.toLowerCase()}'; renderizarSalaEstudos();" class="bg-red-100 text-red-800 px-2.5 py-1 rounded text-[11px] font-bold hover:bg-red-200">Ver Histórico</button>
+            </div>
+          `;
+        });
+
+        quadroUrgentes.innerHTML = `
+          <div class="bg-red-50 border-2 border-red-300 rounded-lg p-4 shadow-sm">
+            <h3 class="font-bold text-red-900 text-sm mb-1 flex items-center gap-2">
+              🚨 QUADRO DE CASOS URGENTES (2+ Ocorrências Registradas)
+            </h3>
+            <p class="text-xs text-red-700 mb-3">Alunos que requerem acompanhamento pedagógico imediato devido à reincidência:</p>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
+              ${htmlUrgentesCards}
+            </div>
+          </div>
+        `;
+      }
 
       if (salaEstudosList.length === 0) {
         container.innerHTML = `<p class="text-xs text-gray-500 italic">Nenhum relatório diário salvo ainda.</p>`;
@@ -987,6 +1051,12 @@
       datasOrdenadas.forEach(data => {
         let htmlItensDia = '';
         agrupadoPorData[data].forEach(occ => {
+          let tagsBadges = '';
+          if (occ.improdutividade) tagsBadges += `<span class="bg-amber-100 text-amber-800 text-[10px] px-2 py-0.5 rounded font-bold mr-1">Improdutividade</span>`;
+          if (occ.indisciplina) tagsBadges += `<span class="bg-orange-100 text-orange-800 text-[10px] px-2 py-0.5 rounded font-bold mr-1">Indisciplina</span>`;
+          if (occ.desrespeitoso) tagsBadges += `<span class="bg-red-100 text-red-800 text-[10px] px-2 py-0.5 rounded font-bold mr-1">Comportamento Desrespeitoso</span>`;
+          if (occ.conversa) tagsBadges += `<span class="bg-purple-100 text-purple-800 text-[10px] px-2 py-0.5 rounded font-bold mr-1">Conversa excessiva</span>`;
+
           htmlItensDia += `
             <div class="bg-white p-3.5 rounded border mb-3 text-xs space-y-1.5 shadow-sm">
               <div class="flex justify-between items-center text-[#1b4332] font-bold">
@@ -997,6 +1067,7 @@
                 </div>
               </div>
               <p><strong>Ocorrência:</strong> ${occ.ocorrencia}</p>
+              ${tagsBadges ? `<div class="mt-1">${tagsBadges}</div>` : ''}
               <div class="grid grid-cols-2 md:grid-cols-4 gap-1 text-[11px] text-gray-600 bg-gray-50 p-1.5 rounded mt-1">
                 <span>Silêncio: ${occ.silencio}</span>
                 <span>Foco: ${occ.foco}</span>
@@ -1032,6 +1103,10 @@
       document.getElementById('se_aluno_1').value = item.aluno;
       document.getElementById('se_turma_1').value = item.turma;
       document.getElementById('se_desc_1').value = item.ocorrencia;
+      if(document.getElementById('se_improd_1')) document.getElementById('se_improd_1').checked = item.improdutividade || false;
+      if(document.getElementById('se_indisc_1')) document.getElementById('se_indisc_1').checked = item.indisciplina || false;
+      if(document.getElementById('se_desresp_1')) document.getElementById('se_desresp_1').checked = item.desrespeitoso || false;
+      if(document.getElementById('se_conversa_1')) document.getElementById('se_conversa_1').checked = item.conversa || false;
 
       document.getElementById('seTituloForm').textContent = 'Editar Relatório de Sala de Estudos';
       document.getElementById('btnSalvaSe').textContent = '💾 Salvar Alterações';
@@ -1073,7 +1148,6 @@
         selectProfessor.appendChild(option);
       });
 
-      // Popula o filtro de impressão APENAS com professores que possuem lançamentos cadastrados
       if (selectFiltro) {
         const professoresComLancamento = [...new Set(profOcorrenciasList.map(p => p.professor))].filter(Boolean).sort();
         selectFiltro.innerHTML = '';
@@ -1143,7 +1217,7 @@
 
     function imprimirRelatorioProfessorIndividual() {
       const profSelecionado = document.getElementById('selectProfessorFiltro').value;
-      const mesSelecionado = document.getElementById('selectMesFiltro').value; // Formato "AAAA-MM"
+      const mesSelecionado = document.getElementById('selectMesFiltro').value;
 
       if (!profSelecionado) {
         alert("Selecione um professor válido.");
@@ -1154,7 +1228,6 @@
         return;
       }
 
-      // Filtra por professor e pelo mês escolhido (ex: data começa com "2026-09")
       const ocorrenciasProf = profOcorrenciasList.filter(p => {
         return p.professor === profSelecionado && p.data && p.data.startsWith(mesSelecionado);
       });
@@ -1164,7 +1237,6 @@
         return;
       }
 
-      // Formata o mês para exibição (ex: Setembro de 2026)
       const [anoF, mesF] = mesSelecionado.split('-');
       const nomeMesAno = new Date(anoF, mesF - 1, 1).toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
 
