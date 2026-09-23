@@ -258,9 +258,9 @@
               <div>
                 <h3 class="text-xs font-bold text-gray-700 uppercase tracking-wider mb-3 flex items-center gap-2">
                   <span class="bg-[#1b4332] text-white rounded-full w-5 h-5 flex items-center justify-center text-[10px]">3</span>
-                  Ocorrências de Alunos (20 Espaços Disponíveis)
+                  OCORRÊNCIAS DE ALUNOS (Com Seletor Rápido de Itens)
                 </h3>
-                <p class="text-[11px] text-gray-500 mb-3">Preencha os alunos que apresentaram ocorrências ou observações neste dia (deixe em branco os que não utilizar).</p>
+                <p class="text-[11px] text-gray-500 mb-3">Preencha os alunos que apresentaram ocorrências ou observações neste dia e marque os itens correspondentes:</p>
                 
                 <div id="container20Espacos" class="space-y-3 bg-gray-50 p-4 rounded border"></div>
               </div>
@@ -659,25 +659,24 @@
       let html = '';
       for (let i = 1; i <= 20; i++) {
         html += `
-          <div class="bg-white p-3 rounded border space-y-2">
+          <div class="bg-white p-3.5 rounded border shadow-sm space-y-2">
             <div class="grid grid-cols-1 md:grid-cols-12 gap-2 items-center">
               <span class="md:col-span-1 text-xs font-bold text-gray-500 text-center">#${i}</span>
-              <div class="md:col-span-4">
-                <input type="text" id="se_aluno_${i}" placeholder="Nome do aluno ${i}..." class="w-full border rounded px-2 py-1 text-xs font-bold text-[#1b4332]" />
+              <div class="md:col-span-3">
+                <input type="text" id="se_aluno_${i}" placeholder="Nome do aluno..." class="w-full border rounded px-2 py-1.5 text-xs font-bold text-[#1b4332]" />
               </div>
               <div class="md:col-span-2">
-                <input type="text" id="se_turma_${i}" placeholder="Turma" class="w-full border rounded px-2 py-1 text-xs font-semibold text-[#1b4332]" />
+                <input type="text" id="se_turma_${i}" placeholder="Turma" class="w-full border rounded px-2 py-1.5 text-xs font-semibold text-[#1b4332]" />
               </div>
-              <div class="md:col-span-5">
-                <input type="text" id="se_desc_${i}" placeholder="Ocorrência / Observação..." class="w-full border rounded px-2 py-1 text-xs" />
+              <div class="md:col-span-6">
+                <input type="text" id="se_desc_${i}" placeholder="Ocorrência / Observação..." class="w-full border rounded px-2 py-1.5 text-xs" />
               </div>
             </div>
-            <div class="flex flex-wrap gap-4 pl-8 text-[11px] text-gray-700 font-medium bg-gray-50/70 p-2 rounded border border-gray-100">
-              <span class="font-bold text-gray-600">Ocorrência:</span>
-              <label class="flex items-center gap-1 cursor-pointer"><input type="checkbox" id="se_improd_${i}" class="w-3.5 h-3.5 accent-[#1b4332]" /> Improdutividade</label>
-              <label class="flex items-center gap-1 cursor-pointer"><input type="checkbox" id="se_indisc_${i}" class="w-3.5 h-3.5 accent-[#1b4332]" /> Indisciplina</label>
-              <label class="flex items-center gap-1 cursor-pointer"><input type="checkbox" id="se_desresp_${i}" class="w-3.5 h-3.5 accent-[#1b4332]" /> Comportamento Desrespeitoso</label>
-              <label class="flex items-center gap-1 cursor-pointer"><input type="checkbox" id="se_conversa_${i}" class="w-3.5 h-3.5 accent-[#1b4332]" /> Conversa excessiva</label>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-2 pl-8 pt-1 text-[11px] font-semibold text-gray-700 bg-emerald-50/50 p-2 rounded border border-emerald-900/10">
+              <label class="flex items-center gap-1.5 cursor-pointer"><input type="checkbox" id="se_improd_${i}" class="w-4 h-4 accent-[#1b4332]" /> Improdutividade</label>
+              <label class="flex items-center gap-1.5 cursor-pointer"><input type="checkbox" id="se_indisc_${i}" class="w-4 h-4 accent-[#1b4332]" /> Indisciplina</label>
+              <label class="flex items-center gap-1.5 cursor-pointer"><input type="checkbox" id="se_desresp_${i}" class="w-4 h-4 accent-[#1b4332]" /> Comportamento Desrespeitoso</label>
+              <label class="flex items-center gap-1.5 cursor-pointer"><input type="checkbox" id="se_conversa_${i}" class="w-4 h-4 accent-[#1b4332]" /> Conversa excessiva</label>
             </div>
           </div>
         `;
