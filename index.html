@@ -672,7 +672,8 @@
                 <input type="text" id="se_desc_${i}" placeholder="Ocorrência / Observação..." class="w-full border rounded px-2 py-1 text-xs" />
               </div>
             </div>
-            <div class="flex flex-wrap gap-4 pl-8 text-[11px] text-gray-700 font-medium">
+            <div class="flex flex-wrap gap-4 pl-8 text-[11px] text-gray-700 font-medium bg-gray-50/70 p-2 rounded border border-gray-100">
+              <span class="font-bold text-gray-600">Ocorrência:</span>
               <label class="flex items-center gap-1 cursor-pointer"><input type="checkbox" id="se_improd_${i}" class="w-3.5 h-3.5 accent-[#1b4332]" /> Improdutividade</label>
               <label class="flex items-center gap-1 cursor-pointer"><input type="checkbox" id="se_indisc_${i}" class="w-3.5 h-3.5 accent-[#1b4332]" /> Indisciplina</label>
               <label class="flex items-center gap-1 cursor-pointer"><input type="checkbox" id="se_desresp_${i}" class="w-3.5 h-3.5 accent-[#1b4332]" /> Comportamento Desrespeitoso</label>
@@ -692,12 +693,16 @@
 
     function fazerLogin(e) {
       e.preventDefault();
-      const user = document.getElementById('loginUsuario').value.trim().toLowerCase();
+      const user = document.getElementById('loginUsuario').value.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
       const pass = document.getElementById('loginSenha').value.trim();
 
-      let encontrado = usuariosLista.find(u => u.usuario.trim().toLowerCase() === user && u.senha.trim() === pass);
+      let encontrado = usuariosLista.find(u => {
+        const uClean = u.usuario.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+        return uClean === user && u.senha.trim() === pass;
+      });
+
       if (!encontrado && (user === 'tamires' || user === 'coordenacao')) {
-        encontrado = usuariosLista.find(u => u.usuario.trim().toLowerCase() === user);
+        encontrado = usuariosLista.find(u => u.usuario.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "") === user);
       }
 
       if (encontrado) {
