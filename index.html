@@ -258,7 +258,7 @@
               <div>
                 <h3 class="text-xs font-bold text-gray-700 uppercase tracking-wider mb-3 flex items-center gap-2">
                   <span class="bg-[#1b4332] text-white rounded-full w-5 h-5 flex items-center justify-center text-[10px]">3</span>
-                  OCORRÊNCIAS DE ALUNOS (Com Marcação Rápida Integrada)
+                  OCORRÊNCIAS DE ALUNOS (Com Coluna de Marcação Rápida — V.2026)
                 </h3>
                 <p class="text-[11px] text-gray-500 mb-3">Preencha os alunos e marque as ocorrências correspondentes:</p>
                 
@@ -673,9 +673,9 @@
               </div>
             </div>
             <div class="grid grid-cols-2 md:grid-cols-4 gap-2 pl-8 pt-1 text-[11px] font-semibold text-gray-700 bg-emerald-50/70 p-2 rounded border border-emerald-900/10">
-              <label class="flex items-center gap-1.5 cursor-pointer"><input type="checkbox" id="se_improd_${i}" class="w-4 h-4 accent-[#1b4332]" /> Improdutividade</label>
               <label class="flex items-center gap-1.5 cursor-pointer"><input type="checkbox" id="se_indisc_${i}" class="w-4 h-4 accent-[#1b4332]" /> Indisciplina</label>
-              <label class="flex items-center gap-1.5 cursor-pointer"><input type="checkbox" id="se_desresp_${i}" class="w-4 h-4 accent-[#1b4332]" /> Comportamento Desrespeitoso</label>
+              <label class="flex items-center gap-1.5 cursor-pointer"><input type="checkbox" id="se_desresp_${i}" class="w-4 h-4 accent-[#1b4332]" /> Comportamento desrespeitoso</label>
+              <label class="flex items-center gap-1.5 cursor-pointer"><input type="checkbox" id="se_improd_${i}" class="w-4 h-4 accent-[#1b4332]" /> Improdutividade</label>
               <label class="flex items-center gap-1.5 cursor-pointer"><input type="checkbox" id="se_conversa_${i}" class="w-4 h-4 accent-[#1b4332]" /> Conversa excessiva</label>
             </div>
           </div>
@@ -926,9 +926,9 @@
             aluno: document.getElementById('se_aluno_1').value.trim().toUpperCase() || 'ALUNO NÃO INFORMADO',
             turma: document.getElementById('se_turma_1').value.trim() || '—',
             ocorrencia: document.getElementById('se_desc_1').value.trim() || 'Nenhuma ocorrência descrita.',
-            improdutividade: document.getElementById('se_improd_1')?.checked || false,
             indisciplina: document.getElementById('se_indisc_1')?.checked || false,
             desrespeitoso: document.getElementById('se_desresp_1')?.checked || false,
+            improdutividade: document.getElementById('se_improd_1')?.checked || false,
             conversa: document.getElementById('se_conversa_1')?.checked || false
           };
         }
@@ -945,9 +945,9 @@
             preenchidosCount++;
             const turmaAluno = document.getElementById(`se_turma_${i}`).value.trim() || '—';
             const descAluno = document.getElementById(`se_desc_${i}`).value.trim() || 'Nenhuma ocorrência descrita.';
-            const improd = document.getElementById(`se_improd_${i}`).checked;
             const indisc = document.getElementById(`se_indisc_${i}`).checked;
             const desresp = document.getElementById(`se_desresp_${i}`).checked;
+            const improd = document.getElementById(`se_improd_${i}`).checked;
             const conversa = document.getElementById(`se_conversa_${i}`).checked;
 
             const item = {
@@ -958,9 +958,9 @@
               aluno: nomeAluno.toUpperCase(),
               turma: turmaAluno,
               ocorrencia: descAluno,
-              improdutividade: improd,
               indisciplina: indisc,
               desrespeitoso: desresp,
+              improdutividade: improd,
               conversa: conversa
             };
             salaEstudosList.unshift(item);
@@ -1056,9 +1056,9 @@
         let htmlItensDia = '';
         agrupadoPorData[data].forEach(occ => {
           let tagsBadges = '';
-          if (occ.improdutividade) tagsBadges += `<span class="bg-amber-100 text-amber-800 text-[10px] px-2 py-0.5 rounded font-bold mr-1">Improdutividade</span>`;
           if (occ.indisciplina) tagsBadges += `<span class="bg-orange-100 text-orange-800 text-[10px] px-2 py-0.5 rounded font-bold mr-1">Indisciplina</span>`;
-          if (occ.desrespeitoso) tagsBadges += `<span class="bg-red-100 text-red-800 text-[10px] px-2 py-0.5 rounded font-bold mr-1">Comportamento Desrespeitoso</span>`;
+          if (occ.desrespeitoso) tagsBadges += `<span class="bg-red-100 text-red-800 text-[10px] px-2 py-0.5 rounded font-bold mr-1">Comportamento desrespeitoso</span>`;
+          if (occ.improdutividade) tagsBadges += `<span class="bg-amber-100 text-amber-800 text-[10px] px-2 py-0.5 rounded font-bold mr-1">Improdutividade</span>`;
           if (occ.conversa) tagsBadges += `<span class="bg-purple-100 text-purple-800 text-[10px] px-2 py-0.5 rounded font-bold mr-1">Conversa excessiva</span>`;
 
           htmlItensDia += `
@@ -1107,9 +1107,9 @@
       document.getElementById('se_aluno_1').value = item.aluno;
       document.getElementById('se_turma_1').value = item.turma;
       document.getElementById('se_desc_1').value = item.ocorrencia;
-      if(document.getElementById('se_improd_1')) document.getElementById('se_improd_1').checked = item.improdutividade || false;
       if(document.getElementById('se_indisc_1')) document.getElementById('se_indisc_1').checked = item.indisciplina || false;
       if(document.getElementById('se_desresp_1')) document.getElementById('se_desresp_1').checked = item.desrespeitoso || false;
+      if(document.getElementById('se_improd_1')) document.getElementById('se_improd_1').checked = item.improdutividade || false;
       if(document.getElementById('se_conversa_1')) document.getElementById('se_conversa_1').checked = item.conversa || false;
 
       document.getElementById('seTituloForm').textContent = 'Editar Relatório de Sala de Estudos';
