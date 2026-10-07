@@ -32,21 +32,21 @@
         <p class="text-xs text-gray-500 mt-1">Painel de Gestão e Ocorrências (Sincronizado na Nuvem)</p>
       </div>
 
-      <form onsubmit="fazerLogin(event)" class="space-y-4">
+      <div class="space-y-4">
         <div>
           <label class="block text-xs font-semibold text-gray-700 mb-1">Usuário</label>
-          <input type="text" id="loginUsuario" placeholder="Digite seu usuário..." class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-[#1b4332]" required />
+          <input type="text" id="loginUsuario" placeholder="Digite seu usuário..." class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-[#1b4332]" />
         </div>
         <div>
           <label class="block text-xs font-semibold text-gray-700 mb-1">Senha</label>
-          <input type="password" id="loginSenha" placeholder="Digite sua senha..." class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-[#1b4332]" required />
+          <input type="password" id="loginSenha" placeholder="Digite sua senha..." class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-[#1b4332]" />
         </div>
-        <button type="submit" class="w-full bg-[#1b4332] text-white py-2.5 rounded text-sm font-semibold hover:bg-emerald-900 transition">
+        <button type="button" onclick="fazerLoginDireto()" class="w-full bg-[#1b4332] text-white py-2.5 rounded text-sm font-semibold hover:bg-emerald-900 transition">
           Entrar no Sistema →
         </button>
-      </form>
+      </div>
       <div class="mt-4 text-center">
-        <button type="button" onclick="entrarComoCoordDireto()" class="text-xs text-[#1b4332] font-bold underline hover:text-emerald-800">
+        <button type="button" onclick="fazerLoginDireto()" class="text-xs text-[#1b4332] font-bold underline hover:text-emerald-800">
           Entrar como Coordenador (Padrão)
         </button>
       </div>
@@ -66,8 +66,8 @@
 
       <div class="flex items-center gap-3">
         <div class="text-right">
-          <p id="usuarioLogadoNome" class="text-xs font-bold text-white">Usuário</p>
-          <p id="usuarioLogadoPerfil" class="text-[11px] text-emerald-200">Perfil</p>
+          <p id="usuarioLogadoNome" class="text-xs font-bold text-white">Coordenação Geral</p>
+          <p id="usuarioLogadoPerfil" class="text-[11px] text-emerald-200">Perfil: COORDENADOR</p>
         </div>
         <button onclick="fazerLogout()" class="bg-red-800 hover:bg-red-700 text-white px-3 py-1.5 rounded text-xs font-semibold">
           Sair ⎋
@@ -284,7 +284,7 @@
                 <p class="text-xs text-gray-500">Histórico mantido por dia e busca rápida por aluno</p>
               </div>
               <button onclick="window.print()" class="bg-gray-800 text-white px-3 py-1.5 rounded text-xs hover:bg-black no-print">
-                🖨️️ Imprimir Visualização Atual
+                🖨️ Imprimir Visualização Atual
               </button>
             </div>
 
@@ -465,7 +465,7 @@
 
         <div class="bg-emerald-50 border border-emerald-200 rounded-lg p-4 mb-6 no-print flex flex-col md:flex-row items-center justify-between gap-3">
           <div>
-            <h3 class="font-bold text-emerald-900 text-sm">🖨️️ Relatório Individual por Inspetor</h3>
+            <h3 class="font-bold text-emerald-900 text-sm">🖨️ Relatório Individual por Inspetor</h3>
             <p class="text-xs text-emerald-700">Selecione o inspetor/orientador para gerar um relatório compilado com todas as orientações:</p>
           </div>
           <div class="flex gap-2 w-full md:w-auto">
@@ -559,4 +559,908 @@
     }
 
     const PROFESSORES_DATA = {
-      "6ano": ["Julio Cesar (INGLÊS)", "João Leonardo (MAT1)", "Renato Neto (MAT2)", "Stênio (MAT3)", "Grazielly (GRA)", "Elaine (LIT)", "Pauliany (TEXTO)", "Kaila (RED)", "Alexandre (HISTÓRIA)", "Emilly (GEOGRAFIA)", "Danielle (CIÊNCIAS)", "Ângela (ARTE)", "Élb
+      "6ano": ["Julio Cesar (INGLÊS)", "João Leonardo (MAT1)", "Renato Neto (MAT2)", "Stênio (MAT3)", "Grazielly (GRA)", "Elaine (LIT)", "Pauliany (TEXTO)", "Kaila (RED)", "Alexandre (HISTÓRIA)", "Emilly (GEOGRAFIA)", "Danielle (CIÊNCIAS)", "Ângela (ARTE)", "Élbio (INGLÊS 1)", "Thalita (INGLÊS 2)", "Sebastião (ED. FÍSICA)", "Marlon (SOCIOEMOCIONAL)"],
+      "7ano": ["Fernanda (MAT1)", "Fernando (MAT2)", "Bruno (MAT3)", "Tomás (GRA)", "Cecília (LIT)", "Luana (TEXTO)", "Lorena (RED)", "Letícia (HISTÓRIA)", "Wilker (GEOGRAFIA)", "Paula (CIÊNCIAS)", "Ângela (ARTE)", "Lucas (INGLÊS)", "Thalita (INGLÊS 2)", "Gustavo Coutinho (ED. FÍSICA)", "Marlon (SOCIOEMOCIONAL)"],
+      "8ano": ["Kairo (MAT1)", "Pedrinho (MAT2)", "Bruno (MAT3)", "Maria José (GRA)", "Leandro (LIT)", "Sarah (TEXTO)", "Mariany (RED)", "Daiany (HISTÓRIA)", "Marco Túlio (GEOGRAFIA 1)", "Rodrigo (GEOGRAFIA 2)", "Alexandre (QUÍMICA)", "César Augusto (FÍSICA)", "Renato Feijão (BIOLOGIA 1)", "Diogo (BIOLOGIA 2)", "Karlla (ARTE)", "Wilker (INGLÊS 1)", "Gunther (INGLÊS 2)", "Gabriel (SOCIOEMOCIONAL)"],
+      "9ano": ["Ceagá (MAT1)", "Hugo (MAT2)", "Rodolfo (MAT3)", "Cléssia (GRA)", "Sarah (LIT)", "Jade (TEXTO)", "Fred (RED)", "João Patrício (HISTÓRIA 1)", "Elby (HISTÓRIA 2)", "Marco Túlio (GEOGRAFIA)", "Gustavo Batista (QUÍMICA)", "César Augusto (FÍSICA)", "Diogo (BIOLOGIA)", "Karlla (ARTE)", "Cláudia (INGLÊS)", "Gunther (INGLÊS 2)", "Gabriel (SOCIOEMOCIONAL)"],
+      "vespertino": ["João Leonardo + Fernando (MAT)", "Cléssia (LP)", "Carolina Ferraz Bucar Paredes (INGLÊS)", "Caroline Baylão Silva Araújo Gedda (CAMBRIDGE)", "Amanda Bueno Godinho Pancieri (BEO)", "Lajla Katherine Rocha Simião (MONITORIA REDAÇÃO)", "Gustavo Coutinho (ED. FÍSICA)", "Marcelo (VÔLEI)", "Fellipe Gustavo (JUDÔ)", "Dênis (FUTSAL)", "Ananda (DANÇAS)", "Fhellipe Augusto (XADREZ)", "Renato (HANDEBOL)", "Nívea (MEDITAÇÃO)", "Nayara (FUNCIONAL)", "Rodolfo (ED. FINANCEIRA)", "Robótica", "André Arantes (TEATRO/PINTURA)", "André Mols (SONANTE)", "Marco Túlio (EAGLE+BEO)"]
+    };
+
+    let usuariosLista = [{ id: 1, nome: "Coordenação Geral", perfil: "coordenador", usuario: "coordenacao", senha: "123" }];
+    let usuarioLogadoAtual = null;
+    let atrasosList = [];
+    let salaEstudosList = [];
+    let profOcorrenciasList = [];
+    let inspetoresList = [];
+    let turnoAtrasoAtual = 'Matutino';
+    let alunosNotificadosSet = new Set();
+
+    window.addEventListener('DOMContentLoaded', () => {
+      montar20EspacosSalaEstudos();
+      
+      const hoje = new Date();
+      const anoMesAtual = hoje.toISOString().slice(0, 7);
+      const inputMes = document.getElementById('selectMesFiltro');
+      if (inputMes) inputMes.value = anoMesAtual;
+
+      carregarDadosNuvem();
+    });
+
+    function fazerLoginDireto() {
+      usuarioLogadoAtual = { id: 1, nome: "Coordenação Geral", perfil: "coordenador", usuario: "coordenacao" };
+      localStorage.setItem('usuario_logado_arena_obj', JSON.stringify(usuarioLogadoAtual));
+      aplicarSessao();
+    }
+
+    function carregarDadosNuvem() {
+      if (usaNuvem && db) {
+        db.ref('escola_arena_contraturno').on('value', (snapshot) => {
+          const dados = snapshot.val();
+          if (dados) {
+            if (dados.atrasos) atrasosList = dados.atrasos;
+            if (dados.salaEstudos) salaEstudosList = dados.salaEstudos;
+            if (dados.professores) profOcorrenciasList = dados.professores;
+            if (dados.inspetores) inspetoresList = dados.inspetores;
+            if (dados.notificados) alunosNotificadosSet = new Set(dados.notificados);
+          }
+          renderizarTudoGeral();
+        });
+      } else {
+        renderizarTudoGeral();
+      }
+    }
+
+    function sincronizarNuvem() {
+      const payload = {
+        atrasos: atrasosList,
+        salaEstudos: salaEstudosList,
+        professores: profOcorrenciasList,
+        inspetores: inspetoresList,
+        notificados: Array.from(alunosNotificadosSet)
+      };
+      if (usaNuvem && db) {
+        db.ref('escola_arena_contraturno').set(payload);
+      }
+    }
+
+    function renderizarTudoGeral() {
+      renderizarAtrasos();
+      renderizarSalaEstudos();
+      renderizarProfOcorrencias();
+      renderizarInspetores();
+    }
+
+    function montar20EspacosSalaEstudos() {
+      const container = document.getElementById('container20Espacos');
+      if (!container) return;
+      let html = '';
+      for (let i = 1; i <= 20; i++) {
+        html += `
+          <div class="bg-white p-3.5 rounded border shadow-sm space-y-2">
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-2 items-center">
+              <span class="md:col-span-1 text-xs font-bold text-gray-500 text-center">#${i}</span>
+              <div class="md:col-span-3">
+                <input type="text" id="se_aluno_${i}" placeholder="Nome do aluno..." class="w-full border rounded px-2 py-1.5 text-xs font-bold text-[#1b4332]" />
+              </div>
+              <div class="md:col-span-2">
+                <input type="text" id="se_turma_${i}" placeholder="Turma" class="w-full border rounded px-2 py-1.5 text-xs font-semibold text-[#1b4332]" />
+              </div>
+              <div class="md:col-span-6">
+                <input type="text" id="se_desc_${i}" placeholder="Ocorrência / Observação..." class="w-full border rounded px-2 py-1.5 text-xs" />
+              </div>
+            </div>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-2 pl-8 pt-1 text-[11px] font-semibold text-gray-700 bg-emerald-50/70 p-2 rounded border border-emerald-900/10">
+              <label class="flex items-center gap-1.5 cursor-pointer"><input type="checkbox" id="se_indisc_${i}" class="w-4 h-4 accent-[#1b4332]" /> Indisciplina</label>
+              <label class="flex items-center gap-1.5 cursor-pointer"><input type="checkbox" id="se_desresp_${i}" class="w-4 h-4 accent-[#1b4332]" /> Comportamento desrespeitoso</label>
+              <label class="flex items-center gap-1.5 cursor-pointer"><input type="checkbox" id="se_improd_${i}" class="w-4 h-4 accent-[#1b4332]" /> Improdutividade</label>
+              <label class="flex items-center gap-1.5 cursor-pointer"><input type="checkbox" id="se_conversa_${i}" class="w-4 h-4 accent-[#1b4332]" /> Conversa excessiva</label>
+            </div>
+          </div>
+        `;
+      }
+      container.innerHTML = html;
+    }
+
+    function fazerlogout() {
+      localStorage.removeItem('usuario_logado_arena_obj');
+      document.getElementById('sistema-principal').classList.add('hidden');
+      document.getElementById('tela-login').classList.remove('hidden');
+    }
+
+    function aplicarSessao() {
+      document.getElementById('tela-login').classList.add('hidden');
+      document.getElementById('sistema-principal').classList.remove('hidden');
+
+      const hoje = new Date().toISOString().split('T')[0];
+      const hora = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      if(document.getElementById('atrasoData')) document.getElementById('atrasoData').value = hoje;
+      if(document.getElementById('atrasoHora')) document.getElementById('atrasoHora').value = hora;
+      if(document.getElementById('seData')) document.getElementById('seData').value = hoje;
+      if(document.getElementById('profData')) document.getElementById('profData').value = hoje;
+      if(document.getElementById('inspData')) document.getElementById('inspData').value = hoje;
+      if(document.getElementById('inspHora')) document.getElementById('inspHora').value = hora;
+
+      mudarAba('atrasos');
+      setAtrasoTurno('Matutino');
+      atualizarListaProfessores();
+      renderizarTudoGeral();
+    }
+
+    function mudarAba(abaId) {
+      document.querySelectorAll('.aba-conteudo').forEach(el => el.style.display = 'none');
+      document.querySelectorAll('.aba-btn').forEach(btn => btn.classList.remove('active'));
+      const aba = document.getElementById('aba-' + abaId);
+      const btn = document.getElementById('btn-aba-' + abaId);
+      if (aba) aba.style.display = 'block';
+      if (btn) btn.classList.add('active');
+      
+      if (abaId === 'professores') atualizarListaProfessores();
+      if (abaId === 'sala-estudos') renderizarSalaEstudos();
+      if (abaId === 'inspetores') renderizarInspetores();
+    }
+
+    function mudarSubAbaSala(sub) {
+      const btnNovo = document.getElementById('subbtn-novo');
+      const btnRel = document.getElementById('subbtn-relatorios');
+      const divNovo = document.getElementById('subaba-novo');
+      const divRel = document.getElementById('subaba-relatorios');
+
+      if (sub === 'novo') {
+        btnNovo.className = "px-4 py-2 bg-[#1b4332] text-white rounded text-xs font-semibold";
+        btnRel.className = "px-4 py-2 bg-gray-200 text-gray-700 rounded text-xs font-semibold hover:bg-gray-300";
+        divNovo.style.display = 'block';
+        divRel.style.display = 'none';
+      } else {
+        btnRel.className = "px-4 py-2 bg-[#1b4332] text-white rounded text-xs font-semibold";
+        btnNovo.className = "px-4 py-2 bg-gray-200 text-gray-700 rounded text-xs font-semibold hover:bg-gray-300";
+        divRel.style.display = 'block';
+        divNovo.style.display = 'none';
+        renderizarSalaEstudos();
+      }
+    }
+
+    function setAtrasoTurno(turno) {
+      turnoAtrasoAtual = turno;
+      const selectEspaco = document.getElementById('atrasoEspaco');
+      if(document.getElementById('labelTurno')) document.getElementById('labelTurno').textContent = turno;
+      
+      if(turno === 'Matutino') {
+        if(document.getElementById('btn-turno-mat')) document.getElementById('btn-turno-mat').className = "px-4 py-1.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800";
+        if(document.getElementById('btn-turno-vesp')) document.getElementById('btn-turno-vesp').className = "px-4 py-1.5 rounded-full text-xs font-semibold bg-gray-100 text-gray-600";
+        if(selectEspaco) {
+          selectEspaco.innerHTML = `<option value="Sala de aula">Sala de aula</option>`;
+          selectEspaco.value = "Sala de aula";
+        }
+      } else {
+        if(document.getElementById('btn-turno-vesp')) document.getElementById('btn-turno-vesp').className = "px-4 py-1.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800";
+        if(document.getElementById('btn-turno-mat')) document.getElementById('btn-turno-mat').className = "px-4 py-1.5 rounded-full text-xs font-semibold bg-gray-100 text-gray-600";
+        if(selectEspaco) {
+          selectEspaco.innerHTML = `
+            <option value="">Selecione...</option>
+            <option value="Sala de aula">Sala de aula</option>
+            <option value="Cambridge">Cambridge</option>
+            <option value="Nivelamentos">Nivelamentos</option>
+            <option value="Sala de estudos">Sala de estudos</option>
+            <option value="Biblioteca">Biblioteca</option>
+            <option value="Modalidades diversas">Modalidades diversas</option>
+            <option value="AEE">AEE</option>
+          `;
+        }
+      }
+    }
+
+    function salvarAtraso(e) {
+      e.preventDefault();
+      const item = {
+        id: Date.now(),
+        turno: turnoAtrasoAtual,
+        espaco: document.getElementById('atrasoEspaco').value,
+        hora: document.getElementById('atrasoHora').value,
+        data: document.getElementById('atrasoData').value,
+        aluno: document.getElementById('atrasoAluno').value.trim().toUpperCase(),
+        turma: document.getElementById('atrasoTurma').value.trim(),
+        justificativa: document.getElementById('atrasoJustificativa').value,
+        lancadoTotvs: false
+      };
+      atrasosList.unshift(item);
+      sincronizarNuvem();
+      e.target.reset();
+      setAtrasoTurno(turnoAtrasoAtual);
+      renderizarAtrasos();
+    }
+
+    function renderizarAtrasos() {
+      const tbody = document.getElementById('listaAtrasosTbody');
+      if (!tbody) return;
+      tbody.innerHTML = '';
+
+      const contagemAlunos = {};
+      atrasosList.forEach(a => {
+        const nome = a.aluno;
+        contagemAlunos[nome] = (contagemAlunos[nome] || 0) + 1;
+      });
+
+      atrasosList.forEach(a => {
+        const qtdAparicoes = contagemAlunos[a.aluno] || 1;
+        let badgeReincidente = '';
+        let corLinha = '';
+
+        if (qtdAparicoes > 1) {
+          badgeReincidente = `<span class="ml-2 bg-red-100 text-red-800 text-[10px] font-bold px-2 py-0.5 rounded-full border border-red-300">⚠️ REINCIDENTE (${qtdAparicoes}x)</span>`;
+          corLinha = 'bg-red-50/40';
+        }
+        if (a.lancadoTotvs) corLinha = 'bg-emerald-50/70';
+
+        tbody.innerHTML += `
+          <tr class="border-b hover:bg-gray-50 ${corLinha}">
+            <td class="p-2 border font-medium">${a.data} às ${a.hora}</td>
+            <td class="p-2 border">${a.turno}</td>
+            <td class="p-2 border font-bold text-[#1b4332]">${a.aluno} ${badgeReincidente}</td>
+            <td class="p-2 border font-semibold text-[#1b4332]">${a.turma}</td>
+            <td class="p-2 border">${a.espaco}</td>
+            <td class="p-2 border text-gray-600">${a.justificativa || '—'}</td>
+            <td class="p-2 border text-center">
+              <input type="checkbox" ${a.lancadoTotvs ? 'checked' : ''} onchange="toggleTotvs(${a.id}, this.checked)" class="w-4 h-4 accent-[#1b4332] cursor-pointer" />
+            </td>
+            <td class="p-2 border text-center no-print">
+              <button onclick="excluirAtraso(${a.id})" class="text-red-600 font-bold hover:underline">Apagar</button>
+            </td>
+          </tr>
+        `;
+      });
+    }
+
+    function toggleTotvs(id, status) {
+      const item = atrasosList.find(a => a.id === id);
+      if (item) {
+        item.lancadoTotvs = status;
+        sincronizarNuvem();
+        renderizarAtrasos();
+      }
+    }
+
+    function excluirAtraso(id) {
+      atrasosList = atrasosList.filter(a => a.id !== id);
+      sincronizarNuvem();
+      renderizarAtrasos();
+    }
+
+    function limparAtrasos() {
+      if(confirm("Deseja realmente limpar todo o histórico de atrasos?")) {
+        atrasosList = [];
+        sincronizarNuvem();
+        renderizarAtrasos();
+      }
+    }
+
+    function salvarSalaEstudos(e) {
+      e.preventDefault();
+      const editId = document.getElementById('seEditId').value;
+      const dataRel = document.getElementById('seData').value;
+      const profRel = document.getElementById('seProfessor').value;
+      const silencio = document.querySelector('input[name="ind_silencio"]:checked')?.value || '—';
+      const foco = document.querySelector('input[name="ind_foco"]:checked')?.value || '—';
+      const celular = document.querySelector('input[name="ind_celular"]:checked')?.value || '—';
+      const org = document.querySelector('input[name="ind_org"]:checked')?.value || '—';
+
+      if (editId) {
+        const index = salaEstudosList.findIndex(s => s.id === Number(editId));
+        if (index !== -1) {
+          salaEstudosList[index] = {
+            id: Number(editId),
+            data: dataRel,
+            professor: profRel,
+            silencio, foco, celular, org,
+            aluno: document.getElementById('se_aluno_1').value.trim().toUpperCase() || 'ALUNO NÃO INFORMADO',
+            turma: document.getElementById('se_turma_1').value.trim() || '—',
+            ocorrencia: document.getElementById('se_desc_1').value.trim() || 'Nenhuma ocorrência descrita.',
+            indisciplina: document.getElementById('se_indisc_1')?.checked || false,
+            desrespeitoso: document.getElementById('se_desresp_1')?.checked || false,
+            improdutividade: document.getElementById('se_improd_1')?.checked || false,
+            conversa: document.getElementById('se_conversa_1')?.checked || false
+          };
+        }
+        document.getElementById('seEditId').value = '';
+        document.getElementById('seTituloForm').textContent = 'Controle Diário — Sala de Estudos e Biblioteca';
+        document.getElementById('btnSalvaSe').textContent = '💾 Salvar Relatório Diário';
+        document.getElementById('btnCancelaEditSe').classList.add('hidden');
+        alert('Registro atualizado com sucesso!');
+      } else {
+        let preenchidosCount = 0;
+        for (let i = 1; i <= 20; i++) {
+          const nomeAluno = document.getElementById(`se_aluno_${i}`).value.trim();
+          if (nomeAluno) {
+            preenchidosCount++;
+            const turmaAluno = document.getElementById(`se_turma_${i}`).value.trim() || '—';
+            const descAluno = document.getElementById(`se_desc_${i}`).value.trim() || 'Nenhuma ocorrência descrita.';
+            const indisc = document.getElementById(`se_indisc_${i}`).checked;
+            const desresp = document.getElementById(`se_desresp_${i}`).checked;
+            const improd = document.getElementById(`se_improd_${i}`).checked;
+            const conversa = document.getElementById(`se_conversa_${i}`).checked;
+
+            const item = {
+              id: Date.now() + i,
+              data: dataRel,
+              professor: profRel,
+              silencio, foco, celular, org,
+              aluno: nomeAluno.toUpperCase(),
+              turma: turmaAluno,
+              ocorrencia: descAluno,
+              indisciplina: indisc,
+              desrespeitoso: desresp,
+              improdutividade: improd,
+              conversa: conversa
+            };
+            salaEstudosList.unshift(item);
+          }
+        }
+
+        if (preenchidosCount === 0) {
+          alert('Por favor, preencha pelo menos um aluno nos espaços do Item 3.');
+          return;
+        }
+        alert(`Relatório salvo com sucesso (${preenchidosCount} ocorrência(s) registrada(s))!`);
+      }
+
+      sincronizarNuvem();
+      e.target.reset();
+      montar20EspacosSalaEstudos();
+      mudarSubAbaSala('relatorios');
+    }
+
+    function alternarNotificacaoAluno(nomeAluno, checkbox) {
+      const nomeLimpo = nomeAluno.trim().toUpperCase();
+      if (checkbox.checked) {
+        alunosNotificadosSet.add(nomeLimpo);
+      } else {
+        alunosNotificadosSet.delete(nomeLimpo);
+      }
+      sincronizarNuvem();
+      renderizarSalaEstudos();
+    }
+
+    function renderizarSalaEstudos() {
+      const container = document.getElementById('listaRelatoriosContainer');
+      const quadroUrgentes = document.getElementById('quadroCasosUrgentes');
+      const filtroAluno = document.getElementById('filtroAlunoSala')?.value.toLowerCase().trim() || '';
+      if (!container || !quadroUrgentes) return;
+      container.innerHTML = '';
+      quadroUrgentes.innerHTML = '';
+
+      const contagemOcorrenciasAluno = {};
+      salaEstudosList.forEach(r => {
+        const nomeAl = r.aluno;
+        if (!contagemOcorrenciasAluno[nomeAl]) {
+          contagemOcorrenciasAluno[nomeAl] = { total: 0, turma: r.turma, datas: [] };
+        }
+        contagemOcorrenciasAluno[nomeAl].total++;
+        if (!contagemOcorrenciasAluno[nomeAl].datas.includes(r.data)) {
+          contagemOcorrenciasAluno[nomeAl].datas.push(r.data);
+        }
+      });
+
+      const alunosUrgentes = Object.entries(contagemOcorrenciasAluno).filter(([nome, dados]) => {
+        return dados.total >= 2 && !alunosNotificadosSet.has(nome.trim().toUpperCase());
+      });
+
+      if (alunosUrgentes.length > 0) {
+        let htmlUrgentesCards = '';
+        alunosUrgentes.forEach(([nome, dados]) => {
+          htmlUrgentesCards += `
+            <div class="bg-white border border-red-200 p-2.5 rounded shadow-sm text-xs flex justify-between items-center">
+              <div>
+                <strong class="text-red-900 font-bold">${nome}</strong> <span class="text-gray-500">(${dados.turma})</span>
+                <p class="text-[11px] text-red-700 mt-0.5">⚠️ <strong>${dados.total} registros</strong> acumulados.</p>
+                <div class="mt-2">
+                  <label class="flex items-center gap-1.5 text-xs font-bold text-emerald-900 cursor-pointer bg-emerald-50 px-2 py-1 rounded border border-emerald-300 w-fit">
+                    <input type="checkbox" onchange="alternarNotificacaoAluno('${nome}', this)" class="w-4 h-4 accent-[#1b4332]" />
+                    <span>✓ Notificado (Remover do Alerta)</span>
+                  </label>
+                </div>
+              </div>
+              <button onclick="document.getElementById('filtroAlunoSala').value='${nome.toLowerCase()}'; renderizarSalaEstudos();" class="bg-red-100 text-red-800 px-2.5 py-1 rounded text-[11px] font-bold hover:bg-red-200">Ver Histórico</button>
+            </div>
+          `;
+        });
+
+        quadroUrgentes.innerHTML = `
+          <div class="bg-red-50 border-2 border-red-300 rounded-lg p-4 shadow-sm">
+            <h3 class="font-bold text-red-900 text-sm mb-1 flex items-center gap-2">
+              🚨 QUADRO DE CASOS URGENTES (2+ Ocorrências Registradas)
+            </h3>
+            <p class="text-xs text-red-700 mb-3">Alunos que requerem acompanhamento pedagógico imediato devido à reincidência:</p>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
+              ${htmlUrgentesCards}
+            </div>
+          </div>
+        `;
+      }
+
+      if (salaEstudosList.length === 0) {
+        container.innerHTML = `<p class="text-xs text-gray-500 italic">Nenhum relatório diário salvo ainda.</p>`;
+        return;
+      }
+
+      let listaFiltrada = salaEstudosList;
+      if (filtroAluno) {
+        listaFiltrada = salaEstudosList.filter(r => r.aluno.toLowerCase().includes(filtroAluno));
+        if (listaFiltrada.length === 0) {
+          container.innerHTML = `<p class="text-xs text-red-600 font-semibold italic">Nenhum registro encontrado para o aluno "${filtroAluno}".</p>`;
+          return;
+        }
+      }
+
+      const agrupadoPorData = {};
+      listaFiltrada.forEach(r => {
+        const dataKey = r.data || 'Data não informada';
+        if (!agrupadoPorData[dataKey]) agrupadoPorData[dataKey] = [];
+        agrupadoPorData[dataKey].push(r);
+      });
+
+      const datasOrdenadas = Object.keys(agrupadoPorData).sort().reverse();
+
+      datasOrdenadas.forEach(data => {
+        let htmlItensDia = '';
+        agrupadoPorData[data].forEach(occ => {
+          let tagsBadges = '';
+          if (occ.indisciplina) tagsBadges += `<span class="bg-orange-100 text-orange-800 text-[10px] px-2 py-0.5 rounded font-bold mr-1">Indisciplina</span>`;
+          if (occ.desrespeitoso) tagsBadges += `<span class="bg-red-100 text-red-800 text-[10px] px-2 py-0.5 rounded font-bold mr-1">Comportamento desrespeitoso</span>`;
+          if (occ.improdutividade) tagsBadges += `<span class="bg-amber-100 text-amber-800 text-[10px] px-2 py-0.5 rounded font-bold mr-1">Improdutividade</span>`;
+          if (occ.conversa) tagsBadges += `<span class="bg-purple-100 text-purple-800 text-[10px] px-2 py-0.5 rounded font-bold mr-1">Conversa excessiva</span>`;
+
+          htmlItensDia += `
+            <div class="bg-white p-3.5 rounded border mb-3 text-xs space-y-1.5 shadow-sm">
+              <div class="flex justify-between items-center text-[#1b4332] font-bold">
+                <span>👤 Aluno(a): ${occ.aluno} <span class="text-gray-500 font-normal">(${occ.turma})</span></span>
+                <div class="flex gap-2 no-print">
+                  <button onclick="editarSalaEstudos(${occ.id})" class="text-blue-600 font-bold hover:underline">✏️ Editar</button>
+                  <button onclick="excluirSalaEstudos(${occ.id})" class="text-red-600 font-bold hover:underline">🗑️ Apagar</button>
+                </div>
+              </div>
+              <p><strong>Ocorrência:</strong> ${occ.ocorrencia}</p>
+              ${tagsBadges ? `<div class="mt-1">${tagsBadges}</div>` : ''}
+              <div class="grid grid-cols-2 md:grid-cols-4 gap-1 text-[11px] text-gray-600 bg-gray-50 p-1.5 rounded mt-1">
+                <span>Silêncio: ${occ.silencio}</span>
+                <span>Foco: ${occ.foco}</span>
+                <span>Celular: ${occ.celular}</span>
+                <span>Organização: ${occ.org}</span>
+              </div>
+            </div>
+          `;
+        });
+
+        container.innerHTML += `
+          <div class="border rounded-lg p-4 bg-emerald-50/40 mb-4 border-emerald-900/20">
+            <div class="border-b pb-2 mb-3 flex justify-between items-center">
+              <h3 class="font-bold text-[#1b4332] text-sm">📅 Data: ${data}</h3>
+              <span class="bg-[#1b4332] text-white text-[11px] font-bold px-2.5 py-0.5 rounded-full">${agrupadoPorData[data].length} registro(s)</span>
+            </div>
+            <div class="space-y-2">
+              ${htmlItensDia}
+            </div>
+          </div>
+        `;
+      });
+    }
+
+    function editarSalaEstudos(id) {
+      const item = salaEstudosList.find(s => s.id === id);
+      if (!item) return;
+
+      mudarSubAbaSala('novo');
+      document.getElementById('seEditId').value = item.id;
+      document.getElementById('seData').value = item.data;
+      document.getElementById('seProfessor').value = item.professor;
+      document.getElementById('se_aluno_1').value = item.aluno;
+      document.getElementById('se_turma_1').value = item.turma;
+      document.getElementById('se_desc_1').value = item.ocorrencia;
+      if(document.getElementById('se_indisc_1')) document.getElementById('se_indisc_1').checked = item.indisciplina || false;
+      if(document.getElementById('se_desresp_1')) document.getElementById('se_desresp_1').checked = item.desrespeitoso || false;
+      if(document.getElementById('se_improd_1')) document.getElementById('se_improd_1').checked = item.improdutividade || false;
+      if(document.getElementById('se_conversa_1')) document.getElementById('se_conversa_1').checked = item.conversa || false;
+
+      document.getElementById('seTituloForm').textContent = 'Editar Relatório de Sala de Estudos';
+      document.getElementById('btnSalvaSe').textContent = '💾 Salvar Alterações';
+      document.getElementById('btnCancelaEditSe').classList.add('hidden');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function cancelarEdicaoSalaEstudos() {
+      document.getElementById('formSalaEstudos').reset();
+      document.getElementById('seEditId').value = '';
+      document.getElementById('seTituloForm').textContent = 'Controle Diário — Sala de Estudos e Biblioteca';
+      document.getElementById('btnSalvaSe').textContent = '💾 Salvar Relatório Diário';
+      document.getElementById('btnCancelaEditSe').classList.add('hidden');
+      montar20EspacosSalaEstudos();
+    }
+
+    function excluirSalaEstudos(id) {
+      if(confirm('Tem certeza de que deseja apagar esta ocorrência?')) {
+        salaEstudosList = salaEstudosList.filter(s => s.id !== id);
+        sincronizarNuvem();
+        renderizarSalaEstudos();
+      }
+    }
+
+    function atualizarListaProfessores() {
+      const selectSegmento = document.getElementById('profSegmento');
+      const selectProfessor = document.getElementById('profNome');
+      const selectFiltro = document.getElementById('selectProfessorFiltro');
+      if (!selectSegmento || !selectProfessor) return;
+
+      const segmento = selectSegmento.value;
+      const lista = PROFESSORES_DATA[segmento] || [];
+      
+      selectProfessor.innerHTML = '';
+      lista.forEach(prof => {
+        const option = document.createElement('option');
+        option.value = prof;
+        option.textContent = prof;
+        selectProfessor.appendChild(option);
+      });
+
+      if (selectFiltro) {
+        const professoresComLancamento = [...new Set(profOcorrenciasList.map(p => p.professor))].filter(Boolean).sort();
+        selectFiltro.innerHTML = '';
+        if (professoresComLancamento.length === 0) {
+          selectFiltro.innerHTML = `<option value="">Nenhum professor com lançamento</option>`;
+        } else {
+          professoresComLancamento.forEach(nomeProf => {
+            selectFiltro.innerHTML += `<option value="${nomeProf}">${nomeProf}</option>`;
+          });
+        }
+      }
+    }
+
+    function salvarOcorrenciaProfessor(e) {
+      e.preventDefault();
+      const editId = document.getElementById('profEditId').value;
+      const liberouChecked = document.getElementById('profLiberouMaisCedo').checked;
+      const compLiberou = document.getElementById('profComplementoLiberou').value.trim();
+      let textoLiberou = liberouChecked ? (compLiberou ? `Sim (${compLiberou})` : 'Sim') : 'Não';
+
+      const item = {
+        id: editId ? Number(editId) : Date.now(),
+        data: document.getElementById('profData').value,
+        professor: document.getElementById('profNome').value,
+        semChamada: document.getElementById('profChamada').checked,
+        atrasoInicio: document.getElementById('profAtrasoInicio').checked ? document.getElementById('profMinutosInicio').value + ' min' : 'Não',
+        atrasoIntervalo: document.getElementById('profAtrasoInterv').checked ? document.getElementById('profMinutosInterv').value + ' min' : 'Não',
+        liberouMaisCedo: textoLiberou,
+        obs: document.getElementById('profObs').value
+      };
+
+      if (editId) {
+        const index = profOcorrenciasList.findIndex(p => p.id === Number(editId));
+        if (index !== -1) profOcorrenciasList[index] = item;
+      } else {
+        profOcorrenciasList.unshift(item);
+      }
+
+      sincronizarNuvem();
+      cancelarEdicaoProfessor();
+      renderizarProfOcorrencias();
+    }
+
+    function renderizarProfOcorrencias() {
+      const tbody = document.getElementById('listaProfessoresTbody');
+      if (!tbody) return;
+      tbody.innerHTML = '';
+      profOcorrenciasList.forEach(p => {
+        tbody.innerHTML += `
+          <tr class="border-b hover:bg-gray-50">
+            <td class="p-2.5 border">${p.data}</td>
+            <td class="p-2.5 border font-semibold">${p.professor}</td>
+            <td class="p-2.5 border text-center">${p.semChamada ? '❌ Sim' : '—'}</td>
+            <td class="p-2.5 border text-center">${p.atrasoInicio !== 'Não' ? p.atrasoInicio : '—'}</td>
+            <td class="p-2.5 border text-center">${p.atrasoIntervalo !== 'Não' ? p.atrasoIntervalo : '—'}</td>
+            <td class="p-2.5 border text-center">${p.liberouMaisCedo !== 'Não' ? p.liberouMaisCedo : '—'}</td>
+            <td class="p-2.5 border">${p.obs || '—'}</td>
+            <td class="p-2.5 border text-center no-print">
+              <button onclick="editarOcorrenciaProfessor(${p.id})" class="text-blue-600 font-bold text-xs bg-blue-50 px-2 py-1 rounded border border-blue-200 mr-1">✏️ Editar</button>
+              <button onclick="excluirOcorrenciaProfessor(${p.id})" class="text-red-600 font-bold text-xs bg-red-50 px-2 py-1 rounded border border-red-200">🗑️ Apagar</button>
+            </td>
+          </tr>
+        `;
+      });
+      atualizarListaProfessores();
+    }
+
+    function imprimirRelatorioProfessorIndividual() {
+      const profSelecionado = document.getElementById('selectProfessorFiltro').value;
+      const mesSelecionado = document.getElementById('selectMesFiltro').value;
+
+      if (!profSelecionado) {
+        alert("Selecione um professor válido.");
+        return;
+      }
+      if (!mesSelecionado) {
+        alert("Selecione o mês de referência.");
+        return;
+      }
+
+      const ocorrenciasProf = profOcorrenciasList.filter(p => {
+        return p.professor === profSelecionado && p.data && p.data.startsWith(mesSelecionado);
+      });
+
+      if (ocorrenciasProf.length === 0) {
+        alert(`Não há ocorrências registradas para o(a) professor(a) ${profSelecionado} no mês ${mesSelecionado.split('-').reverse().join('/')}.`);
+        return;
+      }
+
+      const [anoF, mesF] = mesSelecionado.split('-');
+      const nomeMesAno = new Date(anoF, mesF - 1, 1).toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
+
+      let janelaPrint = window.open('', '_blank');
+      let htmlTabela = '';
+      ocorrenciasProf.forEach((occ) => {
+        const dataFormatada = occ.data.split('-').reverse().join('/');
+        htmlTabela += `
+          <tr style="border-bottom: 1px solid #ddd;">
+            <td style="padding: 8px; border: 1px solid #ccc;">${dataFormatada}</td>
+            <td style="padding: 8px; border: 1px solid #ccc; text-align: center;">${occ.semChamada ? 'Sim' : '—'}</td>
+            <td style="padding: 8px; border: 1px solid #ccc; text-align: center;">${occ.atrasoInicio}</td>
+            <td style="padding: 8px; border: 1px solid #ccc; text-align: center;">${occ.atrasoIntervalo}</td>
+            <td style="padding: 8px; border: 1px solid #ccc; text-align: center;">${occ.liberouMaisCedo}</td>
+            <td style="padding: 8px; border: 1px solid #ccc;">${occ.obs || '—'}</td>
+          </tr>
+        `;
+      });
+
+      janelaPrint.document.write(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <title>Relatório do Professor - Colégio Arena</title>
+          <style>
+            body { font-family: Arial, sans-serif; padding: 30px; color: #333; }
+            h2 { color: #1b4332; margin-bottom: 5px; }
+            p { font-size: 13px; color: #555; margin-bottom: 20px; text-transform: capitalize; }
+            table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 12px; }
+            th { background-color: #1b4332; color: white; padding: 10px; border: 1px solid #1b4332; text-align: left; }
+            td { padding: 8px; border: 1px solid #ccc; }
+          </style>
+        </head>
+        <body>
+          <h2>Colégio Arena — Relatório Mensal de Acompanhamento Docente</h2>
+          <p><strong>Professor(a):</strong> ${profSelecionado} &nbsp;|&nbsp; <strong>Mês Referência:</strong> ${nomeMesAno} &nbsp;|&nbsp; <strong>Emitido em:</strong> ${new Date().toLocaleDateString('pt-BR')}</p>
+          <table>
+            <thead>
+              <tr>
+                <th>Data</th>
+                <th style="text-align: center;">Chamada Pendente</th>
+                <th style="text-align: center;">Atraso Entrada</th>
+                <th style="text-align: center;">Atraso Intervalo</th>
+                <th style="text-align: center;">Liberou Mais Cedo</th>
+                <th>Observações</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${htmlTabela}
+            </tbody>
+          </table>
+          <script>
+            window.onload = function() { setTimeout(() => { window.print(); window.close(); }, 300); };
+          <\/script>
+        </body>
+        </html>
+      `);
+      janelaPrint.document.close();
+    }
+
+    function editarOcorrenciaProfessor(id) {
+      const item = profOcorrenciasList.find(p => p.id === id);
+      if (!item) return;
+
+      document.getElementById('profEditId').value = item.id;
+      document.getElementById('profData').value = item.data;
+      document.getElementById('profObs').value = item.obs === '—' ? '' : item.obs;
+      document.getElementById('profChamada').checked = item.semChamada;
+      
+      if (item.atrasoInicio !== 'Não') {
+        document.getElementById('profAtrasoInicio').checked = true;
+        document.getElementById('profMinutosInicio').value = item.atrasoInicio.replace(' min', '');
+        document.getElementById('profMinutosInicio').disabled = false;
+      } else {
+        document.getElementById('profAtrasoInicio').checked = false;
+        document.getElementById('profMinutosInicio').value = '';
+        document.getElementById('profMinutosInicio').disabled = true;
+      }
+
+      if (item.atrasoIntervalo !== 'Não') {
+        document.getElementById('profAtrasoInterv').checked = true;
+        document.getElementById('profMinutosInterv').value = item.atrasoIntervalo.replace(' min', '');
+        document.getElementById('profMinutosInterv').disabled = false;
+      } else {
+        document.getElementById('profAtrasoInterv').checked = false;
+        document.getElementById('profMinutosInterv').value = '';
+        document.getElementById('profMinutosInterv').disabled = true;
+      }
+
+      if (item.liberouMaisCedo !== 'Não') {
+        document.getElementById('profLiberouMaisCedo').checked = true;
+        const comp = item.liberouMaisCedo.replace('Sim (', '').replace(')', '');
+        document.getElementById('profComplementoLiberou').value = comp === 'Sim' ? '' : comp;
+        document.getElementById('profComplementoLiberou').disabled = false;
+      } else {
+        document.getElementById('profLiberouMaisCedo').checked = false;
+        document.getElementById('profComplementoLiberou').value = '';
+        document.getElementById('profComplementoLiberou').disabled = true;
+      }
+
+      document.getElementById('profFormTitulo').textContent = 'Editar Ocorrência com Professor';
+      document.getElementById('btnSalvaProf').textContent = 'Salvar Alterações';
+      document.getElementById('btnCancelaEditProf').classList.remove('hidden');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function cancelarEdicaoProfessor() {
+      document.getElementById('formProfessores').reset();
+      document.getElementById('profEditId').value = '';
+      document.getElementById('profFormTitulo').textContent = 'Ocorrências com Professores';
+      document.getElementById('btnSalvaProf').textContent = 'Registrar Ocorrência';
+      document.getElementById('btnCancelaEditProf').classList.add('hidden');
+      document.getElementById('profMinutosInicio').disabled = true;
+      document.getElementById('profMinutosInterv').disabled = true;
+      document.getElementById('profComplementoLiberou').disabled = true;
+    }
+
+    function excluirOcorrenciaProfessor(id) {
+      if (confirm('Tem certeza de que deseja apagar este registro?')) {
+        profOcorrenciasList = profOcorrenciasList.filter(p => p.id !== id);
+        sincronizarNuvem();
+        renderizarProfOcorrencias();
+      }
+    }
+
+    function salvarInspetor(e) {
+      e.preventDefault();
+      const editId = document.getElementById('inspEditId').value;
+      const item = {
+        id: editId ? Number(editId) : Date.now(),
+        data: document.getElementById('inspData').value,
+        hora: document.getElementById('inspHora').value,
+        nome: document.getElementById('inspNome').value.trim(),
+        problema: document.getElementById('inspProblema').value,
+        feedback: document.getElementById('inspFeedback').value
+      };
+
+      if (editId) {
+        const index = inspetoresList.findIndex(i => i.id === Number(editId));
+        if (index !== -1) inspetoresList[index] = item;
+      } else {
+        inspetoresList.unshift(item);
+      }
+
+      sincronizarNuvem();
+      cancelarEdicaoInspetor();
+      renderizarInspetores();
+    }
+
+    function renderizarInspetores() {
+      const c = document.getElementById('listaInspetoresCards');
+      const selectFiltro = document.getElementById('selectInspetorFiltro');
+      if (!c) return;
+      c.innerHTML = '';
+
+      const nomesUnicos = [...new Set(inspetoresList.map(i => i.nome))].filter(Boolean).sort();
+      
+      if (selectFiltro) {
+        selectFiltro.innerHTML = '';
+        if (nomesUnicos.length === 0) {
+          selectFiltro.innerHTML = `<option value="">Nenhum inspetor cadastrado</option>`;
+        } else {
+          nomesUnicos.forEach(nome => {
+            selectFiltro.innerHTML += `<option value="${nome}">${nome}</option>`;
+          });
+        }
+      }
+
+      if (inspetoresList.length === 0) {
+        c.innerHTML = `<p class="text-xs text-gray-500 italic">Nenhuma orientação de inspetor registrada ainda.</p>`;
+        return;
+      }
+
+      inspetoresList.forEach(i => {
+        c.innerHTML += `
+          <div class="border p-3.5 rounded bg-gray-50 text-xs mb-2 flex justify-between items-start">
+            <div>
+              <p class="font-bold text-[#1b4332]">Orientador: ${i.nome} (${i.data} às ${i.hora})</p>
+              <p><strong>Situação:</strong> ${i.problema}</p>
+              <p><strong>Feedback:</strong> ${i.feedback}</p>
+            </div>
+            <div class="flex gap-1 no-print">
+              <button onclick="editarInspetor(${i.id})" class="text-blue-600 font-bold text-xs bg-blue-50 px-2 py-1 rounded border border-blue-200">✏️ Editar</button>
+              <button onclick="excluirInspetor(${i.id})" class="text-red-600 font-bold text-xs bg-red-50 px-2 py-1 rounded border border-red-200">🗑️ Apagar</button>
+            </div>
+          </div>
+        `;
+      });
+    }
+
+    function imprimirRelatorioInspetorIndividual() {
+      const inspSelecionado = document.getElementById('selectInspetorFiltro').value;
+      if (!inspSelecionado) {
+        alert("Selecione um inspetor válido.");
+        return;
+      }
+
+      const orientacoesInsp = inspetoresList.filter(i => i.nome === inspSelecionado);
+
+      if (orientacoesInsp.length === 0) {
+        alert(`Não há orientações registradas para o(a) inspetor(a): ${inspSelecionado}`);
+        return;
+      }
+
+      let janelaPrint = window.open('', '_blank');
+      let htmlCards = '';
+      orientacoesInsp.forEach((occ) => {
+        htmlCards += `
+          <div style="border: 1px solid #ccc; padding: 12px; margin-bottom: 12px; border-radius: 6px; font-size: 12px; background: #f9f9f9;">
+            <p style="margin: 0 0 6px 0; font-weight: bold; color: #1b4332;">Data/Hora: ${occ.data} às ${occ.hora}</p>
+            <p style="margin: 0 0 6px 0;"><strong>Situação Identificada:</strong> ${occ.problema}</p>
+            <p style="margin: 0;"><strong>Feedback / Encaminhamento:</strong> ${occ.feedback}</p>
+          </div>
+        `;
+      });
+
+      janelaPrint.document.write(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <title>Relatório do Inspetor - Colégio Arena</title>
+          <style>
+            body { font-family: Arial, sans-serif; padding: 30px; color: #333; }
+            h2 { color: #1b4332; margin-bottom: 5px; }
+            p { font-size: 13px; color: #555; margin-bottom: 20px; }
+          </style>
+        </head>
+        <body>
+          <h2>Colégio Arena — Relatório Individual de Orientações (Inspetores)</h2>
+          <p><strong>Inspetor(a) / Orientador(a):</strong> ${inspSelecionado} &nbsp;|&nbsp; <strong>Emitido em:</strong> ${new Date().toLocaleDateString('pt-BR')}</p>
+          <hr style="border: 0; border-top: 1px solid #ddd; margin-bottom: 20px;" />
+          ${htmlCards}
+          <script>
+            window.onload = function() { setTimeout(() => { window.print(); window.close(); }, 300); };
+          <\/script>
+        </body>
+        </html>
+      `);
+      janelaPrint.document.close();
+    }
+
+    function editarInspetor(id) {
+      const item = inspetoresList.find(i => i.id === id);
+      if (!item) return;
+
+      document.getElementById('inspEditId').value = item.id;
+      document.getElementById('inspNome').value = item.nome;
+      document.getElementById('inspData').value = item.data;
+      document.getElementById('inspHora').value = item.hora;
+      document.getElementById('inspProblema').value = item.problema;
+      document.getElementById('inspFeedback').value = item.feedback;
+
+      document.getElementById('inspFormTitulo').textContent = 'Editar Orientação de Inspetor';
+      document.getElementById('btnSalvaInsp').textContent = 'Salvar Alterações';
+      document.getElementById('btnCancelaEditInsp').classList.remove('hidden');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function cancelarEdicaoInspetor() {
+      document.getElementById('formInspetores').reset();
+      document.getElementById('inspEditId').value = '';
+      document.getElementById('inspFormTitulo').textContent = 'Registro de Orientações — Inspetores';
+      document.getElementById('btnSalvaInsp').textContent = 'Salvar Orientação';
+      document.getElementById('btnCancelaEditInsp').classList.add('hidden');
+    }
+
+    function excluirInspetor(id) {
+      if (confirm('Tem certeza de que deseja apagar esta orientação?')) {
+        inspetoresList = inspetoresList.filter(i => i.id !== id);
+        sincronizarNuvem();
+        renderizarInspetores();
+      }
+    }
+  </script>
+</body>
+</html>
