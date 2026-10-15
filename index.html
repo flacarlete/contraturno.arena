@@ -7,6 +7,8 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
     @media print {
       body * { visibility: hidden; }
       #printableArea, #printableArea * { visibility: visible; }
@@ -43,7 +45,7 @@
   <main class="p-6 max-w-6xl w-full mx-auto flex-1">
 
     <!-- ABA 1: ATRASOS -->
-    <section id="content-atrasos" class="tab-content">
+    <section id="content-atrasos" class="tab-content active">
       <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
         <div class="flex gap-4 border-b border-gray-200 pb-3 mb-4">
           <button onclick="setAtrasoTurno('Matutino')" id="btn-turno-mat" class="px-4 py-1.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800">Período Matutino</button>
@@ -81,7 +83,6 @@
             <div>
               <label class="block text-xs font-medium text-gray-700 mb-1">Nome do Aluno</label>
               <input type="text" id="atrasoAluno" placeholder="Digite o nome do aluno..." class="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm font-medium" required />
-              <p id="atrasoTurmaLabel" class="text-xs text-emerald-800 font-bold mt-1.5"></p>
             </div>
             <div>
               <label class="block text-xs font-medium text-gray-700 mb-1">Justificativa</label>
@@ -99,7 +100,6 @@
 
       <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
         <h3 class="font-bold text-gray-700 text-sm mb-3">Histórico de Atrasos & Alertas</h3>
-        <div id="alertasContainer" class="mb-4 space-y-2"></div>
         <div class="overflow-x-auto">
           <table class="w-full text-left text-xs border border-gray-200">
             <thead class="bg-gray-100 font-semibold text-gray-700">
@@ -120,57 +120,42 @@
     </section>
 
     <!-- ABA 2: SALA DE ESTUDOS -->
-    <section id="content-sala-estudos" class="tab-content hidden">
+    <section id="content-sala-estudos" class="tab-content">
       <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
-        <div class="flex justify-between items-center mb-4">
-          <h2 class="text-base font-bold text-[#1b4332]">Controle Diário — Sala de Estudos e Biblioteca</h2>
-          <button onclick="window.print()" class="bg-gray-800 text-white px-3 py-1.5 rounded text-xs hover:bg-black no-print">🖨️ Imprimir Relatório</button>
-        </div>
-
-        <form id="formSalaEstudos" onsubmit="salvarSalaEstudos(event)" class="space-y-6">
+        <h2 class="text-base font-bold text-[#1b4332] mb-4">Controle Diário — Sala de Estudos e Biblioteca</h2>
+        <form onsubmit="salvarSalaEstudos(event)" class="space-y-4">
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label class="block text-xs font-medium text-gray-700 mb-1">Data</label>
-              <input type="date" id="seData" class="w-full border border-gray-300 rounded px-3 py-2 text-sm" required />
-            </div>
-            <div>
-              <label class="block text-xs font-medium text-gray-700 mb-1">Professor / Inspetor Responsável</label>
-              <input type="text" id="seProfessor" class="w-full border border-gray-300 rounded px-3 py-2 text-sm" placeholder="Nome do avaliador..." required />
-            </div>
+            <div><label class="block text-xs font-medium text-gray-700 mb-1">Data</label><input type="date" id="seData" class="w-full border rounded px-3 py-2 text-sm" required /></div>
+            <div><label class="block text-xs font-medium text-gray-700 mb-1">Responsável</label><input type="text" id="seProfessor" class="w-full border rounded px-3 py-2 text-sm" required /></div>
           </div>
-
-          <div class="flex justify-end">
-            <button type="submit" class="bg-[#1b4332] text-white px-6 py-2.5 rounded text-sm font-semibold hover:bg-emerald-900">
-              💾 Salvar Relatório Diário
-            </button>
-          </div>
+          <div class="flex justify-end"><button type="submit" class="bg-[#1b4332] text-white px-6 py-2.5 rounded text-sm font-semibold">Salvar Relatório</button></div>
         </form>
       </div>
     </section>
 
     <!-- ABA 3: PROFESSORES -->
-    <section id="content-professores" class="tab-content hidden">
+    <section id="content-professores" class="tab-content">
       <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
         <h2 class="text-base font-bold text-[#1b4332] mb-4">Acompanhamento Docente</h2>
       </div>
     </section>
 
     <!-- ABA 4: INSPETORES -->
-    <section id="content-inspetores" class="tab-content hidden">
+    <section id="content-inspetores" class="tab-content">
       <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
         <h2 class="text-base font-bold text-[#1b4332] mb-4">Orientações de Inspetores</h2>
       </div>
     </section>
 
     <!-- ABA 5: ATENDIMENTOS -->
-    <section id="content-atendimentos" class="tab-content hidden">
+    <section id="content-atendimentos" class="tab-content">
       <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
         <h2 class="text-base font-bold text-[#1b4332] mb-4">Registro de Atendimentos</h2>
       </div>
     </section>
 
     <!-- ABA 6: CONTATOS -->
-    <section id="content-contatos" class="tab-content hidden">
+    <section id="content-contatos" class="tab-content">
       <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
         <h2 class="text-base font-bold text-[#1b4332] mb-4">Contatos Rápidos</h2>
       </div>
@@ -180,14 +165,14 @@
 
   <script>
     function switchTab(tabId) {
-      document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
       document.querySelectorAll('.tab-btn').forEach(btn => {
         btn.classList.remove('border-[#1b4332]', 'text-[#1b4332]', 'font-semibold');
         btn.classList.add('border-transparent', 'text-gray-600');
       });
       const content = document.getElementById('content-' + tabId);
       const btn = document.getElementById('tab-' + tabId);
-      if(content) content.classList.remove('hidden');
+      if(content) content.classList.add('active');
       if(btn) {
         btn.classList.add('border-[#1b4332]', 'text-[#1b4332]', 'font-semibold');
         btn.classList.remove('border-transparent', 'text-gray-600');
@@ -206,46 +191,4 @@
       renderAtrasos();
     });
 
-    function setAtrasoTurno(turno) {
-      turnoAtrasoAtual = turno;
-      if(document.getElementById('labelTurno')) document.getElementById('labelTurno').textContent = turno;
-    }
-
-    function salvarAtraso(e) {
-      e.preventDefault();
-      atrasosList.unshift({
-        id: Date.now(),
-        turno: turnoAtrasoAtual,
-        espaco: document.getElementById('atrasoEspaco').value,
-        hora: document.getElementById('atrasoHora').value,
-        data: document.getElementById('atrasoData').value,
-        aluno: document.getElementById('atrasoAluno').value.toUpperCase(),
-        justificativa: document.getElementById('atrasoJustificativa').value
-      });
-      localStorage.setItem('arena_atrasos_full', JSON.stringify(atrasosList));
-      e.target.reset();
-      renderAtrasos();
-    }
-
-    function renderAtrasos() {
-      const tb = document.getElementById('listaAtrasosTbody');
-      if(!tb) return;
-      tb.innerHTML = '';
-      atrasosList.forEach(a => {
-        tb.innerHTML += `<tr class="border-b"><td class="p-2 border">${a.data} às ${a.hora}</td><td class="p-2 border">${a.turno}</td><td class="p-2 border font-bold text-[#1b4332]">${a.aluno}</td><td class="p-2 border">—</td><td class="p-2 border">${a.espaco}</td><td class="p-2 border">${a.justificativa || '—'}</td><td class="p-2 border text-center"><button onclick="delAtraso(${a.id})" class="text-red-600 font-bold">Apagar</button></td></tr>`;
-      });
-    }
-
-    function delAtraso(id) {
-      atrasosList = atrasosList.filter(x => x.id !== id);
-      localStorage.setItem('arena_atrasos_full', JSON.stringify(atrasosList));
-      renderAtrasos();
-    }
-
-    function salvarSalaEstudos(e) {
-      e.preventDefault();
-      alert('Relatório diário salvo com sucesso!');
-    }
-  </script>
-</body>
-</html>
+    function set
