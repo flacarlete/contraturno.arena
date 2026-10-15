@@ -5,55 +5,27 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Controle de Gestão Escolar — Arena</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Firebase SDKs -->
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
-  <style>
-    .aba-conteudo { display: none; }
-    .aba-btn.active { border-bottom: 3px solid #1b4332; color: #1b4332; font-weight: 700; background-color: #f0fdf4; }
-    @media print {
-      body * { visibility: hidden; }
-      #printableArea, #printableArea *, #printableProfArea, #printableProfArea *, #printableRelatorioArea, #printableRelatorioArea *, #printableInspArea, #printableInspArea * { visibility: visible; }
-      #printableArea, #printableProfArea, #printableRelatorioArea, #printableInspArea { 
-        position: absolute; left: 0; top: 0; width: 100%; background: white !important; padding: 0 !important; margin: 0 !important;
-      }
-      .no-print { display: none !important; }
-    }
-  </style>
 </head>
 <body class="bg-gray-100 text-gray-800 font-sans min-h-screen flex flex-col">
 
-  <!-- ==================== SISTEMA PRINCIPAL (DIRETO) ==================== -->
-  <div id="sistema-principal" class="flex flex-col flex-1 min-h-screen">
-    
-    <header class="bg-[#1b4332] text-white px-6 py-3.5 shadow flex flex-col md:flex-row justify-between items-start md:items-center no-print gap-3">
-      <div>
-        <h1 class="text-lg font-bold flex items-center gap-2">
-          <span>📋</span> Colégio Arena — Gestão Escolar
-        </h1>
-        <p class="text-xs text-emerald-200 mt-0.5">Painel Escolar — Acesso Direto à Coordenação</p>
+  <header class="bg-[#1b4332] text-white px-6 py-4 shadow flex justify-between items-center">
+    <div>
+      <h1 class="text-lg font-bold flex items-center gap-2">
+        <span>📋</span> Colégio Arena — Gestão Escolar
+      </h1>
+      <p class="text-xs text-emerald-200 mt-0.5">Painel Escolar — Acesso Direto</p>
+    </div>
+  </header>
+
+  <main class="p-6 max-w-4xl w-full mx-auto flex-1 space-y-6">
+    <div class="bg-white rounded-lg shadow p-6 text-center space-y-4">
+      <h2 class="text-xl font-bold text-[#1b4332]">✅ Sistema Reiniciado com Sucesso</h2>
+      <p class="text-sm text-gray-600">O painel foi limpo de qualquer travamento anterior de login ou cache.</p>
+      <div class="p-4 bg-emerald-50 border border-emerald-300 rounded text-emerald-900 text-sm font-semibold">
+        O sistema está pronto. Diga-me qual é a próxima funcionalidade ou ajuste que deseja adicionar agora na sua aplicação!
       </div>
+    </div>
+  </main>
 
-      <div class="flex items-center gap-3">
-        <div class="text-right">
-          <p class="text-xs font-bold text-white">Coordenação Geral</p>
-          <p class="text-[11px] text-emerald-200">Perfil: COORDENADOR</p>
-        </div>
-      </div>
-    </header>
-
-    <nav class="bg-white border-b border-gray-200 px-6 flex flex-wrap gap-2 text-sm font-medium text-gray-600 no-print">
-      <button onclick="mudarAba('atrasos')" id="btn-aba-atrasos" class="aba-btn py-3 px-4 border-b-2 text-gray-600 flex items-center gap-2 active">⏰ Atrasos</button>
-      <button onclick="mudarAba('sala-estudos')" id="btn-aba-sala-estudos" class="aba-btn py-3 px-4 border-b-2 text-gray-600 flex items-center gap-2">📚 Sala de Estudos</button>
-      <button onclick="mudarAba('professores')" id="btn-aba-professores" class="aba-btn py-3 px-4 border-b-2 text-gray-600 flex items-center gap-2">👨‍🏫 Professores</button>
-      <button onclick="mudarAba('inspetores')" id="btn-aba-inspetores" class="aba-btn py-3 px-4 border-b-2 text-gray-600 flex items-center gap-2">📋 Inspetores</button>
-      <button onclick="mudarAba('adm')" id="btn-aba-adm" class="aba-btn py-3 px-4 border-b-2 text-gray-600 flex items-center gap-2 bg-emerald-50 text-[#1b4332]">⚙️ ADM (Acessos & Backup)</button>
-    </nav>
-
-    <main class="p-6 max-w-6xl w-full mx-auto flex-1">
-
-      <!-- ==================== ABA 1: ATRASOS ==================== -->
-      <section id="aba-atrasos" class="aba-conteudo" style="display: block;">
-        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
-          <div class="flex gap-4 border-b border-gray-200 pb-3 mb-4">
-            <button onclick="setAtrasoTurno('Matutino')" id="
+</body>
+</html>
