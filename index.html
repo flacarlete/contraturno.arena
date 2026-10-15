@@ -1,24 +1,147 @@
-<div style="font-family: Arial; padding: 20px;">
-  <div style="margin-bottom: 15px;">
-    <button onclick="mudar('um')" id="b-um" style="padding: 10px 20px; background: green; color: white; border: none; cursor: pointer; font-weight: bold;">Aba 1</button>
-    <button onclick="mudar('dois')" id="b-dois" style="padding: 10px 20px; background: #ccc; border: none; cursor: pointer;">Aba 2</button>
-  </div>
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Controle de Gestão Escolar & Contraturno — Colégio Arena</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .painel { display: none; }
+    .painel.ativo { display: block; }
+    .btn-aba.ativo { background-color: #1b4332 !important; color: white !important; font-weight: bold; }
+  </style>
+</head>
+<body class="bg-gray-100 text-gray-800 font-sans min-h-screen flex flex-col">
 
-  <div id="p-um" style="display: block; padding: 15px; border: 1px solid #ccc;">
-    Conteúdo da Aba 1 a funcionar perfeitamente!
-  </div>
+  <header class="bg-[#1b4332] text-white px-6 py-4 shadow flex justify-between items-center">
+    <div>
+      <h1 class="text-lg font-bold flex items-center gap-2"><span>📋</span> Colégio Arena — Gestão Escolar</h1>
+      <p class="text-xs text-emerald-200">Painel de Controlo — Coordenação</p>
+    </div>
+    <div class="text-right text-xs bg-emerald-900/80 px-3 py-1.5 rounded text-emerald-100 font-medium">
+      🟢 1.160 alunos carregados
+    </div>
+  </header>
 
-  <div id="p-dois" style="display: none; padding: 15px; border: 1px solid #ccc;">
-    Conteúdo da Aba 2 a funcionar perfeitamente!
-  </div>
-</div>
+  <!-- MENU DE ABAS -->
+  <nav class="bg-white border-b px-6 py-2 flex flex-wrap gap-2 text-sm font-medium">
+    <button onclick="mudarPainel('atrasos')" id="b-atrasos" class="btn-aba ativo py-2 px-4 rounded transition bg-[#1b4332] text-white">⏰ Atrasos</button>
+    <button onclick="mudarPainel('sala')" id="b-sala" class="btn-aba py-2 px-4 rounded transition text-gray-600 hover:bg-gray-100">📚 Sala de Estudos</button>
+    <button onclick="mudarPainel('prof')" id="b-prof" class="btn-aba py-2 px-4 rounded transition text-gray-600 hover:bg-gray-100">👨‍🏫 Professores</button>
+    <button onclick="mudarPainel('insp')" id="b-insp" class="btn-aba py-2 px-4 rounded transition text-gray-600 hover:bg-gray-100">📋 Inspetores</button>
+    <button onclick="mudarPainel('atd')" id="b-atd" class="btn-aba py-2 px-4 rounded transition text-gray-600 hover:bg-gray-100">📋 Atendimentos</button>
+    <button onclick="mudarPainel('contatos')" id="b-contatos" class="btn-aba py-2 px-4 rounded transition text-gray-600 hover:bg-gray-100">📞 Contactos</button>
+  </nav>
 
-<script>
-  function mudar(id) {
-    document.getElementById('p-um').style.display = (id === 'um') ? 'block' : 'none';
-    document.getElementById('p-dois').style.display = (id === 'dois') ? 'block' : 'none';
-    
-    document.getElementById('b-um').style.background = (id === 'um') ? 'green' : '#ccc';
-    document.getElementById('b-dois').style.background = (id === 'dois') ? 'green' : '#ccc';
-  }
-</script>
+  <main class="p-6 max-w-5xl w-full mx-auto flex-1">
+
+    <!-- ABA 1: ATRASOS -->
+    <section id="p-atrasos" class="painel ativo bg-white rounded-lg shadow p-6 space-y-4">
+      <h2 class="text-base font-bold text-[#1b4332]">⏰ Registar Atrasos</h2>
+      <form onsubmit="salvarAtraso(event)" class="space-y-4">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <input type="text" id="atrasoAluno" placeholder="Nome completo do aluno..." class="border rounded px-3 py-2 text-sm font-bold" required />
+          <input type="text" id="atrasoTurma" placeholder="Turma (Ex: 8ºG)" class="border rounded px-3 py-2 text-sm" required />
+          <input type="time" id="atrasoHora" class="border rounded px-3 py-2 text-sm" required />
+        </div>
+        <div class="flex justify-end">
+          <button type="submit" class="bg-[#1b4332] text-white px-5 py-2 rounded text-sm font-semibold hover:bg-emerald-900">✓ Registar Atraso</button>
+        </div>
+      </form>
+      <div class="border-t pt-4">
+        <h3 class="font-bold text-gray-700 text-sm mb-2">Histórico de Atrasos</h3>
+        <table class="w-full text-left text-xs border">
+          <thead class="bg-gray-100">
+            <tr><th class="p-2 border">Hora</th><th class="p-2 border">Aluno</th><th class="p-2 border">Turma</th><th class="p-2 border text-center">Ações</th></tr>
+          </thead>
+          <tbody id="tabelaAtrasos"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ABA 2: SALA DE ESTUDOS -->
+    <section id="p-sala" class="painel bg-white rounded-lg shadow p-6 space-y-4">
+      <h2 class="text-base font-bold text-[#1b4332]">📚 Sala de Estudos & Biblioteca</h2>
+      <p class="text-xs text-gray-500">Módulo de controlo de ambiente e foco.</p>
+    </section>
+
+    <!-- ABA 3: PROFESSORES -->
+    <section id="p-prof" class="painel bg-white rounded-lg shadow p-6 space-y-4">
+      <h2 class="text-base font-bold text-[#1b4332]">👨‍🏫 Acompanhamento de Professores</h2>
+      <p class="text-xs text-gray-500">Módulo de registo docente.</p>
+    </section>
+
+    <!-- ABA 4: INSPETORES -->
+    <section id="p-insp" class="painel bg-white rounded-lg shadow p-6 space-y-4">
+      <h2 class="text-base font-bold text-[#1b4332]">📋 Orientações de Inspetores</h2>
+      <p class="text-xs text-gray-500">Módulo de orientações ativa.</p>
+    </section>
+
+    <!-- ABA 5: ATENDIMENTOS -->
+    <section id="p-atd" class="painel bg-white rounded-lg shadow p-6 space-y-4">
+      <h2 class="text-base font-bold text-[#1b4332]">📋 Registo de Atendimentos</h2>
+      <p class="text-xs text-gray-500">Módulo de atendimentos ativos.</p>
+    </section>
+
+    <!-- ABA 6: CONTACTOS -->
+    <section id="p-contatos" class="painel bg-white rounded-lg shadow p-6 space-y-4">
+      <h2 class="text-base font-bold text-[#1b4332]">📞 Contactos Rápidos & Backup</h2>
+      <button onclick="baixarBackup()" class="bg-[#1b4332] text-white px-4 py-2 rounded text-xs font-semibold">⬇️ Baixar Backup em JSON</button>
+    </section>
+
+  </main>
+
+  <script>
+    function mudarPainel(id) {
+      document.querySelectorAll('.painel').forEach(p => p.classList.remove('ativo'));
+      document.querySelectorAll('.btn-aba').forEach(b => b.classList.remove('ativo', 'bg-[#1b4332]', 'text-white'));
+      
+      const painel = document.getElementById('p-' + id);
+      const botao = document.getElementById('b-' + id);
+      if(painel) painel.classList.add('ativo');
+      if(botao) botao.classList.add('ativo', 'bg-[#1b4332]', 'text-white');
+    }
+
+    let atrasosList = JSON.parse(localStorage.getItem('arena_atrasos') || '[]');
+
+    window.addEventListener('DOMContentLoaded', () => {
+      const hora = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      if(document.getElementById('atrasoHora')) document.getElementById('atrasoHora').value = hora;
+      renderAtrasos();
+    });
+
+    function salvarAtraso(e) {
+      e.preventDefault();
+      atrasosList.unshift({
+        id: Date.now(),
+        aluno: document.getElementById('atrasoAluno').value.toUpperCase(),
+        turma: document.getElementById('atrasoTurma').value,
+        hora: document.getElementById('atrasoHora').value
+      });
+      localStorage.setItem('arena_atrasos', JSON.stringify(atrasosList));
+      e.target.reset();
+      renderAtrasos();
+    }
+
+    function renderAtrasos() {
+      const tb = document.getElementById('tabelaAtrasos');
+      if(!tb) return;
+      tb.innerHTML = '';
+      atrasosList.forEach(a => {
+        tb.innerHTML += `<tr class="border-b"><td class="p-2 border">${a.hora}</td><td class="p-2 border font-bold">${a.aluno}</td><td class="p-2 border">${a.turma}</td><td class="p-2 border text-center"><button onclick="delAtraso(${a.id})" class="text-red-600 font-bold">Apagar</button></td></tr>`;
+      });
+    }
+
+    function delAtraso(id) {
+      atrasosList = atrasosList.filter(x => x.id !== id);
+      localStorage.setItem('arena_atrasos', JSON.stringify(atrasosList));
+      renderAtrasos();
+    }
+
+    function baixarBackup() {
+      const blob = new Blob([JSON.stringify({atrasosList}, null, 2)], {type: 'application/json'});
+      const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'backup_arena.json'; a.click();
+    }
+  </script>
+</body>
+</html>
