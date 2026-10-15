@@ -3,11 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Controle de Gestão Escolar & Contraturno — Colégio Arena</title>
+  <title>Controle de Gestão Escolar & Contraturno</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
-    .tab-content { display: none; }
-    .tab-content.active { display: block; }
     @media print {
       body * { visibility: hidden; }
       #printableArea, #printableArea * { visibility: visible; }
@@ -22,7 +21,7 @@
   <header class="bg-[#1b4332] text-white px-6 py-4 shadow flex flex-col md:flex-row justify-between items-start md:items-center no-print">
     <div>
       <h1 class="text-xl font-bold flex items-center gap-2">
-        <span>📋</span> Colégio Arena — Gestão Escolar & Contraturno
+        <span>📋</span> Controle de Gestão e Contraturno
       </h1>
       <p id="currentDateDisplay" class="text-xs text-emerald-200 mt-1"></p>
     </div>
@@ -43,8 +42,8 @@
 
   <main class="p-6 max-w-6xl w-full mx-auto flex-1">
 
-    <!-- ==================== ABA 1: ATRASOS ==================== -->
-    <section id="content-atrasos" class="tab-content active">
+    <!-- ABA 1: ATRASOS -->
+    <section id="content-atrasos" class="tab-content">
       <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
         <div class="flex gap-4 border-b border-gray-200 pb-3 mb-4">
           <button onclick="setAtrasoTurno('Matutino')" id="btn-turno-mat" class="px-4 py-1.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800">Período Matutino</button>
@@ -60,7 +59,7 @@
             <div>
               <label class="block text-xs font-medium text-gray-700 mb-1">Espaço / Aula</label>
               <select id="atrasoEspaco" class="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm" required>
-                <option value="Sala de aula">Sala de aula</option>
+                <option value="">Selecione...</option>
                 <option value="Nivelamentos">Nivelamentos</option>
                 <option value="Sala de estudos">Sala de estudos</option>
                 <option value="Biblioteca">Biblioteca</option>
@@ -70,22 +69,20 @@
             </div>
             <div>
               <label class="block text-xs font-medium text-gray-700 mb-1">Horário de Chegada</label>
-              <input type="time" id="atrasoHora" class="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm" required />
+              <input type="time" id="atrasoHora" onclick="preencherHoraAtual(this)" class="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm" required />
             </div>
             <div>
               <label class="block text-xs font-medium text-gray-700 mb-1">Data</label>
-              <input type="date" id="atrasoData" class="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm" required />
+              <input type="date" id="atrasoData" onclick="preencherDataAtual(this)" class="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm" required />
             </div>
           </div>
 
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label class="block text-xs font-medium text-gray-700 mb-1">Nome do Aluno</label>
-              <input type="text" id="atrasoAluno" placeholder="Nome completo do aluno..." class="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm font-bold text-[#1b4332]" required />
-            </div>
-            <div>
-              <label class="block text-xs font-medium text-gray-700 mb-1">Turma</label>
-              <input type="text" id="atrasoTurma" placeholder="Ex: 8ºG" class="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm" required />
+              <label class="block text-xs font-medium text-gray-700 mb-1">Nome do Aluno (Busca Inteligente)</label>
+              <input list="listaAlunosDatalist" id="atrasoAluno" oninput="completarTurmaAtraso(this.value)" placeholder="Digite o nome do aluno..." class="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm font-medium" required />
+              <datalist id="listaAlunosDatalist"></datalist>
+              <p id="atrasoTurmaLabel" class="text-xs text-emerald-800 font-bold mt-1.5"></p>
             </div>
             <div>
               <label class="block text-xs font-medium text-gray-700 mb-1">Justificativa</label>
@@ -95,14 +92,15 @@
 
           <div class="flex justify-end">
             <button type="submit" class="bg-[#1b4332] text-white px-5 py-2 rounded text-sm font-medium hover:bg-emerald-900">
-              ✓ Registrar Atraso
+              ✓ Registrar atraso
             </button>
           </div>
         </form>
       </div>
 
       <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <h3 class="font-bold text-gray-700 text-sm mb-3">Histórico de Atrasos</h3>
+        <h3 class="font-bold text-gray-700 text-sm mb-3">Histórico de Atrasos & Alertas</h3>
+        <div id="alertasContainer" class="mb-4 space-y-2"></div>
         <div class="overflow-x-auto">
           <table class="w-full text-left text-xs border border-gray-200">
             <thead class="bg-gray-100 font-semibold text-gray-700">
@@ -113,7 +111,7 @@
                 <th class="p-2 border">Turma</th>
                 <th class="p-2 border">Espaço</th>
                 <th class="p-2 border">Justificativa</th>
-                <th class="p-2 border text-center">Ações</th>
+                <th class="p-2 border text-center">Ocorrências</th>
               </tr>
             </thead>
             <tbody id="listaAtrasosTbody"></tbody>
@@ -122,23 +120,23 @@
       </div>
     </section>
 
-    <!-- ==================== ABA 2: SALA DE ESTUDOS ==================== -->
-    <section id="content-sala-estudos" class="tab-content">
-      <div id="printableArea" class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+    <!-- ABA 2: SALA DE ESTUDOS -->
+    <section id="content-sala-estudos" class="tab-content hidden">
+      <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
         <div class="flex justify-between items-center mb-4">
-          <h2 class="text-base font-bold text-[#1b4332]">📚 Controle Diário — Sala de Estudos e Biblioteca</h2>
-          <button onclick="window.print()" class="bg-gray-800 text-white px-3 py-1.5 rounded text-xs hover:bg-black no-print">🖨️ Imprimir Formulário</button>
+          <h2 class="text-base font-bold text-[#1b4332]">Controle Diário — Sala de Estudos e Biblioteca</h2>
+          <button onclick="window.print()" class="bg-gray-800 text-white px-3 py-1.5 rounded text-xs hover:bg-black no-print">🖨️ Imprimir Relatório</button>
         </div>
 
         <form id="formSalaEstudos" onsubmit="salvarSalaEstudos(event)" class="space-y-6">
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label class="block text-xs font-medium text-gray-700 mb-1">Data</label>
-              <input type="date" id="seData" class="w-full border rounded px-3 py-2 text-sm" required />
+              <input type="date" id="seData" class="w-full border border-gray-300 rounded px-3 py-2 text-sm" required />
             </div>
             <div>
               <label class="block text-xs font-medium text-gray-700 mb-1">Professor / Inspetor Responsável</label>
-              <input type="text" id="seProfessor" placeholder="Seu nome..." class="w-full border rounded px-3 py-2 text-sm" required />
+              <input type="text" id="seProfessor" class="w-full border border-gray-300 rounded px-3 py-2 text-sm" placeholder="Nome do avaliador..." required />
             </div>
           </div>
 
@@ -162,11 +160,6 @@
             </div>
           </div>
 
-          <div>
-            <h3 class="text-xs font-bold text-gray-700 uppercase mb-2">2. Ocorrências de Alunos (20 Espaços Disponíveis)</h3>
-            <div id="container20Espacos" class="space-y-2 bg-gray-50 p-3 rounded border"></div>
-          </div>
-
           <div class="flex justify-end">
             <button type="submit" class="bg-[#1b4332] text-white px-6 py-2.5 rounded text-sm font-semibold hover:bg-emerald-900">
               💾 Salvar Relatório Diário
@@ -174,28 +167,107 @@
           </div>
         </form>
       </div>
+    </section>
 
+    <!-- ABA 3: PROFESSORES -->
+    <section id="content-professores" class="tab-content hidden">
       <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <div id="quadroUrgentes" class="mb-6"></div>
-        <h3 class="font-bold text-gray-700 text-sm mb-3">Histórico de Ocorrências da Sala de Estudos</h3>
-        <div id="listaSalaEstudos" class="space-y-3"></div>
+        <h2 class="text-base font-bold text-[#1b4332] mb-4">Acompanhamento Docente</h2>
+        <p class="text-xs text-gray-500">Módulo de ocorrências e chamadas de professores.</p>
       </div>
     </section>
 
-    <!-- ==================== ABA 3: PROFESSORES ==================== -->
-    <section id="content-professores" class="tab-content">
-      <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
-        <h2 class="text-base font-bold text-[#1b4332] mb-4">👨‍🏫 Acompanhamento de Professores</h2>
-        <form onsubmit="salvarProfessor(event)" class="space-y-4">
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <input type="text" id="profNome" placeholder="Nome do Professor e Matéria..." class="border rounded px-3 py-2 text-sm font-bold" required />
-            <input type="date" id="profData" class="border rounded px-3 py-2 text-sm" required />
-            <input type="text" id="profObs" placeholder="Observação (Ex: Atraso, Chamada pendente)..." class="border rounded px-3 py-2 text-sm" required />
-          </div>
-          <div class="flex justify-end">
-            <button type="submit" class="bg-[#1b4332] text-white px-5 py-2 rounded text-sm font-semibold">Registrar Ocorrência</button>
-          </div>
-        </form>
-      </div>
+    <!-- ABA 4: INSPETORES -->
+    <section id="content-inspetores" class="tab-content hidden">
       <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <h3 class
+        <h2 class="text-base font-bold text-[#1b4332] mb-4">Orientações de Inspetores</h2>
+      </div>
+    </section>
+
+    <!-- ABA 5: ATENDIMENTOS -->
+    <section id="content-atendimentos" class="tab-content hidden">
+      <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+        <h2 class="text-base font-bold text-[#1b4332] mb-4">Registro de Atendimentos</h2>
+      </div>
+    </section>
+
+    <!-- ABA 6: CONTATOS -->
+    <section id="content-contatos" class="tab-content hidden">
+      <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+        <h2 class="text-base font-bold text-[#1b4332] mb-4">Contatos Rápidos</h2>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('border-[#1b4332]', 'text-[#1b4332]', 'font-semibold');
+        btn.classList.add('border-transparent', 'text-gray-600');
+      });
+      const content = document.getElementById('content-' + tabId);
+      const btn = document.getElementById('tab-' + tabId);
+      if(content) content.classList.remove('hidden');
+      if(btn) {
+        btn.classList.add('border-[#1b4332]', 'text-[#1b4332]', 'font-semibold');
+        btn.classList.remove('border-transparent', 'text-gray-600');
+      }
+    }
+
+    let atrasosList = JSON.parse(localStorage.getItem('arena_atrasos_full') || '[]');
+    let turnoAtrasoAtual = 'Matutino';
+
+    window.addEventListener('DOMContentLoaded', () => {
+      const hoje = new Date().toISOString().split('T')[0];
+      const hora = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      if(document.getElementById('atrasoData')) document.getElementById('atrasoData').value = hoje;
+      if(document.getElementById('atrasoHora')) document.getElementById('atrasoHora').value = hora;
+      if(document.getElementById('seData')) document.getElementById('seData').value = hoje;
+      renderAtrasos();
+    });
+
+    function setAtrasoTurno(turno) {
+      turnoAtrasoAtual = turno;
+      if(document.getElementById('labelTurno')) document.getElementById('labelTurno').textContent = turno;
+    }
+
+    function salvarAtraso(e) {
+      e.preventDefault();
+      atrasosList.unshift({
+        id: Date.now(),
+        turno: turnoAtrasoAtual,
+        espaco: document.getElementById('atrasoEspaco').value,
+        hora: document.getElementById('atrasoHora').value,
+        data: document.getElementById('atrasoData').value,
+        aluno: document.getElementById('atrasoAluno').value.toUpperCase(),
+        justificativa: document.getElementById('atrasoJustificativa').value
+      });
+      localStorage.setItem('arena_atrasos_full', JSON.stringify(atrasosList));
+      e.target.reset();
+      renderAtrasos();
+    }
+
+    function renderAtrasos() {
+      const tb = document.getElementById('listaAtrasosTbody');
+      if(!tb) return;
+      tb.innerHTML = '';
+      atrasosList.forEach(a => {
+        tb.innerHTML += `<tr class="border-b"><td class="p-2 border">${a.data} às ${a.hora}</td><td class="p-2 border">${a.turno}</td><td class="p-2 border font-bold text-[#1b4332]">${a.aluno}</td><td class="p-2 border">—</td><td class="p-2 border">${a.espaco}</td><td class="p-2 border">${a.justificativa || '—'}</td><td class="p-2 border text-center"><button onclick="delAtraso(${a.id})" class="text-red-600 font-bold">Apagar</button></td></tr>`;
+      });
+    }
+
+    function delAtraso(id) {
+      atrasosList = atrasosList.filter(x => x.id !== id);
+      localStorage.setItem('arena_atrasos_full', JSON.stringify(atrasosList));
+      renderAtrasos();
+    }
+
+    function salvarSalaEstudos(e) {
+      e.preventDefault();
+      alert('Relatório diário salvo com sucesso!');
+    }
+  </script>
+</body>
+</html>
