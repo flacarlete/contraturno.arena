@@ -3,10 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Controle de Gestão Escolar & Contraturno</title>
+  <title>Controle de Gestão Escolar & Contraturno — Colégio Arena</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
+    .secao-aba { display: none; }
+    .secao-aba.ativa { display: block; }
+    .tab-btn.ativo { border-bottom: 3px solid #1b4332; color: #1b4332; font-weight: 700; background-color: #f0fdf4; }
     @media print {
       body * { visibility: hidden; }
       #printableArea, #printableArea * { visibility: visible; }
@@ -21,7 +23,7 @@
   <header class="bg-[#1b4332] text-white px-6 py-4 shadow flex flex-col md:flex-row justify-between items-start md:items-center no-print">
     <div>
       <h1 class="text-xl font-bold flex items-center gap-2">
-        <span>📋</span> Controle de Gestão e Contraturno
+        <span>📋</span> Colégio Arena — Gestão Escolar & Contraturno
       </h1>
       <p id="currentDateDisplay" class="text-xs text-emerald-200 mt-1"></p>
     </div>
@@ -32,19 +34,19 @@
 
   <!-- Navegação -->
   <nav class="bg-white border-b border-gray-200 px-6 flex flex-wrap gap-2 text-sm font-medium text-gray-600 no-print">
-    <button onclick="switchTab('atrasos')" id="tab-atrasos" class="tab-btn py-3 px-4 border-b-2 border-[#1b4332] text-[#1b4332] font-semibold flex items-center gap-2">⏰ Atrasos</button>
-    <button onclick="switchTab('sala-estudos')" id="tab-sala-estudos" class="tab-btn py-3 px-4 border-b-2 border-transparent hover:text-[#1b4332] flex items-center gap-2">📚 Sala de Estudos & Biblioteca</button>
-    <button onclick="switchTab('professores')" id="tab-professores" class="tab-btn py-3 px-4 border-b-2 border-transparent hover:text-[#1b4332] flex items-center gap-2">👨‍🏫 Professores</button>
-    <button onclick="switchTab('inspetores')" id="tab-inspetores" class="tab-btn py-3 px-4 border-b-2 border-transparent hover:text-[#1b4332] flex items-center gap-2">📋 Inspetores / Orientadores</button>
-    <button onclick="switchTab('atendimentos')" id="tab-atendimentos" class="tab-btn py-3 px-4 border-b-2 border-transparent hover:text-[#1b4332] flex items-center gap-2">📋 Atendimentos</button>
-    <button onclick="switchTab('contatos')" id="tab-contatos" class="tab-btn py-3 px-4 border-b-2 border-transparent hover:text-[#1b4332] flex items-center gap-2">📞 Contatos Rápidos</button>
+    <button onclick="mudarAba('atrasos')" id="tab-atrasos" class="tab-btn py-3 px-4 border-b-2 border-transparent hover:text-[#1b4332] flex items-center gap-2 ativo">⏰ Atrasos</button>
+    <button onclick="mudarAba('sala-estudos')" id="tab-sala-estudos" class="tab-btn py-3 px-4 border-b-2 border-transparent hover:text-[#1b4332] flex items-center gap-2">📚 Sala de Estudos & Biblioteca</button>
+    <button onclick="mudarAba('professores')" id="tab-professores" class="tab-btn py-3 px-4 border-b-2 border-transparent hover:text-[#1b4332] flex items-center gap-2">👨‍🏫 Professores</button>
+    <button onclick="mudarAba('inspetores')" id="tab-inspetores" class="tab-btn py-3 px-4 border-b-2 border-transparent hover:text-[#1b4332] flex items-center gap-2">📋 Inspetores / Orientadores</button>
+    <button onclick="mudarAba('atendimentos')" id="tab-atendimentos" class="tab-btn py-3 px-4 border-b-2 border-transparent hover:text-[#1b4332] flex items-center gap-2">📋 Atendimentos</button>
+    <button onclick="mudarAba('contatos')" id="tab-contatos" class="tab-btn py-3 px-4 border-b-2 border-transparent hover:text-[#1b4332] flex items-center gap-2">📞 Contatos Rápidos</button>
   </nav>
 
   <main class="p-6 max-w-6xl w-full mx-auto flex-1">
 
-    <!-- ABA 1: ATRASOS -->
-    <section id="content-atrasos" class="tab-content">
-      <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+    <!-- ==================== ABA 1: ATRASOS ==================== -->
+    <section id="content-atrasos" class="secao-aba ativa space-y-6">
+      <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
         <div class="flex gap-4 border-b border-gray-200 pb-3 mb-4">
           <button onclick="setAtrasoTurno('Matutino')" id="btn-turno-mat" class="px-4 py-1.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800">Período Matutino</button>
           <button onclick="setAtrasoTurno('Vespertino')" id="btn-turno-vesp" class="px-4 py-1.5 rounded-full text-xs font-semibold bg-gray-100 text-gray-600">Período Vespertino</button>
@@ -59,7 +61,7 @@
             <div>
               <label class="block text-xs font-medium text-gray-700 mb-1">Espaço / Aula</label>
               <select id="atrasoEspaco" class="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm" required>
-                <option value="">Selecione...</option>
+                <option value="Sala de aula">Sala de aula</option>
                 <option value="Nivelamentos">Nivelamentos</option>
                 <option value="Sala de estudos">Sala de estudos</option>
                 <option value="Biblioteca">Biblioteca</option>
@@ -69,20 +71,22 @@
             </div>
             <div>
               <label class="block text-xs font-medium text-gray-700 mb-1">Horário de Chegada</label>
-              <input type="time" id="atrasoHora" onclick="preencherHoraAtual(this)" class="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm" required />
+              <input type="time" id="atrasoHora" class="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm" required />
             </div>
             <div>
               <label class="block text-xs font-medium text-gray-700 mb-1">Data</label>
-              <input type="date" id="atrasoData" onclick="preencherDataAtual(this)" class="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm" required />
+              <input type="date" id="atrasoData" class="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm" required />
             </div>
           </div>
 
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
-              <label class="block text-xs font-medium text-gray-700 mb-1">Nome do Aluno (Busca Inteligente)</label>
-              <input list="listaAlunosDatalist" id="atrasoAluno" oninput="completarTurmaAtraso(this.value)" placeholder="Digite o nome do aluno..." class="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm font-medium" required />
-              <datalist id="listaAlunosDatalist"></datalist>
-              <p id="atrasoTurmaLabel" class="text-xs text-emerald-800 font-bold mt-1.5"></p>
+              <label class="block text-xs font-medium text-gray-700 mb-1">Nome do Aluno</label>
+              <input type="text" id="atrasoAluno" placeholder="Nome completo do aluno..." class="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm font-bold text-[#1b4332]" required />
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-gray-700 mb-1">Turma</label>
+              <input type="text" id="atrasoTurma" placeholder="Ex: 8ºG" class="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm" required />
             </div>
             <div>
               <label class="block text-xs font-medium text-gray-700 mb-1">Justificativa</label>
@@ -92,15 +96,14 @@
 
           <div class="flex justify-end">
             <button type="submit" class="bg-[#1b4332] text-white px-5 py-2 rounded text-sm font-medium hover:bg-emerald-900">
-              ✓ Registrar atraso
+              ✓ Registrar Atraso
             </button>
           </div>
         </form>
       </div>
 
       <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <h3 class="font-bold text-gray-700 text-sm mb-3">Histórico de Atrasos & Alertas</h3>
-        <div id="alertasContainer" class="mb-4 space-y-2"></div>
+        <h3 class="font-bold text-gray-700 text-sm mb-3">Histórico de Atrasos</h3>
         <div class="overflow-x-auto">
           <table class="w-full text-left text-xs border border-gray-200">
             <thead class="bg-gray-100 font-semibold text-gray-700">
@@ -111,7 +114,7 @@
                 <th class="p-2 border">Turma</th>
                 <th class="p-2 border">Espaço</th>
                 <th class="p-2 border">Justificativa</th>
-                <th class="p-2 border text-center">Ocorrências</th>
+                <th class="p-2 border text-center">Ações</th>
               </tr>
             </thead>
             <tbody id="listaAtrasosTbody"></tbody>
@@ -120,23 +123,23 @@
       </div>
     </section>
 
-    <!-- ABA 2: SALA DE ESTUDOS -->
-    <section id="content-sala-estudos" class="tab-content hidden">
-      <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+    <!-- ==================== ABA 2: SALA DE ESTUDOS ==================== -->
+    <section id="content-sala-estudos" class="secao-aba space-y-6">
+      <div id="printableArea" class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
         <div class="flex justify-between items-center mb-4">
-          <h2 class="text-base font-bold text-[#1b4332]">Controle Diário — Sala de Estudos e Biblioteca</h2>
-          <button onclick="window.print()" class="bg-gray-800 text-white px-3 py-1.5 rounded text-xs hover:bg-black no-print">🖨️ Imprimir Relatório</button>
+          <h2 class="text-base font-bold text-[#1b4332]">📚 Controle Diário — Sala de Estudos e Biblioteca</h2>
+          <button onclick="window.print()" class="bg-gray-800 text-white px-3 py-1.5 rounded text-xs hover:bg-black no-print">🖨️ Imprimir Formulário</button>
         </div>
 
         <form id="formSalaEstudos" onsubmit="salvarSalaEstudos(event)" class="space-y-6">
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label class="block text-xs font-medium text-gray-700 mb-1">Data</label>
-              <input type="date" id="seData" class="w-full border border-gray-300 rounded px-3 py-2 text-sm" required />
+              <input type="date" id="seData" class="w-full border rounded px-3 py-2 text-sm" required />
             </div>
             <div>
               <label class="block text-xs font-medium text-gray-700 mb-1">Professor / Inspetor Responsável</label>
-              <input type="text" id="seProfessor" class="w-full border border-gray-300 rounded px-3 py-2 text-sm" placeholder="Nome do avaliador..." required />
+              <input type="text" id="seProfessor" placeholder="Seu nome..." class="w-full border rounded px-3 py-2 text-sm" required />
             </div>
           </div>
 
@@ -160,6 +163,11 @@
             </div>
           </div>
 
+          <div>
+            <h3 class="text-xs font-bold text-gray-700 uppercase mb-2">2. Ocorrências de Alunos (20 Espaços Disponíveis)</h3>
+            <div id="container20Espacos" class="space-y-2 bg-gray-50 p-3 rounded border"></div>
+          </div>
+
           <div class="flex justify-end">
             <button type="submit" class="bg-[#1b4332] text-white px-6 py-2.5 rounded text-sm font-semibold hover:bg-emerald-900">
               💾 Salvar Relatório Diário
@@ -167,85 +175,159 @@
           </div>
         </form>
       </div>
-    </section>
 
-    <!-- ABA 3: PROFESSORES -->
-    <section id="content-professores" class="tab-content hidden">
       <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <h2 class="text-base font-bold text-[#1b4332] mb-4">Acompanhamento Docente</h2>
-        <p class="text-xs text-gray-500">Módulo de ocorrências e chamadas de professores.</p>
+        <div id="quadroUrgentes" class="mb-6"></div>
+        <h3 class="font-bold text-gray-700 text-sm mb-3">Histórico de Ocorrências da Sala de Estudos</h3>
+        <div id="listaSalaEstudos" class="space-y-3"></div>
       </div>
     </section>
 
-    <!-- ABA 4: INSPETORES -->
-    <section id="content-inspetores" class="tab-content hidden">
+    <!-- ==================== ABA 3: PROFESSORES ==================== -->
+    <section id="content-professores" class="secao-aba space-y-6">
       <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <h2 class="text-base font-bold text-[#1b4332] mb-4">Orientações de Inspetores</h2>
+        <h2 class="text-base font-bold text-[#1b4332] mb-4">👨‍🏫 Acompanhamento de Professores</h2>
+        <form onsubmit="salvarProfessor(event)" class="space-y-4">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <input type="text" id="profNome" placeholder="Nome do Professor e Matéria..." class="border rounded px-3 py-2 text-sm font-bold" required />
+            <input type="date" id="profData" class="border rounded px-3 py-2 text-sm" required />
+            <input type="text" id="profObs" placeholder="Observação (Ex: Atraso, Chamada pendente)..." class="border rounded px-3 py-2 text-sm" required />
+          </div>
+          <div class="flex justify-end">
+            <button type="submit" class="bg-[#1b4332] text-white px-5 py-2 rounded text-sm font-semibold">Registrar Ocorrência</button>
+          </div>
+        </form>
+      </div>
+      <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+        <h3 class="font-bold text-gray-700 text-sm mb-3">Histórico de Acompanhamento Docente</h3>
+        <div id="listaProfessores" class="space-y-2"></div>
       </div>
     </section>
 
-    <!-- ABA 5: ATENDIMENTOS -->
-    <section id="content-atendimentos" class="tab-content hidden">
+    <!-- ==================== ABA 4: INSPETORES ==================== -->
+    <section id="content-inspetores" class="secao-aba space-y-6">
       <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <h2 class="text-base font-bold text-[#1b4332] mb-4">Registro de Atendimentos</h2>
+        <h2 class="text-base font-bold text-[#1b4332] mb-4">📋 Orientações de Inspetores</h2>
+        <form onsubmit="salvarInspetor(event)" class="space-y-4">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <input type="text" id="inspNome" placeholder="Nome do Inspetor..." class="border rounded px-3 py-2 text-sm font-bold" required />
+            <input type="date" id="inspData" class="border rounded px-3 py-2 text-sm" required />
+            <input type="time" id="inspHora" class="border rounded px-3 py-2 text-sm" required />
+          </div>
+          <textarea id="inspDesc" placeholder="Situação identificada e feedback..." rows="2" class="w-full border rounded p-3 text-xs" required></textarea>
+          <div class="flex justify-end">
+            <button type="submit" class="bg-[#1b4332] text-white px-5 py-2 rounded text-sm font-semibold">Salvar Orientação</button>
+          </div>
+        </form>
+      </div>
+      <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+        <h3 class="font-bold text-gray-700 text-sm mb-3">Histórico de Orientações</h3>
+        <div id="listaInspetores" class="space-y-2"></div>
       </div>
     </section>
 
-    <!-- ABA 6: CONTATOS -->
-    <section id="content-contatos" class="tab-content hidden">
+    <!-- ==================== ABA 5: ATENDIMENTOS ==================== -->
+    <section id="content-atendimentos" class="secao-aba space-y-6">
       <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <h2 class="text-base font-bold text-[#1b4332] mb-4">Contatos Rápidos</h2>
+        <h2 class="text-base font-bold text-[#1b4332] mb-4">📋 Registro de Atendimentos</h2>
+        <form onsubmit="salvarAtendimento(event)" class="space-y-4">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <input type="text" id="atdAluno" placeholder="Nome do Aluno..." class="border rounded px-3 py-2 text-sm font-bold" required />
+            <input type="text" id="atdTurma" placeholder="Turma..." class="border rounded px-3 py-2 text-sm" required />
+            <input type="date" id="atdData" class="border rounded px-3 py-2 text-sm" required />
+          </div>
+          <textarea id="atdRelato" placeholder="Relato do atendimento..." rows="2" class="w-full border rounded p-3 text-xs" required></textarea>
+          <div class="flex justify-end">
+            <button type="submit" class="bg-[#1b4332] text-white px-5 py-2 rounded text-sm font-semibold">Salvar Atendimento</button>
+          </div>
+        </form>
+      </div>
+      <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+        <h3 class="font-bold text-gray-700 text-sm mb-3">Histórico de Atendimentos</h3>
+        <div id="listaAtendimentos" class="space-y-2"></div>
+      </div>
+    </section>
+
+    <!-- ==================== ABA 6: CONTATOS ==================== -->
+    <section id="content-contatos" class="secao-aba space-y-6">
+      <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+        <h2 class="text-base font-bold text-[#1b4332] mb-4">📞 Contatos Rápidos & Backup</h2>
+        <button onclick="baixarBackup()" class="bg-[#1b4332] text-white px-4 py-2 rounded text-xs font-semibold">⬇️ Baixar Backup em JSON</button>
       </div>
     </section>
 
   </main>
 
   <script>
-    function switchTab(tabId) {
-      document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
-      document.querySelectorAll('.tab-btn').forEach(btn => {
-        btn.classList.remove('border-[#1b4332]', 'text-[#1b4332]', 'font-semibold');
-        btn.classList.add('border-transparent', 'text-gray-600');
-      });
+    function mudarAba(tabId) {
+      document.querySelectorAll('.secao-aba').forEach(el => el.classList.remove('ativa'));
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('ativo'));
+      
       const content = document.getElementById('content-' + tabId);
       const btn = document.getElementById('tab-' + tabId);
-      if(content) content.classList.remove('hidden');
-      if(btn) {
-        btn.classList.add('border-[#1b4332]', 'text-[#1b4332]', 'font-semibold');
-        btn.classList.remove('border-transparent', 'text-gray-600');
-      }
+      if(content) content.classList.add('ativa');
+      if(btn) btn.classList.add('ativo');
     }
 
-    let atrasosList = JSON.parse(localStorage.getItem('arena_atrasos_full') || '[]');
-    let turnoAtrasoAtual = 'Matutino';
+    let atrasosList = JSON.parse(localStorage.getItem('arena_atrasos') || '[]');
+    let salaList = JSON.parse(localStorage.getItem('arena_sala') || '[]');
+    let profList = JSON.parse(localStorage.getItem('arena_prof') || '[]');
+    let inspList = JSON.parse(localStorage.getItem('arena_insp') || '[]');
+    let atdList = JSON.parse(localStorage.getItem('arena_atd') || '[]');
+    let turnoAtual = 'Matutino';
 
     window.addEventListener('DOMContentLoaded', () => {
+      montar20Espacos();
       const hoje = new Date().toISOString().split('T')[0];
       const hora = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-      if(document.getElementById('atrasoData')) document.getElementById('atrasoData').value = hoje;
+      
+      ['atrasoData', 'seData', 'profData', 'inspData', 'atdData'].forEach(id => {
+        if(document.getElementById(id)) document.getElementById(id).value = hoje;
+      });
       if(document.getElementById('atrasoHora')) document.getElementById('atrasoHora').value = hora;
-      if(document.getElementById('seData')) document.getElementById('seData').value = hoje;
-      renderAtrasos();
+      if(document.getElementById('inspHora')) document.getElementById('inspHora').value = hora;
+
+      setAtrasoTurno('Matutino');
+      renderizarTudo();
     });
 
-    function setAtrasoTurno(turno) {
-      turnoAtrasoAtual = turno;
-      if(document.getElementById('labelTurno')) document.getElementById('labelTurno').textContent = turno;
+    function salvarLocal() {
+      localStorage.setItem('arena_atrasos', JSON.stringify(atrasosList));
+      localStorage.setItem('arena_sala', JSON.stringify(salaList));
+      localStorage.setItem('arena_prof', JSON.stringify(profList));
+      localStorage.setItem('arena_insp', JSON.stringify(inspList));
+      localStorage.setItem('arena_atd', JSON.stringify(atdList));
+    }
+
+    function renderizarTudo() {
+      renderAtrasos();
+      renderSala();
+      renderProf();
+      renderInsp();
+      renderAtd();
+    }
+
+    // Atrasos
+    function setAtrasoTurno(t) {
+      turnoAtual = t;
+      if(document.getElementById('labelTurno')) document.getElementById('labelTurno').textContent = t;
     }
 
     function salvarAtraso(e) {
       e.preventDefault();
       atrasosList.unshift({
         id: Date.now(),
-        turno: turnoAtrasoAtual,
+        turno: turnoAtual,
         espaco: document.getElementById('atrasoEspaco').value,
         hora: document.getElementById('atrasoHora').value,
         data: document.getElementById('atrasoData').value,
         aluno: document.getElementById('atrasoAluno').value.toUpperCase(),
+        turma: document.getElementById('atrasoTurma').value,
         justificativa: document.getElementById('atrasoJustificativa').value
       });
-      localStorage.setItem('arena_atrasos_full', JSON.stringify(atrasosList));
+      salvarLocal();
       e.target.reset();
+      setAtrasoTurno(turnoAtual);
       renderAtrasos();
     }
 
@@ -254,19 +336,158 @@
       if(!tb) return;
       tb.innerHTML = '';
       atrasosList.forEach(a => {
-        tb.innerHTML += `<tr class="border-b"><td class="p-2 border">${a.data} às ${a.hora}</td><td class="p-2 border">${a.turno}</td><td class="p-2 border font-bold text-[#1b4332]">${a.aluno}</td><td class="p-2 border">—</td><td class="p-2 border">${a.espaco}</td><td class="p-2 border">${a.justificativa || '—'}</td><td class="p-2 border text-center"><button onclick="delAtraso(${a.id})" class="text-red-600 font-bold">Apagar</button></td></tr>`;
+        tb.innerHTML += `<tr class="border-b"><td class="p-2 border">${a.data} às ${a.hora}</td><td class="p-2 border">${a.turno}</td><td class="p-2 border font-bold text-[#1b4332]">${a.aluno}</td><td class="p-2 border">${a.turma}</td><td class="p-2 border">${a.espaco}</td><td class="p-2 border">${a.justificativa || '—'}</td><td class="p-2 border text-center"><button onclick="delAtraso(${a.id})" class="text-red-600 font-bold">Apagar</button></td></tr>`;
       });
     }
 
-    function delAtraso(id) {
-      atrasosList = atrasosList.filter(x => x.id !== id);
-      localStorage.setItem('arena_atrasos_full', JSON.stringify(atrasosList));
-      renderAtrasos();
+    function delAtraso(id) { atrasosList = atrasosList.filter(x => x.id !== id); salvarLocal(); renderAtrasos(); }
+
+    // Sala de Estudos (20 espaços)
+    function montar20Espacos() {
+      const c = document.getElementById('container20Espacos');
+      if(!c) return;
+      let h = '';
+      for(let i=1; i<=20; i++) {
+        h += `<div class="grid grid-cols-1 md:grid-cols-12 gap-2 items-center bg-white p-2 rounded border"><span class="text-xs font-bold text-gray-500 text-center">#${i}</span><div class="md:col-span-4"><input type="text" id="se_aluno_${i}" placeholder="Nome do aluno..." class="w-full border rounded px-2 py-1 text-xs font-bold text-[#1b4332]" /></div><div class="md:col-span-2"><input type="text" id="se_turma_${i}" placeholder="Turma" class="w-full border rounded px-2 py-1 text-xs" /></div><div class="md:col-span-5"><input type="text" id="se_desc_${i}" placeholder="Ocorrência..." class="w-full border rounded px-2 py-1 text-xs" /></div></div>`;
+      }
+      c.innerHTML = h;
     }
 
     function salvarSalaEstudos(e) {
       e.preventDefault();
-      alert('Relatório diário salvo com sucesso!');
+      let count = 0;
+      for(let i=1; i<=20; i++) {
+        const nome = document.getElementById(`se_aluno_${i}`).value.trim();
+        if(nome) {
+          count++;
+          salaList.unshift({
+            id: Date.now() + i,
+            data: document.getElementById('seData').value,
+            responsavel: document.getElementById('seProfessor').value,
+            aluno: nome.toUpperCase(),
+            turma: document.getElementById(`se_turma_${i}`).value.trim() || '—',
+            ocorrencia: document.getElementById(`se_desc_${i}`).value.trim() || '—'
+          });
+        }
+      }
+      if(count === 0) { alert('Preencha pelo menos um aluno.'); return; }
+      salvarLocal();
+      e.target.reset();
+      montar20Espacos();
+      renderSala();
+      alert(`${count} ocorrência(s) salva(s) com sucesso!`);
+    }
+
+    function renderSala() {
+      const l = document.getElementById('listaSalaEstudos');
+      const q = document.getElementById('quadroUrgentes');
+      if(!l || !q) return;
+      l.innerHTML = '';
+      q.innerHTML = '';
+
+      const contagem = {};
+      salaList.forEach(s => { contagem[s.aluno] = (contagem[s.aluno] || 0) + 1; });
+      const urg = Object.entries(contagem).filter(([n, t]) => t >= 2);
+
+      if(urg.length > 0) {
+        let htmlU = '';
+        urg.forEach(([n, t]) => {
+          htmlU += `<div class="bg-white border border-red-300 p-2.5 rounded text-xs flex justify-between items-center"><span><strong>${n}</strong> — <strong>${t}x ocorrências</strong></span><button onclick="removerUrgente('${n}')" class="bg-emerald-600 text-white px-2.5 py-1 rounded font-bold">✓ Notificado (Remover)</button></div>`;
+        });
+        q.innerHTML = `<div class="bg-red-50 border-2 border-red-300 rounded p-4"><h3 class="font-bold text-red-900 text-sm mb-2">🚨 Casos Urgentes (2+ Ocorrências)</h3><div class="grid grid-cols-1 md:grid-cols-2 gap-2">${htmlU}</div></div>`;
+      }
+
+      salaList.forEach(s => {
+        l.innerHTML += `<div class="border p-3 rounded bg-white text-xs"><strong>${s.data}</strong> (Resp: ${s.responsavel}) — 👤 <strong>${s.aluno}</strong> (${s.turma}): ${s.ocorrencia} <button onclick="delSala(${s.id})" class="text-red-600 float-right font-bold">Apagar</button></div>`;
+      });
+    }
+
+    function removerUrgente(nome) {
+      if(confirm(`Deseja remover todos os registros de ${nome} para retirá-lo dos alertas?`)) {
+        salaList = salaList.filter(s => s.aluno !== nome);
+        salvarLocal();
+        renderSala();
+      }
+    }
+    function delSala(id) { salaList = salaList.filter(s => s.id !== id); salvarLocal(); renderSala(); }
+
+    // Professores
+    function salvarProfessor(e) {
+      e.preventDefault();
+      profList.unshift({
+        id: Date.now(),
+        nome: document.getElementById('profNome').value,
+        data: document.getElementById('profData').value,
+        obs: document.getElementById('profObs').value
+      });
+      salvarLocal();
+      e.target.reset();
+      renderProf();
+      alert('Ocorrência com professor registrada!');
+    }
+    function renderProf() {
+      const l = document.getElementById('listaProfessores');
+      if(!l) return;
+      l.innerHTML = '';
+      profList.forEach(p => {
+        l.innerHTML += `<div class="border p-2 rounded bg-white text-xs"><strong>${p.data}</strong> — ${p.nome}: ${p.obs} <button onclick="delProf(${p.id})" class="text-red-600 float-right font-bold">Apagar</button></div>`;
+      });
+    }
+    function delProf(id) { profList = profList.filter(p => p.id !== id); salvarLocal(); renderProf(); }
+
+    // Inspetores
+    function salvarInspetor(e) {
+      e.preventDefault();
+      inspList.unshift({
+        id: Date.now(),
+        nome: document.getElementById('inspNome').value,
+        data: document.getElementById('inspData').value,
+        hora: document.getElementById('inspHora').value,
+        desc: document.getElementById('inspDesc').value
+      });
+      salvarLocal();
+      e.target.reset();
+      renderInsp();
+      alert('Orientação salva!');
+    }
+    function renderInsp() {
+      const l = document.getElementById('listaInspetores');
+      if(!l) return;
+      l.innerHTML = '';
+      inspList.forEach(i => {
+        l.innerHTML += `<div class="border p-2 rounded bg-white text-xs"><strong>${i.nome}</strong> (${i.data} às ${i.hora}): ${i.desc} <button onclick="delInsp(${i.id})" class="text-red-600 float-right font-bold">Apagar</button></div>`;
+      });
+    }
+    function delInsp(id) { inspList = inspList.filter(i => i.id !== id); salvarLocal(); renderInsp(); }
+
+    // Atendimentos
+    function salvarAtendimento(e) {
+      e.preventDefault();
+      atdList.unshift({
+        id: Date.now(),
+        aluno: document.getElementById('atdAluno').value.toUpperCase(),
+        turma: document.getElementById('atdTurma').value,
+        data: document.getElementById('atdData').value,
+        relato: document.getElementById('atdRelato').value
+      });
+      salvarLocal();
+      e.target.reset();
+      renderAtd();
+      alert('Atendimento salvo!');
+    }
+    function renderAtd() {
+      const l = document.getElementById('listaAtendimentos');
+      if(!l) return;
+      l.innerHTML = '';
+      atdList.forEach(a => {
+        l.innerHTML += `<div class="border p-2 rounded bg-white text-xs"><strong>${a.data}</strong> — <strong>${a.aluno}</strong> (${a.turma}): ${a.relato} <button onclick="delAtd(${a.id})" class="text-red-600 float-right font-bold">Apagar</button></div>`;
+      });
+    }
+    function delAtd(id) { atdList = atdList.filter(a => a.id !== id); salvarLocal(); renderAtd(); }
+
+    function baixarBackup() {
+      const b = new Blob([JSON.stringify({atrasosList, salaList, profList, inspList, atdList}, null, 2)], {type: 'application/json'});
+      const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = 'backup_arena.json'; a.click();
     }
   </script>
 </body>
