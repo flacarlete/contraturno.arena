@@ -1,43 +1,24 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-  <meta charset="UTF-8">
-  <title>Sistema Colégio Arena</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    .bloco-aba { display: none; }
-    .bloco-aba.visivel { display: block; }
-    .btn-menu.ativo { background-color: #1b4332; color: white; font-weight: bold; }
-  </style>
-</head>
-<body class="bg-gray-100 font-sans p-6">
-  <div class="max-w-4xl mx-auto bg-white p-6 rounded shadow">
-    <h1 class="text-xl font-bold text-[#1b4332] mb-4">Colégio Arena — Gestão Escolar</h1>
-    
-    <nav class="flex gap-2 border-b pb-3 mb-4">
-      <button onclick="mudar('atrasos')" id="m-atrasos" class="btn-menu ativo px-4 py-2 rounded bg-gray-200">Atrasos</button>
-      <button onclick="mudar('sala')" id="m-sala" class="btn-menu px-4 py-2 rounded bg-gray-200">Sala de Estudos</button>
-    </nav>
-
-    <div id="b-atrasos" class="bloco-aba visivel">
-      <h2 class="font-bold mb-2">Registo de Atrasos</h2>
-      <p class="text-sm text-gray-600">Módulo de atrasos ativo e funcional.</p>
-    </div>
-
-    <div id="b-sala" class="bloco-aba">
-      <h2 class="font-bold mb-2">Sala de Estudos</h2>
-      <p class="text-sm text-gray-600">Módulo de sala de estudos ativo e funcional.</p>
-    </div>
+<div style="font-family: Arial; padding: 20px;">
+  <div style="margin-bottom: 15px;">
+    <button onclick="mudar('um')" id="b-um" style="padding: 10px 20px; background: green; color: white; border: none; cursor: pointer; font-weight: bold;">Aba 1</button>
+    <button onclick="mudar('dois')" id="b-dois" style="padding: 10px 20px; background: #ccc; border: none; cursor: pointer;">Aba 2</button>
   </div>
 
-  <script>
-    function mudar(id) {
-      document.querySelectorAll('.bloco-aba').forEach(el => el.classList.remove('visivel'));
-      document.querySelectorAll('.btn-menu').forEach(el => el.classList.remove('ativo', 'bg-[#1b4332]', 'text-white'));
-      
-      document.getElementById('b-' + id).classList.add('visivel');
-      document.getElementById('m-' + id).classList.add('ativo', 'bg-[#1b4332]', 'text-white');
-    }
-  </script>
-</body>
-</html>
+  <div id="p-um" style="display: block; padding: 15px; border: 1px solid #ccc;">
+    Conteúdo da Aba 1 a funcionar perfeitamente!
+  </div>
+
+  <div id="p-dois" style="display: none; padding: 15px; border: 1px solid #ccc;">
+    Conteúdo da Aba 2 a funcionar perfeitamente!
+  </div>
+</div>
+
+<script>
+  function mudar(id) {
+    document.getElementById('p-um').style.display = (id === 'um') ? 'block' : 'none';
+    document.getElementById('p-dois').style.display = (id === 'dois') ? 'block' : 'none';
+    
+    document.getElementById('b-um').style.background = (id === 'um') ? 'green' : '#ccc';
+    document.getElementById('b-dois').style.background = (id === 'dois') ? 'green' : '#ccc';
+  }
+</script>
