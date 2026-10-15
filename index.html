@@ -5,9 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Controle de Gestão Escolar — Arena</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Firebase SDKs -->
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
   <style>
     .aba-conteudo { display: none; }
     .aba-btn.active { border-bottom: 3px solid #1b4332; color: #1b4332; font-weight: 700; background-color: #f0fdf4; }
@@ -23,7 +20,6 @@
 </head>
 <body class="bg-gray-100 text-gray-800 font-sans min-h-screen flex flex-col">
 
-  <!-- ==================== SISTEMA PRINCIPAL ==================== -->
   <div id="sistema-principal" class="flex flex-col flex-1 min-h-screen">
     
     <header class="bg-[#1b4332] text-white px-6 py-3.5 shadow flex flex-col md:flex-row justify-between items-start md:items-center no-print gap-3">
@@ -137,14 +133,10 @@
           <button onclick="mudarSubAbaSala('relatorios')" id="subbtn-relatorios" class="px-4 py-2 bg-gray-200 text-gray-700 rounded text-xs font-semibold hover:bg-gray-300">📋 Relatório por Aluno (Ocorrências Agrupadas)</button>
         </div>
 
-        <!-- Sub-aba 2A: Novo Relatório -->
         <div id="subaba-novo" class="subaba-sala-conteudo">
-          <div id="printableArea" class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+          <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
             <div class="flex justify-between items-center mb-4">
               <h2 id="seTituloForm" class="text-base font-bold text-[#1b4332]">Controle Diário — Sala de Estudos e Biblioteca</h2>
-              <button onclick="window.print()" class="bg-gray-800 text-white px-3 py-1.5 rounded text-xs hover:bg-black flex items-center gap-1.5 no-print">
-                🖨️ Imprimir Formulário
-              </button>
             </div>
 
             <form id="formSalaEstudos" onsubmit="salvarSalaEstudos(event)" class="space-y-6">
@@ -160,83 +152,13 @@
                 </div>
               </div>
 
-              <div class="space-y-3">
-                <h3 class="text-xs font-bold text-gray-700 uppercase tracking-wider mb-3 flex items-center gap-2">
-                  <span class="bg-[#1b4332] text-white rounded-full w-5 h-5 flex items-center justify-center text-[10px]">1</span>
-                  Controle de Ambiente e Ciclo de Foco
-                </h3>
-                <div class="flex flex-col md:flex-row justify-between md:items-center border-b pb-2 text-xs">
-                  <div>
-                    <p class="font-bold">A) SILÊNCIO / RUÍDO PRODUTIVO</p>
-                    <p class="text-gray-500 text-[11px]">Sussurros / assuntos pertinentes</p>
-                  </div>
-                  <div class="flex gap-2 mt-2 md:mt-0">
-                    <label class="flex items-center gap-1"><input type="radio" name="ind_silencio" value="Excelente" checked /> Excelente</label>
-                    <label class="flex items-center gap-1"><input type="radio" name="ind_silencio" value="Regular" /> Regular</label>
-                    <label class="flex items-center gap-1"><input type="radio" name="ind_silencio" value="Crítico" /> Crítico</label>
-                  </div>
-                </div>
-                <div class="flex flex-col md:flex-row justify-between md:items-center border-b pb-2 text-xs">
-                  <div>
-                    <p class="font-bold">B) CICLO DE FOCO</p>
-                    <p class="text-gray-500 text-[11px]">Tempo de foco + tempo de descanso</p>
-                  </div>
-                  <div class="flex gap-2 mt-2 md:mt-0">
-                    <label class="flex items-center gap-1"><input type="radio" name="ind_foco" value="Excelente" checked /> Excelente</label>
-                    <label class="flex items-center gap-1"><input type="radio" name="ind_foco" value="Regular" /> Regular</label>
-                    <label class="flex items-center gap-1"><input type="radio" name="ind_foco" value="Crítico" /> Crítico</label>
-                  </div>
-                </div>
-                <div class="flex flex-col md:flex-row justify-between md:items-center border-b pb-2 text-xs">
-                  <div>
-                    <p class="font-bold">C) CELULAR</p>
-                    <p class="text-gray-500 text-[11px]">Devem estar guardados</p>
-                  </div>
-                  <div class="flex gap-2 mt-2 md:mt-0">
-                    <label class="flex items-center gap-1"><input type="radio" name="ind_celular" value="Excelente" checked /> Excelente</label>
-                    <label class="flex items-center gap-1"><input type="radio" name="ind_celular" value="Regular" /> Regular</label>
-                    <label class="flex items-center gap-1"><input type="radio" name="ind_celular" value="Crítico" /> Crítico</label>
-                  </div>
-                </div>
-                <div class="flex flex-col md:flex-row justify-between md:items-center border-b pb-2 text-xs">
-                  <div>
-                    <p class="font-bold">D) ORGANIZAÇÃO</p>
-                    <p class="text-gray-500 text-[11px]">Mesa limpa, somente material pertinente</p>
-                  </div>
-                  <div class="flex gap-2 mt-2 md:mt-0">
-                    <label class="flex items-center gap-1"><input type="radio" name="ind_org" value="Excelente" checked /> Excelente</label>
-                    <label class="flex items-center gap-1"><input type="radio" name="ind_org" value="Regular" /> Regular</label>
-                    <label class="flex items-center gap-1"><input type="radio" name="ind_org" value="Crítico" /> Crítico</label>
-                  </div>
-                </div>
-              </div>
-
               <div>
-                <h3 class="text-xs font-bold text-gray-700 uppercase tracking-wider mb-2 flex items-center gap-2">
-                  <span class="bg-[#1b4332] text-white rounded-full w-5 h-5 flex items-center justify-center text-[10px]">2</span>
-                  Check-list "Padrão Ouro"
-                </h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs">
-                  <label class="flex items-start gap-2"><input type="checkbox" id="chkApostila" class="mt-0.5" /><span><strong>APOSTILA VIVA</strong> — Grifos e anotações</span></label>
-                  <label class="flex items-start gap-2"><input type="checkbox" id="chkRespostas" class="mt-0.5" /><span><strong>RESPOSTAS COMPLETAS</strong> — Fundamentadas</span></label>
-                  <label class="flex items-start gap-2"><input type="checkbox" id="chkErro" class="mt-0.5" /><span><strong>JUSTIFICATIVA DO ERRO</strong> — Correção</span></label>
-                  <label class="flex items-start gap-2"><input type="checkbox" id="chkAtivo" class="mt-0.5" /><span><strong>ESTUDO ATIVO</strong> — Autoexplicação</span></label>
-                </div>
-              </div>
-
-              <div>
-                <h3 class="text-xs font-bold text-gray-700 uppercase tracking-wider mb-3 flex items-center gap-2">
-                  <span class="bg-[#1b4332] text-white rounded-full w-5 h-5 flex items-center justify-center text-[10px]">3</span>
-                  Ocorrências de Alunos (20 Espaços Disponíveis)
-                </h3>
-                <p class="text-[11px] text-gray-500 mb-3">Preencha os alunos que apresentaram ocorrências ou observações neste dia:</p>
-                
+                <h3 class="text-xs font-bold text-gray-700 uppercase tracking-wider mb-3">Ocorrências de Alunos (20 Espaços Disponíveis)</h3>
                 <div id="container20Espacos" class="space-y-3 bg-gray-50 p-4 rounded border"></div>
               </div>
 
-              <div class="flex justify-end gap-3 no-print">
-                <button type="button" id="btnCancelaEditSe" onclick="cancelarEdicaoSalaEstudos()" class="hidden bg-gray-500 text-white px-4 py-2.5 rounded text-sm font-semibold">Cancelar Edição</button>
-                <button type="submit" id="btnSalvaSe" class="bg-[#1b4332] text-white px-6 py-2.5 rounded text-sm font-semibold hover:bg-emerald-900">
+              <div class="flex justify-end gap-3">
+                <button type="submit" class="bg-[#1b4332] text-white px-6 py-2.5 rounded text-sm font-semibold hover:bg-emerald-900">
                   💾 Salvar Relatório Diário
                 </button>
               </div>
@@ -244,28 +166,10 @@
           </div>
         </div>
 
-        <!-- Sub-aba 2B: Relatório por Aluno & Casos Urgentes -->
         <div id="subaba-relatorios" class="subaba-sala-conteudo" style="display: none;">
-          <div id="printableRelatorioArea" class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
-            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-3">
-              <div>
-                <h2 class="text-base font-bold text-[#1b4332]">📋 Relatórios de Sala de Estudos</h2>
-                <p class="text-xs text-gray-500">Histórico mantido por dia e busca rápida por aluno</p>
-              </div>
-              <button onclick="window.print()" class="bg-gray-800 text-white px-3 py-1.5 rounded text-xs hover:bg-black no-print">
-                🖨️ Imprimir Visualização Atual
-              </button>
-            </div>
-
-            <!-- QUADRO DE CASOS URGENTES (2+ OCORRÊNCIAS) -->
+          <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+            <h2 class="text-base font-bold text-[#1b4332] mb-4">📋 Relatórios de Sala de Estudos</h2>
             <div id="quadroCasosUrgentes" class="mb-6"></div>
-
-            <!-- CAMPO DE BUSCA POR ALUNO -->
-            <div class="bg-emerald-50 border border-emerald-200 rounded-lg p-4 mb-6 no-print">
-              <label class="block text-xs font-bold text-emerald-900 mb-1">🔍 Procurar informações registradas por Aluno:</label>
-              <input type="text" id="filtroAlunoSala" oninput="renderizarSalaEstudos()" placeholder="Digite o nome do aluno para buscar ocorrências em todos os dias..." class="w-full bg-white border border-emerald-300 rounded px-3 py-2 text-xs font-semibold focus:outline-none focus:border-[#1b4332]" />
-            </div>
-
             <div id="listaRelatoriosContainer" class="space-y-6"></div>
           </div>
         </div>
@@ -273,27 +177,47 @@
 
       <!-- ==================== ABA 3: PROFESSORES ==================== -->
       <section id="aba-professores" class="aba-conteudo">
-        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6 no-print">
-          <div class="flex justify-between items-center mb-4">
-            <h2 id="profFormTitulo" class="text-base font-bold text-[#1b4332]">Ocorrências com Professores</h2>
-            <button onclick="window.print()" class="bg-[#1b4332] text-white px-4 py-2 rounded text-xs font-semibold hover:bg-emerald-900 flex items-center gap-1.5 shadow">
-              🖨️ Imprimir Histórico Geral
-            </button>
-          </div>
-
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+          <h2 class="text-base font-bold text-[#1b4332] mb-4">Ocorrências com Professores</h2>
           <form id="formProfessores" onsubmit="salvarOcorrenciaProfessor(event)" class="space-y-4">
-            <input type="hidden" id="profEditId" value="" />
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
                 <label class="block text-xs font-medium text-gray-700 mb-1">Segmento / Turno</label>
-                <select id="profSegmento" onchange="atualizarListaProfessores()" class="w-full border border-gray-300 rounded px-3 py-2 text-sm" required>
+                <select id="profSegmento" onchange="atualizarListaProfessores()" class="w-full border rounded px-3 py-2 text-sm">
                   <option value="6ano">6º Ano Matutino</option>
                   <option value="7ano">7º Ano Matutino</option>
                   <option value="8ano">8º Ano Matutino</option>
                   <option value="9ano">9º Ano Matutino</option>
-                  <option value="vespertino">Vespertino / Oficinas / Esportes</option>
+                  <option value="vespertino">Vespertino</option>
                 </select>
               </div>
               <div>
                 <label class="block text-xs font-medium text-gray-700 mb-1">Professor & Disciplina</label>
-                <select id="profNome" class="w-full border border-gray-300 rounded px-3 py-2 text-sm font-bold text-[#1b4332]" required
+                <select id="profNome" class="w-full border rounded px-3 py-2 text-sm font-bold text-[#1b4332]"></select>
+              </div>
+              <div>
+                <label class="block text-xs font-medium text-gray-700 mb-1">Data</label>
+                <input type="date" id="profData" class="w-full border rounded px-3 py-2 text-sm" required />
+              </div>
+            </div>
+            <div class="flex justify-end">
+              <button type="submit" class="bg-[#1b4332] text-white px-5 py-2 rounded text-sm font-medium">Registrar Ocorrência</button>
+            </div>
+          </form>
+        </div>
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+          <table class="w-full text-left text-xs border">
+            <thead class="bg-gray-100">
+              <tr>
+                <th class="p-2 border">Data</th>
+                <th class="p-2 border">Professor</th>
+                <th class="p-2 border text-center">Ações</th>
+              </tr>
+            </thead>
+            <tbody id="listaProfessoresTbody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ==================== ABA 4: INSPETORES ==================== -->
+      <section id="aba-
