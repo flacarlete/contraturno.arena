@@ -8,7 +8,7 @@
     body { font-family: Arial, sans-serif; background-color: #f3f4f6; margin: 0; padding: 0; color: #1f2937; }
     header { background-color: #1b4332; color: white; padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; }
     nav { background: white; border-bottom: 1px solid #e5e7eb; padding: 8px 24px; display: flex; gap: 8px; flex-wrap: wrap; }
-    nav button { padding: 8px 16px; border: none; background: #f3f4f6; color: #4b5563; font-weight: bold; cursor: pointer; border-radius: 4px; }
+    nav button { padding: 8px 16px; border: none; background: #f3f4f6; color: #4b5563; font-weight: bold; cursor: pointer; border-radius: 4px; transition: background 0.2s; }
     nav button.ativo { background-color: #1b4332; color: white; }
     main { max-width: 950px; margin: 24px auto; background: white; padding: 24px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
     .secao { display: none; }
@@ -23,7 +23,7 @@
     th, td { border: 1px solid #e5e7eb; padding: 8px; text-align: left; }
     th { background-color: #f9fafb; font-weight: bold; }
     .card-list { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
-    .card-item { border: 1px solid #e5e7eb; padding: 12px; border-radius: 4px; background: #f9fafb; font-size: 13px; position: relative; }
+    .card-item { border: 1px solid #e5e7eb; padding: 12px; border-radius: 4px; background: #f9fafb; font-size: 13px; }
   </style>
 </head>
 <body>
@@ -68,7 +68,6 @@
         </div>
         <button type="submit" class="btn-submit">✓ Registar Atraso</button>
       </form>
-
       <table>
         <thead>
           <tr><th>Horário</th><th>Aluno</th><th>Turma</th><th style="text-align:center;">Ações</th></tr>
@@ -179,14 +178,22 @@
 
   <script>
     function mudarAba(id) {
-      var secoes = document.getElementsByClassName('secao');
-      for (var i = 0; i < secoes.length; i++) { secoes[i].classList.remove('ativa'); }
-
-      var botoes = document.getElementsByTagName('nav')[0].getElementsByTagName('button');
-      for (var i = 0; i < botoes.length; i++) { botoes[i].classList.remove('ativo'); }
-
-      document.getElementById('sec-' + id).classList.add('ativa');
-      document.getElementById('btn-' + id).classList.add('ativo');
+      // Oculta todas as secções
+      var secoes = document.querySelectorAll('.secao');
+      for (var i = 0; i < secoes.length; i++) {
+        secoes[i].classList.remove('ativa');
+      }
+      // Remove a classe activo de todos os botões do menu
+      var botoes = document.querySelectorAll('nav button');
+      for (var i = 0; i < botoes.length; i++) {
+        botoes[i].classList.remove('ativo');
+      }
+      // Ativa a secção e o botão correspondentes
+      var targetSecao = document.getElementById('sec-' + id);
+      var targetBotao = document.getElementById('btn-' + id);
+      
+      if (targetSecao) targetSecao.classList.add('ativa');
+      if (targetBotao) targetBotao.classList.add('ativo');
     }
 
     let dbAtrasos = JSON.parse(localStorage.getItem('arena_atrasos') || '[]');
