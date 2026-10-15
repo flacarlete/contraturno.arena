@@ -10,10 +10,10 @@
     nav { background: white; border-bottom: 1px solid #e5e7eb; padding: 8px 24px; display: flex; gap: 8px; flex-wrap: wrap; }
     nav button { padding: 8px 16px; border: none; background: #f3f4f6; color: #4b5563; font-weight: bold; cursor: pointer; border-radius: 4px; transition: background 0.2s; }
     nav button.ativo { background-color: #1b4332; color: white; }
-    main { max-width: 950px; margin: 24px auto; background: white; padding: 24px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+    main { max-width: 1000px; margin: 24px auto; background: white; padding: 24px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
     .secao { display: none; }
     .secao.ativa { display: block; }
-    .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 16px; }
+    .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin-bottom: 16px; }
     .form-group { margin-bottom: 12px; }
     .form-group label { display: block; font-size: 12px; font-weight: bold; margin-bottom: 4px; color: #374151; }
     .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 4px; box-sizing: border-box; font-size: 13px; }
@@ -24,6 +24,7 @@
     th { background-color: #f9fafb; font-weight: bold; }
     .card-list { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
     .card-item { border: 1px solid #e5e7eb; padding: 12px; border-radius: 4px; background: #f9fafb; font-size: 13px; }
+    .urgente-box { background-color: #fef2f2; border: 1px solid #f87171; padding: 12px; border-radius: 6px; margin-bottom: 16px; }
   </style>
 </head>
 <body>
@@ -31,7 +32,7 @@
   <header>
     <div>
       <h1 style="margin:0; font-size: 18px;">📋 Colégio Arena — Gestão Escolar & Contraturno</h1>
-      <p style="margin:4px 0 0 0; font-size: 12px; color: #a7f3d0;">Coordenação Geral — Painel Operacional</p>
+      <p style="margin:4px 0 0 0; font-size: 12px; color: #a7f3d0;">Coordenação Geral — Painel Operacional Completo</p>
     </div>
     <div style="font-size: 12px; background: rgba(0,0,0,0.2); padding: 6px 10px; border-radius: 4px;">
       🟢 1.160 Alunos Integrados
@@ -44,7 +45,7 @@
     <button onclick="mudarAba('prof')" id="btn-prof">👨‍🏫 Professores</button>
     <button onclick="mudarAba('insp')" id="btn-insp">📋 Inspetores</button>
     <button onclick="mudarAba('atd')" id="btn-atd">📋 Atendimentos</button>
-    <button onclick="mudarAba('contatos')" id="btn-contatos">📞 Contatos & Backup</button>
+    <button onclick="mudarAba('contatos')" id="btn-contatos">⚙️ ADM & Backup</button>
   </nav>
 
   <main>
@@ -54,8 +55,8 @@
       <form onsubmit="salvarAtraso(event)">
         <div class="form-grid">
           <div class="form-group">
-            <label>Nome do Aluno</label>
-            <input type="text" id="atrasoAluno" required placeholder="Nome completo...">
+            <label>Nome Completo do Aluno</label>
+            <input type="text" id="atrasoAluno" required placeholder="Nome do aluno...">
           </div>
           <div class="form-group">
             <label>Turma</label>
@@ -78,7 +79,7 @@
 
     <!-- ABA 2: SALA DE ESTUDOS -->
     <section id="sec-sala" class="secao">
-      <h2 style="color: #1b4332; font-size: 16px; margin-top: 0;">📚 Sala de Estudos & Biblioteca</h2>
+      <h2 style="color: #1b4332; font-size: 16px; margin-top: 0;">📚 Sala de Estudos & Biblioteca — 20 Espaços</h2>
       <form onsubmit="salvarSala(event)">
         <div class="form-grid">
           <div class="form-group">
@@ -86,17 +87,18 @@
             <input type="date" id="salaData" required>
           </div>
           <div class="form-group">
-            <label>Responsável</label>
-            <input type="text" id="salaResp" required placeholder="Seu nome...">
+            <label>Professor / Responsável</label>
+            <input type="text" id="salaResp" required placeholder="Nome do responsável...">
           </div>
         </div>
-        <div class="form-group">
-          <label>Nome do Aluno / Ocorrência</label>
-          <input type="text" id="salaAluno" required placeholder="Nome do aluno e detalhe...">
-        </div>
-        <button type="submit" class="btn-submit">💾 Registar Ocorrência</button>
+        <div id="container20Espacos" style="background:#f9fafb; padding:12px; border:1px solid #e5e7eb; border-radius:6px; margin-bottom:12px; max-height:250px; overflow-y:auto;"></div>
+        <button type="submit" class="btn-submit">💾 Salvar Relatório da Sala</button>
       </form>
-      <div id="listaSala" class="card-list"></div>
+      <div id="quadroUrgentes"></div>
+      <div style="margin-top: 20px;">
+        <h3 style="font-size: 14px; font-weight: bold; color: #374151; margin-bottom: 8px;">Histórico da Sala de Estudos</h3>
+        <div id="listaSala" class="card-list"></div>
+      </div>
     </section>
 
     <!-- ABA 3: PROFESSORES -->
@@ -106,18 +108,14 @@
         <div class="form-grid">
           <div class="form-group">
             <label>Professor e Matéria</label>
-            <input type="text" id="profNome" required placeholder="Nome do professor...">
+            <input type="text" id="profNome" required placeholder="Nome do professor e disciplina...">
           </div>
           <div class="form-group">
             <label>Data</label>
             <input type="date" id="profData" required>
           </div>
         </div>
-        <div class="form-group">
-          <label>Observação</label>
-          <input type="text" id="profObs" required placeholder="Detalhe da ocorrência...">
-        </div>
-        <button type="submit" class="btn-submit">Registar Ocorrência</button>
+        <button type="submit" class="btn-submit">Registar Ocorrência Docente</button>
       </form>
       <div id="listaProf" class="card-list"></div>
     </section>
@@ -126,19 +124,13 @@
     <section id="sec-insp" class="secao">
       <h2 style="color: #1b4332; font-size: 16px; margin-top: 0;">📋 Orientações de Inspetores</h2>
       <form onsubmit="salvarInsp(event)">
-        <div class="form-grid">
-          <div class="form-group">
-            <label>Nome do Inspetor</label>
-            <input type="text" id="inspNome" required placeholder="Nome...">
-          </div>
-          <div class="form-group">
-            <label>Data</label>
-            <input type="date" id="inspData" required>
-          </div>
+        <div class="form-group">
+          <label>Nome do Inspetor</label>
+          <input type="text" id="inspNome" required placeholder="Nome do inspetor...">
         </div>
         <div class="form-group">
-          <label>Descrição / Feedback</label>
-          <textarea id="inspDesc" rows="2" required placeholder="Situação identificada..."></textarea>
+          <label>Situação e Feedback</label>
+          <textarea id="inspDesc" rows="3" required placeholder="Relato da orientação..."></textarea>
         </div>
         <button type="submit" class="btn-submit">Guardar Orientação</button>
       </form>
@@ -152,7 +144,7 @@
         <div class="form-grid">
           <div class="form-group">
             <label>Nome do Aluno</label>
-            <input type="text" id="atdAluno" required placeholder="Aluno...">
+            <input type="text" id="atdAluno" required placeholder="Nome do aluno...">
           </div>
           <div class="form-group">
             <label>Turma</label>
@@ -160,38 +152,31 @@
           </div>
         </div>
         <div class="form-group">
-          <label>Relato</label>
-          <textarea id="atdRelato" rows="2" required placeholder="Relato do atendimento..."></textarea>
+          <label>Relato do Atendimento</label>
+          <textarea id="atdRelato" rows="3" required placeholder="Detalhes do atendimento..."></textarea>
         </div>
         <button type="submit" class="btn-submit">Guardar Atendimento</button>
       </form>
       <div id="listaAtd" class="card-list"></div>
     </section>
 
-    <!-- ABA 6: CONTATOS -->
+    <!-- ABA 6: ADM & BACKUP -->
     <section id="sec-contatos" class="secao">
-      <h2 style="color: #1b4332; font-size: 16px; margin-top: 0;">📞 Contatos Rápidos & Backup</h2>
-      <p style="font-size: 13px; color: #6b7280; margin-bottom: 12px;">Pode descarregar uma cópia de segurança de todos os registos em formato JSON a qualquer momento.</p>
+      <h2 style="color: #1b4332; font-size: 16px; margin-top: 0;">⚙️ Painel ADM & Backup</h2>
+      <p style="font-size: 13px; color: #6b7280; margin-bottom: 12px;">Faça o backup de todos os seus dados guardados no sistema.</p>
       <button onclick="baixarBackup()" class="btn-submit">⬇️ Baixar Backup em JSON</button>
     </section>
   </main>
 
   <script>
     function mudarAba(id) {
-      // Oculta todas as secções
       var secoes = document.querySelectorAll('.secao');
-      for (var i = 0; i < secoes.length; i++) {
-        secoes[i].classList.remove('ativa');
-      }
-      // Remove a classe activo de todos os botões do menu
+      for (var i = 0; i < secoes.length; i++) { secoes[i].classList.remove('ativa'); }
       var botoes = document.querySelectorAll('nav button');
-      for (var i = 0; i < botoes.length; i++) {
-        botoes[i].classList.remove('ativo');
-      }
-      // Ativa a secção e o botão correspondentes
+      for (var i = 0; i < botoes.length; i++) { botoes[i].classList.remove('ativo'); }
+      
       var targetSecao = document.getElementById('sec-' + id);
       var targetBotao = document.getElementById('btn-' + id);
-      
       if (targetSecao) targetSecao.classList.add('ativa');
       if (targetBotao) targetBotao.classList.add('ativo');
     }
@@ -206,9 +191,9 @@
       const hoje = new Date().toISOString().split('T')[0];
       const hora = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
       if(document.getElementById('atrasoHora')) document.getElementById('atrasoHora').value = hora;
-      if(document.getElementById('salaData')) document.getElementById('salaData').value = hoje;
-      if(document.getElementById('profData')) document.getElementById('profData').value = hoje;
-      if(document.getElementById('inspData')) document.getElementById('inspData').value = hoje;
+      ['salaData', 'profData'].forEach(x => { if(document.getElementById(x)) document.getElementById(x).value = hoje; });
+      
+      montar20Espacos();
       renderizarTudo();
     };
 
@@ -228,35 +213,90 @@
       e.target.reset();
       renderAtrasos();
     }
-
     function renderAtrasos() {
       var tb = document.getElementById('tabelaAtrasos');
       if (!tb) return;
       tb.innerHTML = '';
-      dbAtrasos.forEach(function(item) {
+      dbAtrasos.forEach(item => {
         tb.innerHTML += `<tr><td>${item.hora}</td><td><strong>${item.aluno}</strong></td><td>${item.turma}</td><td style="text-align:center;"><button onclick="delAtraso(${item.id})" style="color:red; background:none; border:none; cursor:pointer; font-weight:bold;">Apagar</button></td></tr>`;
       });
     }
     function delAtraso(id) { dbAtrasos = dbAtrasos.filter(x => x.id !== id); localStorage.setItem('arena_atrasos', JSON.stringify(dbAtrasos)); renderAtrasos(); }
 
+    function montar20Espacos() {
+      var c = document.getElementById('container20Espacos');
+      if (!c) return;
+      let h = '';
+      for(let i=1; i<=20; i++) {
+        h += `<div style="display:grid; grid-template-columns: 40px 1fr 90px 1.5fr; gap:6px; align-items:center; margin-bottom:6px;">
+          <span style="font-size:11px; font-weight:bold; color:#6b7280;">#${i}</span>
+          <input type="text" id="se_aluno_${i}" placeholder="Aluno..." style="padding:6px; font-size:12px; border:1px solid #d1d5db; border-radius:4px;" />
+          <input type="text" id="se_turma_${i}" placeholder="Turma" style="padding:6px; font-size:12px; border:1px solid #d1d5db; border-radius:4px;" />
+          <input type="text" id="se_obs_${i}" placeholder="Ocorrência..." style="padding:6px; font-size:12px; border:1px solid #d1d5db; border-radius:4px;" />
+        </div>`;
+      }
+      c.innerHTML = h;
+    }
+
     function salvarSala(e) {
       e.preventDefault();
-      dbSala.unshift({
-        id: Date.now(),
-        data: document.getElementById('salaData').value,
-        resp: document.getElementById('salaResp').value,
-        aluno: document.getElementById('salaAluno').value.toUpperCase()
-      });
+      let count = 0;
+      const data = document.getElementById('salaData').value;
+      const resp = document.getElementById('salaResp').value;
+      for(let i=1; i<=20; i++) {
+        const aluno = document.getElementById(`se_aluno_${i}`).value.trim();
+        if(aluno) {
+          count++;
+          dbSala.unshift({
+            id: Date.now() + i,
+            data,
+            resp,
+            aluno: aluno.toUpperCase(),
+            turma: document.getElementById(`se_turma_${i}`).value.trim() || '—',
+            obs: document.getElementById(`se_obs_${i}`).value.trim() || '—'
+          });
+        }
+      }
+      if(count === 0) { alert('Preencha pelo menos um aluno nos 20 espaços.'); return; }
       localStorage.setItem('arena_sala', JSON.stringify(dbSala));
       e.target.reset();
+      montar20Espacos();
       renderSala();
+      alert(`${count} registo(s) guardado(s) com sucesso!`);
     }
+
     function renderSala() {
       var l = document.getElementById('listaSala');
-      if (!l) return; l.innerHTML = '';
+      var q = document.getElementById('quadroUrgentes');
+      if (!l || !q) return;
+      l.innerHTML = ''; q.innerHTML = '';
+      
+      const contagem = {};
+      dbSala.forEach(s => { contagem[s.aluno] = (contagem[s.aluno] || 0) + 1; });
+      const urg = Object.entries(contagem).filter(([n, t]) => t >= 2);
+      
+      if(urg.length > 0) {
+        let htmlU = '';
+        urg.forEach(([n, t]) => {
+          htmlU += `<div style="display:flex; justify-content:space-between; align-items:center; background:white; padding:8px; border:1px solid #f87171; border-radius:4px; margin-bottom:6px; font-size:12px;">
+            <span><strong>${n}</strong> — <strong>${t}x ocorrências</strong></span>
+            <button onclick="removerUrgente('${n}')" style="background:#1b4332; color:white; border:none; padding:4px 8px; border-radius:4px; cursor:pointer;">✓ Resolver</button>
+          </div>`;
+        });
+        q.innerHTML = `<div class="urgente-box"><h3 style="margin:0 0 6px 0; color:#991b1b; font-size:13px;">🚨 Alerta: Casos Urgentes (2+ Ocorrências na Sala de Estudos)</h3>${htmlU}</div>`;
+      }
+
       dbSala.forEach(s => {
-        l.innerHTML += `<div class="card-item"><strong>${s.data}</strong> (Resp: ${s.resp}) — <strong>${s.aluno}</strong> <button onclick="delSala(${s.id})" style="float:right; color:red; background:none; border:none; cursor:pointer; font-weight:bold;">Apagar</button></div>`;
+        l.innerHTML += `<div class="card-item"><strong>${s.data}</strong> (Resp: ${s.resp}) — <strong>${s.aluno}</strong> (${s.turma}): ${s.obs} <button onclick="delSala(${s.id})" style="float:right; color:red; background:none; border:none; cursor:pointer; font-weight:bold;">Apagar</button></div>`;
       });
+    }
+
+    function removerUrgente(nome) {
+      if(confirm(`Remover todos os registos pendentes de ${nome}?`)) {
+        dbSala = dbSala.filter(s => s.aluno !== nome);
+        localStorage.setItem('arena_sala', JSON.stringify(dbSala));
+        renderSala();
+      }
     }
     function delSala(id) { dbSala = dbSala.filter(x => x.id !== id); localStorage.setItem('arena_sala', JSON.stringify(dbSala)); renderSala(); }
 
@@ -265,8 +305,7 @@
       dbProf.unshift({
         id: Date.now(),
         nome: document.getElementById('profNome').value,
-        data: document.getElementById('profData').value,
-        obs: document.getElementById('profObs').value
+        data: document.getElementById('profData').value
       });
       localStorage.setItem('arena_prof', JSON.stringify(dbProf));
       e.target.reset();
@@ -276,7 +315,7 @@
       var l = document.getElementById('listaProf');
       if (!l) return; l.innerHTML = '';
       dbProf.forEach(p => {
-        l.innerHTML += `<div class="card-item"><strong>${p.data}</strong> — <strong>${p.nome}</strong>: ${p.obs} <button onclick="delProf(${p.id})" style="float:right; color:red; background:none; border:none; cursor:pointer; font-weight:bold;">Apagar</button></div>`;
+        l.innerHTML += `<div class="card-item"><strong>${p.data}</strong> — <strong>${p.nome}</strong> <button onclick="delProf(${p.id})" style="float:right; color:red; background:none; border:none; cursor:pointer; font-weight:bold;">Apagar</button></div>`;
       });
     }
     function delProf(id) { dbProf = dbProf.filter(x => x.id !== id); localStorage.setItem('arena_prof', JSON.stringify(dbProf)); renderProf(); }
@@ -286,7 +325,6 @@
       dbInsp.unshift({
         id: Date.now(),
         nome: document.getElementById('inspNome').value,
-        data: document.getElementById('inspData').value,
         desc: document.getElementById('inspDesc').value
       });
       localStorage.setItem('arena_insp', JSON.stringify(dbInsp));
@@ -297,7 +335,7 @@
       var l = document.getElementById('listaInsp');
       if (!l) return; l.innerHTML = '';
       dbInsp.forEach(i => {
-        l.innerHTML += `<div class="card-item"><strong>${i.nome}</strong> (${i.data}): ${i.desc} <button onclick="delInsp(${i.id})" style="float:right; color:red; background:none; border:none; cursor:pointer; font-weight:bold;">Apagar</button></div>`;
+        l.innerHTML += `<div class="card-item"><strong>${i.nome}</strong>: ${i.desc} <button onclick="delInsp(${i.id})" style="float:right; color:red; background:none; border:none; cursor:pointer; font-weight:bold;">Apagar</button></div>`;
       });
     }
     function delInsp(id) { dbInsp = dbInsp.filter(x => x.id !== id); localStorage.setItem('arena_insp', JSON.stringify(dbInsp)); renderInsp(); }
