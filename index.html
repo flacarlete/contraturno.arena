@@ -191,4 +191,46 @@
       renderAtrasos();
     });
 
-    function set
+    function setAtrasoTurno(turno) {
+      turnoAtrasoAtual = turno;
+      if(document.getElementById('labelTurno')) document.getElementById('labelTurno').textContent = turno;
+    }
+
+    function salvarAtraso(e) {
+      e.preventDefault();
+      atrasosList.unshift({
+        id: Date.now(),
+        turno: turnoAtrasoAtual,
+        espaco: document.getElementById('atrasoEspaco').value,
+        hora: document.getElementById('atrasoHora').value,
+        data: document.getElementById('atrasoData').value,
+        aluno: document.getElementById('atrasoAluno').value.toUpperCase(),
+        justificativa: document.getElementById('atrasoJustificativa').value
+      });
+      localStorage.setItem('arena_atrasos_full', JSON.stringify(atrasosList));
+      e.target.reset();
+      renderAtrasos();
+    }
+
+    function renderAtrasos() {
+      const tb = document.getElementById('listaAtrasosTbody');
+      if(!tb) return;
+      tb.innerHTML = '';
+      atrasosList.forEach(a => {
+        tb.innerHTML += `<tr class="border-b"><td class="p-2 border">${a.data} às ${a.hora}</td><td class="p-2 border">${a.turno}</td><td class="p-2 border font-bold text-[#1b4332]">${a.aluno}</td><td class="p-2 border">—</td><td class="p-2 border">${a.espaco}</td><td class="p-2 border">${a.justificativa || '—'}</td><td class="p-2 border text-center"><button onclick="delAtraso(${a.id})" class="text-red-600 font-bold">Apagar</button></td></tr>`;
+      });
+    }
+
+    function delAtraso(id) {
+      atrasosList = atrasosList.filter(x => x.id !== id);
+      localStorage.setItem('arena_atrasos_full', JSON.stringify(atrasosList));
+      renderAtrasos();
+    }
+
+    function salvarSalaEstudos(e) {
+      e.preventDefault();
+      alert('Salvo com sucesso!');
+    }
+  </script>
+</body>
+</html>
