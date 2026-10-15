@@ -7,6 +7,8 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
     @media print {
       body * { visibility: hidden; }
       #printableArea, #printableArea * { visibility: visible; }
@@ -43,7 +45,7 @@
   <main class="p-6 max-w-6xl w-full mx-auto flex-1">
 
     <!-- ABA 1: ATRASOS -->
-    <section id="content-atrasos" class="tab-content">
+    <section id="content-atrasos" class="tab-content active">
       <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
         <div class="flex gap-4 border-b border-gray-200 pb-3 mb-4">
           <button onclick="setAtrasoTurno('Matutino')" id="btn-turno-mat" class="px-4 py-1.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800">Período Matutino</button>
@@ -120,7 +122,7 @@
     </section>
 
     <!-- ABA 2: SALA DE ESTUDOS -->
-    <section id="content-sala-estudos" class="tab-content hidden">
+    <section id="content-sala-estudos" class="tab-content">
       <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
         <div class="flex justify-between items-center mb-4">
           <h2 class="text-base font-bold text-[#1b4332]">Controle Diário — Sala de Estudos e Biblioteca</h2>
@@ -161,7 +163,7 @@
     </section>
 
     <!-- ABA 3: PROFESSORES -->
-    <section id="content-professores" class="tab-content hidden">
+    <section id="content-professores" class="tab-content">
       <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
         <h2 class="text-base font-bold text-[#1b4332] mb-4">Acompanhamento Docente</h2>
         <p class="text-xs text-gray-500">Módulo de ocorrências e chamadas de professores.</p>
@@ -169,21 +171,21 @@
     </section>
 
     <!-- ABA 4: INSPETORES -->
-    <section id="content-inspetores" class="tab-content hidden">
+    <section id="content-inspetores" class="tab-content">
       <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
         <h2 class="text-base font-bold text-[#1b4332] mb-4">Orientações de Inspetores</h2>
       </div>
     </section>
 
     <!-- ABA 5: ATENDIMENTOS -->
-    <section id="content-atendimentos" class="tab-content hidden">
+    <section id="content-atendimentos" class="tab-content">
       <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
         <h2 class="text-base font-bold text-[#1b4332] mb-4">Registro de Atendimentos</h2>
       </div>
     </section>
 
     <!-- ABA 6: CONTATOS -->
-    <section id="content-contatos" class="tab-content hidden">
+    <section id="content-contatos" class="tab-content">
       <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
         <h2 class="text-base font-bold text-[#1b4332] mb-4">Contatos Rápidos</h2>
       </div>
@@ -193,14 +195,14 @@
 
   <script>
     function switchTab(tabId) {
-      document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
       document.querySelectorAll('.tab-btn').forEach(btn => {
         btn.classList.remove('border-[#1b4332]', 'text-[#1b4332]', 'font-semibold');
         btn.classList.add('border-transparent', 'text-gray-600');
       });
       const content = document.getElementById('content-' + tabId);
       const btn = document.getElementById('tab-' + tabId);
-      if(content) content.classList.remove('hidden');
+      if(content) content.classList.add('active');
       if(btn) {
         btn.classList.add('border-[#1b4332]', 'text-[#1b4332]', 'font-semibold');
         btn.classList.remove('border-transparent', 'text-gray-600');
