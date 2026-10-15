@@ -1,4 +1,3 @@
-<!-- v2026-10-15 -->
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -136,14 +135,11 @@
 
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      // Configuração segura dos botões de navegação
       document.querySelectorAll('.nav-aba').forEach(button => {
         button.addEventListener('click', () => {
           const targetId = button.getAttribute('data-target');
-          
           document.querySelectorAll('.secao-painel').forEach(s => s.classList.remove('ativo'));
           document.querySelectorAll('.nav-aba').forEach(b => b.classList.remove('ativo', 'bg-[#1b4332]', 'text-white'));
-          
           const painel = document.getElementById('secao-' + targetId);
           if (painel) painel.classList.add('ativo');
           button.classList.add('ativo', 'bg-[#1b4332]', 'text-white');
@@ -157,7 +153,6 @@
       ['seData', 'profData', 'inspData'].forEach(x => { if(document.getElementById(x)) document.getElementById(x).value = hoje; });
       renderizarTudo();
 
-      // Listeners de formulários
       document.getElementById('formAtraso').addEventListener('submit', salvarAtraso);
       document.getElementById('formSala').addEventListener('submit', salvarSala);
       document.getElementById('formProf').addEventListener('submit', salvarProf);
