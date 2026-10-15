@@ -69,7 +69,7 @@
           <p id="usuarioLogadoNome" class="text-xs font-bold text-white">Coordenação Geral</p>
           <p id="usuarioLogadoPerfil" class="text-[11px] text-emerald-200">Perfil: COORDENADOR</p>
         </div>
-        <button onclick="fazerlogout()" class="bg-red-800 hover:bg-red-700 text-white px-3 py-1.5 rounded text-xs font-semibold">
+        <button onclick="fazerLogout()" class="bg-red-800 hover:bg-red-700 text-white px-3 py-1.5 rounded text-xs font-semibold">
           Sair ⎋
         </button>
       </div>
@@ -317,4 +317,150 @@
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
                 <label class="block text-xs font-medium text-gray-700 mb-1">Segmento / Turno</label>
-                <select id="
+                <select id="profSegmento" onchange="atualizarListaProfessores()" class="w-full border border-gray-300 rounded px-3 py-2 text-sm" required>
+                  <option value="6ano">6º Ano Matutino</option>
+                  <option value="7ano">7º Ano Matutino</option>
+                  <option value="8ano">8º Ano Matutino</option>
+                  <option value="9ano">9º Ano Matutino</option>
+                  <option value="vespertino">Vespertino / Oficinas / Esportes</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-xs font-medium text-gray-700 mb-1">Professor & Disciplina</label>
+                <select id="profNome" class="w-full border border-gray-300 rounded px-3 py-2 text-sm font-bold text-[#1b4332]" required></select>
+              </div>
+              <div>
+                <label class="block text-xs font-medium text-gray-700 mb-1">Data</label>
+                <input type="date" id="profData" class="w-full border border-gray-300 rounded px-3 py-2 text-sm" required />
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 pt-2 border-t text-xs">
+              <div class="flex items-center gap-2">
+                <input type="checkbox" id="profChamada" />
+                <label class="font-medium text-gray-700">Não fez chamada</label>
+              </div>
+              <div>
+                <label class="flex items-center gap-2 font-medium mb-1">
+                  <input type="checkbox" id="profAtrasoInicio" onchange="document.getElementById('profMinutosInicio').disabled = !this.checked" />
+                  Não entrou no horário
+                </label>
+                <input type="number" id="profMinutosInicio" placeholder="Minutos de atraso" disabled class="w-full border border-gray-300 rounded px-2 py-1 text-xs" />
+              </div>
+              <div>
+                <label class="flex items-center gap-2 font-medium mb-1">
+                  <input type="checkbox" id="profAtrasoInterv" onchange="document.getElementById('profMinutosInterv').disabled = !this.checked" />
+                  Atraso após o intervalo
+                </label>
+                <input type="number" id="profMinutosInterv" placeholder="Minutos de atraso" disabled class="w-full border border-gray-300 rounded px-2 py-1 text-xs" />
+              </div>
+              <div>
+                <label class="flex items-center gap-2 font-medium mb-1">
+                  <input type="checkbox" id="profLiberouMaisCedo" onchange="document.getElementById('profComplementoLiberou').disabled = !this.checked" />
+                  Liberou mais cedo
+                </label>
+                <input type="text" id="profComplementoLiberou" placeholder="Complemente a info..." disabled class="w-full border border-gray-300 rounded px-2 py-1 text-xs" />
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-xs font-medium text-gray-700 mb-1">Observações Adicionais</label>
+              <input type="text" id="profObs" placeholder="Ex: Substituição necessária, turma aguardando..." class="w-full border border-gray-300 rounded px-3 py-2 text-sm" />
+            </div>
+
+            <div class="flex justify-end gap-2">
+              <button type="button" id="btnCancelaEditProf" onclick="cancelarEdicaoProfessor()" class="hidden bg-gray-500 text-white px-4 py-2 rounded text-xs font-medium">Cancelar</button>
+              <button type="submit" id="btnSalvaProf" class="bg-[#1b4332] text-white px-5 py-2 rounded text-sm font-medium hover:bg-emerald-900">
+                Registrar Ocorrência
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <div class="bg-emerald-50 border border-emerald-200 rounded-lg p-4 mb-6 no-print space-y-3">
+          <div>
+            <h3 class="font-bold text-emerald-900 text-sm">🖨️ Relatório Individual por Professor & Mês</h3>
+            <p class="text-xs text-emerald-700">Selecione o professor (apenas com lançamentos ativos) e o mês desejado para gerar o arquivo:</p>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <div>
+              <label class="block text-[11px] font-bold text-emerald-900 mb-1">Professor(a):</label>
+              <select id="selectProfessorFiltro" class="w-full border border-emerald-300 rounded px-3 py-2 text-xs bg-white font-bold text-[#1b4332]"></select>
+            </div>
+            <div>
+              <label class="block text-[11px] font-bold text-emerald-900 mb-1">Mês de Referência:</label>
+              <input type="month" id="selectMesFiltro" class="w-full border border-emerald-300 rounded px-3 py-2 text-xs bg-white font-bold text-[#1b4332]" />
+            </div>
+            <div class="flex items-end">
+              <button onclick="imprimirRelatorioProfessorIndividual()" class="w-full bg-[#1b4332] text-white px-4 py-2 rounded text-xs font-semibold hover:bg-emerald-900">
+                Gerar Relatório do Mês
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div id="printableProfArea" class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+          <div class="border-b pb-3 mb-4 flex justify-between items-center">
+            <div>
+              <h3 class="font-bold text-gray-800 text-sm">📋 Histórico Geral de Acompanhamento Docente</h3>
+              <p class="text-xs text-gray-500">Chamadas pendentes, pontualidade e liberações</p>
+            </div>
+            <div class="text-right text-xs text-gray-500">
+              <p><strong>Colégio Arena</strong></p>
+              <p id="profPrintDate"></p>
+            </div>
+          </div>
+          <table class="w-full text-left text-xs border border-gray-300">
+            <thead class="bg-gray-100">
+              <tr>
+                <th class="p-2 border">Data</th>
+                <th class="p-2 border">Professor / Matéria</th>
+                <th class="p-2 border text-center">Chamada Pendente</th>
+                <th class="p-2 border text-center">Atraso Entrada</th>
+                <th class="p-2 border text-center">Atraso Intervalo</th>
+                <th class="p-2 border text-center">Liberou Mais Cedo</th>
+                <th class="p-2 border">Observações</th>
+                <th class="p-2 border text-center no-print">Ações</th>
+              </tr>
+            </thead>
+            <tbody id="listaProfessoresTbody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ==================== ABA 4: INSPETORES ==================== -->
+      <section id="aba-inspetores" class="aba-conteudo">
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+          <h2 id="inspFormTitulo" class="text-base font-bold text-[#1b4332] mb-4">Registro de Orientações — Inspetores</h2>
+          <form id="formInspetores" onsubmit="salvarInspetor(event)" class="space-y-4">
+            <input type="hidden" id="inspEditId" value="" />
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <label class="block text-xs font-medium text-gray-700 mb-1">Orientador / Inspetor</label>
+                <input type="text" id="inspNome" placeholder="Seu nome..." class="w-full border rounded px-3 py-2 text-sm font-bold text-[#1b4332]" required />
+              </div>
+              <div>
+                <label class="block text-xs font-medium text-gray-700 mb-1">Data</label>
+                <input type="date" id="inspData" class="w-full border rounded px-3 py-2 text-sm" required />
+              </div>
+              <div>
+                <label class="block text-xs font-medium text-gray-700 mb-1">Horário</label>
+                <input type="time" id="inspHora" class="w-full border rounded px-3 py-2 text-sm" required />
+              </div>
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-gray-700 mb-1">Situação Identificada</label>
+              <textarea id="inspProblema" rows="2" class="w-full border rounded p-3 text-xs" required></textarea>
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-gray-700 mb-1">Feedback / Encaminhamento</label>
+              <textarea id="inspFeedback" rows="2" class="w-full border rounded p-3 text-xs" required></textarea>
+            </div>
+            <div class="flex justify-end gap-2">
+              <button type="button" id="btnCancelaEditInsp" onclick="cancelarEdicaoInspetor()" class="hidden bg-gray-500 text-white px-4 py-2 rounded text-xs font-medium">Cancelar</button>
+              <button type="submit" id="btnSalvaInsp" class="bg-[#1b4332] text-white px-5 py-2 rounded text-xs font-semibold">Salvar Orientação</button>
+            </div>
+          </form>
+        </div>
+
+        <div class="bg-emerald-50 border border-emerald-200 rounded-lg p-4 mb-6 no-print flex flex-col
