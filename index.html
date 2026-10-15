@@ -6,9 +6,9 @@
   <title>Controle de Gestão Escolar & Contraturno — Colégio Arena</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    .conteudo-aba { display: none; }
-    .conteudo-aba.ativo { display: block; }
-    .botao-menu.ativo { background-color: #1b4332 !important; color: white !important; font-weight: bold; }
+    .secao-painel { display: none; }
+    .secao-painel.ativo { display: block; }
+    .nav-aba.ativo { background-color: #1b4332 !important; color: white !important; font-weight: bold; }
   </style>
 </head>
 <body class="bg-gray-100 text-gray-800 font-sans min-h-screen flex flex-col">
@@ -26,20 +26,20 @@
 
   <!-- MENU DE ABAS -->
   <nav class="bg-white border-b px-6 py-2 flex flex-wrap gap-2 text-sm font-medium">
-    <button onclick="alternarAba('atrasos')" id="btn-atrasos" class="botao-menu ativo py-2 px-4 rounded transition bg-[#1b4332] text-white">⏰ Atrasos</button>
-    <button onclick="alternarAba('sala')" id="btn-sala" class="botao-menu py-2 px-4 rounded transition text-gray-600 hover:bg-gray-100">📚 Sala de Estudos</button>
-    <button onclick="alternarAba('prof')" id="btn-prof" class="botao-menu py-2 px-4 rounded transition text-gray-600 hover:bg-gray-100">👨‍🏫 Professores</button>
-    <button onclick="alternarAba('insp')" id="btn-insp" class="botao-menu py-2 px-4 rounded transition text-gray-600 hover:bg-gray-100">📋 Inspetores</button>
-    <button onclick="alternarAba('atd')" id="btn-atd" class="botao-menu py-2 px-4 rounded transition text-gray-600 hover:bg-gray-100">📋 Atendimentos</button>
-    <button onclick="alternarAba('adm')" id="btn-adm" class="botao-menu py-2 px-4 rounded transition text-gray-600 hover:bg-gray-100">⚙️ ADM & Backup</button>
+    <button data-target="atrasos" id="btn-atrasos" class="nav-aba ativo py-2 px-4 rounded transition bg-[#1b4332] text-white">⏰ Atrasos</button>
+    <button data-target="sala" id="btn-sala" class="nav-aba py-2 px-4 rounded transition text-gray-600 hover:bg-gray-100">📚 Sala de Estudos</button>
+    <button data-target="prof" id="btn-prof" class="nav-aba py-2 px-4 rounded transition text-gray-600 hover:bg-gray-100">👨‍🏫 Professores</button>
+    <button data-target="insp" id="btn-insp" class="nav-aba py-2 px-4 rounded transition text-gray-600 hover:bg-gray-100">📋 Inspetores</button>
+    <button data-target="atd" id="btn-atd" class="nav-aba py-2 px-4 rounded transition text-gray-600 hover:bg-gray-100">📋 Atendimentos</button>
+    <button data-target="adm" id="btn-adm" class="nav-aba py-2 px-4 rounded transition text-gray-600 hover:bg-gray-100">⚙️ ADM & Backup</button>
   </nav>
 
   <main class="p-6 max-w-5xl w-full mx-auto flex-1">
 
     <!-- ABA 1: ATRASOS -->
-    <section id="aba-atrasos" class="conteudo-aba ativo bg-white rounded-lg shadow p-6 space-y-4">
+    <section id="secao-atrasos" class="secao-painel ativo bg-white rounded-lg shadow p-6 space-y-4">
       <h2 class="text-base font-bold text-[#1b4332]">⏰ Registrar Atraso</h2>
-      <form onsubmit="salvarAtraso(event)" class="space-y-4">
+      <form id="formAtraso" class="space-y-4">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
           <input type="text" id="atrasoAluno" placeholder="Nome completo do aluno..." class="border rounded px-3 py-2 text-sm font-bold" required />
           <input type="text" id="atrasoTurma" placeholder="Turma (Ex: 8ºG)" class="border rounded px-3 py-2 text-sm" required />
@@ -49,6 +49,7 @@
           <button type="submit" class="bg-[#1b4332] text-white px-5 py-2 rounded text-sm font-semibold hover:bg-emerald-900">✓ Registrar Atraso</button>
         </div>
       </form>
+
       <div class="border-t pt-4">
         <h3 class="font-bold text-gray-700 text-sm mb-2">Histórico de Atrasos</h3>
         <table class="w-full text-left text-xs border">
@@ -61,9 +62,9 @@
     </section>
 
     <!-- ABA 2: SALA DE ESTUDOS -->
-    <section id="aba-sala" class="conteudo-aba bg-white rounded-lg shadow p-6 space-y-4">
+    <section id="secao-sala" class="secao-painel bg-white rounded-lg shadow p-6 space-y-4">
       <h2 class="text-base font-bold text-[#1b4332]">📚 Sala de Estudos & Biblioteca — 20 Espaços</h2>
-      <form onsubmit="salvarSala(event)" class="space-y-4">
+      <form id="formSala" class="space-y-4">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <input type="date" id="seData" class="border rounded px-3 py-2 text-sm" required />
           <input type="text" id="seResp" placeholder="Professor / Responsável..." class="border rounded px-3 py-2 text-sm" required />
@@ -81,9 +82,9 @@
     </section>
 
     <!-- ABA 3: PROFESSORES -->
-    <section id="aba-prof" class="conteudo-aba bg-white rounded-lg shadow p-6 space-y-4">
+    <section id="secao-prof" class="secao-painel bg-white rounded-lg shadow p-6 space-y-4">
       <h2 class="text-base font-bold text-[#1b4332]">👨‍🏫 Acompanhamento de Professores</h2>
-      <form onsubmit="salvarProf(event)" class="space-y-4">
+      <form id="formProf" class="space-y-4">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <input type="text" id="profNome" placeholder="Nome do Professor e Matéria..." class="border rounded px-3 py-2 text-sm font-bold" required />
           <input type="date" id="profData" class="border rounded px-3 py-2 text-sm" required />
@@ -96,9 +97,9 @@
     </section>
 
     <!-- ABA 4: INSPETORES -->
-    <section id="aba-insp" class="conteudo-aba bg-white rounded-lg shadow p-6 space-y-4">
+    <section id="secao-insp" class="secao-painel bg-white rounded-lg shadow p-6 space-y-4">
       <h2 class="text-base font-bold text-[#1b4332]">📋 Orientações de Inspetores</h2>
-      <form onsubmit="salvarInsp(event)" class="space-y-4">
+      <form id="formInsp" class="space-y-4">
         <input type="text" id="inspNome" placeholder="Nome do Inspetor..." class="w-full border rounded px-3 py-2 text-sm" required />
         <textarea id="inspDesc" placeholder="Situação e feedback..." rows="2" class="w-full border rounded p-3 text-xs" required></textarea>
         <div class="flex justify-end">
@@ -109,9 +110,9 @@
     </section>
 
     <!-- ABA 5: ATENDIMENTOS -->
-    <section id="aba-atd" class="conteudo-aba bg-white rounded-lg shadow p-6 space-y-4">
+    <section id="secao-atd" class="secao-painel bg-white rounded-lg shadow p-6 space-y-4">
       <h2 class="text-base font-bold text-[#1b4332]">📋 Registro de Atendimentos</h2>
-      <form onsubmit="salvarAtd(event)" class="space-y-4">
+      <form id="formAtd" class="space-y-4">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <input type="text" id="atdAluno" placeholder="Nome do Aluno..." class="border rounded px-3 py-2 text-sm font-bold" required />
           <input type="text" id="atdTurma" placeholder="Turma..." class="border rounded px-3 py-2 text-sm" required />
@@ -125,38 +126,50 @@
     </section>
 
     <!-- ABA 6: ADM -->
-    <section id="aba-adm" class="conteudo-aba bg-white rounded-lg shadow p-6 space-y-4">
+    <section id="secao-adm" class="secao-painel bg-white rounded-lg shadow p-6 space-y-4">
       <h2 class="text-base font-bold text-[#1b4332]">⚙️ Painel ADM & Backup</h2>
-      <button onclick="baixarBackup()" class="bg-[#1b4332] text-white px-4 py-2 rounded text-xs font-semibold">⬇️ Baixar Backup em JSON</button>
+      <button id="btnBackup" class="bg-[#1b4332] text-white px-4 py-2 rounded text-xs font-semibold">⬇️ Baixar Backup em JSON</button>
     </section>
 
   </main>
 
   <script>
-    function alternarAba(id) {
-      document.querySelectorAll('.conteudo-aba').forEach(s => s.classList.remove('ativo'));
-      document.querySelectorAll('.botao-menu').forEach(b => b.classList.remove('ativo', 'bg-[#1b4332]', 'text-white'));
-      
-      const painel = document.getElementById('aba-' + id);
-      const botao = document.getElementById('btn-' + id);
-      if(painel) painel.classList.add('ativo');
-      if(botao) botao.classList.add('ativo', 'bg-[#1b4332]', 'text-white');
-    }
+    document.addEventListener('DOMContentLoaded', () => {
+      // Configuração segura dos botões de navegação
+      document.querySelectorAll('.nav-aba').forEach(button => {
+        button.addEventListener('click', () => {
+          const targetId = button.getAttribute('data-target');
+          
+          document.querySelectorAll('.secao-painel').forEach(s => s.classList.remove('ativo'));
+          document.querySelectorAll('.nav-aba').forEach(b => b.classList.remove('ativo', 'bg-[#1b4332]', 'text-white'));
+          
+          const painel = document.getElementById('secao-' + targetId);
+          if (painel) painel.classList.add('ativo');
+          button.classList.add('ativo', 'bg-[#1b4332]', 'text-white');
+        });
+      });
 
-    let atrasos = JSON.parse(localStorage.getItem('arena_atrasos') || '[]');
-    let sala = JSON.parse(localStorage.getItem('arena_sala') || '[]');
-    let prof = JSON.parse(localStorage.getItem('arena_prof') || '[]');
-    let insp = JSON.parse(localStorage.getItem('arena_insp') || '[]');
-    let atd = JSON.parse(localStorage.getItem('arena_atd') || '[]');
-
-    window.addEventListener('DOMContentLoaded', () => {
       montar20Espacos();
       const hoje = new Date().toISOString().split('T')[0];
       const hora = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
       if(document.getElementById('atrasoHora')) document.getElementById('atrasoHora').value = hora;
       ['seData', 'profData', 'inspData'].forEach(x => { if(document.getElementById(x)) document.getElementById(x).value = hoje; });
       renderizarTudo();
+
+      // Listeners de formulários
+      document.getElementById('formAtraso').addEventListener('submit', salvarAtraso);
+      document.getElementById('formSala').addEventListener('submit', salvarSala);
+      document.getElementById('formProf').addEventListener('submit', salvarProf);
+      document.getElementById('formInsp').addEventListener('submit', salvarInsp);
+      document.getElementById('formAtd').addEventListener('submit', salvarAtd);
+      document.getElementById('btnBackup').addEventListener('click', baixarBackup);
     });
+
+    let atrasos = JSON.parse(localStorage.getItem('arena_atrasos') || '[]');
+    let sala = JSON.parse(localStorage.getItem('arena_sala') || '[]');
+    let prof = JSON.parse(localStorage.getItem('arena_prof') || '[]');
+    let insp = JSON.parse(localStorage.getItem('arena_insp') || '[]');
+    let atd = JSON.parse(localStorage.getItem('arena_atd') || '[]');
 
     function salvarDados() {
       localStorage.setItem('arena_atrasos', JSON.stringify(atrasos));
@@ -186,15 +199,23 @@
       e.target.reset();
       renderAtrasos();
     }
+
     function renderAtrasos() {
       const tb = document.getElementById('tabelaAtrasos');
       if(!tb) return;
       tb.innerHTML = '';
       atrasos.forEach(a => {
-        tb.innerHTML += `<tr class="border-b"><td class="p-2 border">${a.hora}</td><td class="p-2 border font-bold">${a.aluno}</td><td class="p-2 border">${a.turma}</td><td class="p-2 border text-center"><button onclick="delAtraso(${a.id})" class="text-red-600 font-bold">Apagar</button></td></tr>`;
+        tb.innerHTML += `<tr class="border-b"><td class="p-2 border">${a.hora}</td><td class="p-2 border font-bold">${a.aluno}</td><td class="p-2 border">${a.turma}</td><td class="p-2 border text-center"><button data-id="${a.id}" class="btn-del-atraso text-red-600 font-bold">Apagar</button></td></tr>`;
+      });
+      document.querySelectorAll('.btn-del-atraso').forEach(btn => {
+        btn.addEventListener('click', (ev) => {
+          const id = Number(ev.target.getAttribute('data-id'));
+          atrasos = atrasos.filter(x => x.id !== id);
+          salvarDados();
+          renderAtrasos();
+        });
       });
     }
-    function delAtraso(id) { atrasos = atrasos.filter(x => x.id !== id); salvarDados(); renderAtrasos(); }
 
     function montar20Espacos() {
       const c = document.getElementById('container20Espacos');
@@ -205,6 +226,7 @@
       }
       c.innerHTML = h;
     }
+
     function salvarSala(e) {
       e.preventDefault();
       let count = 0;
@@ -224,6 +246,7 @@
       renderSala();
       alert(`${count} registro(s) salvo(s)!`);
     }
+
     function renderSala() {
       const l = document.getElementById('listaSala');
       const q = document.getElementById('quadroUrgentes');
@@ -236,22 +259,33 @@
       if(urg.length > 0) {
         let htmlU = '';
         urg.forEach(([n, t]) => {
-          htmlU += `<div class="bg-white border border-red-300 p-2 rounded text-xs flex justify-between items-center"><span><strong>${n}</strong> — <strong>${t}x ocorrências</strong></span><button onclick="removerUrgente('${n}')" class="bg-emerald-600 text-white px-2 py-1 rounded">✓ Resolver</button></div>`;
+          htmlU += `<div class="bg-white border border-red-300 p-2 rounded text-xs flex justify-between items-center"><span><strong>${n}</strong> — <strong>${t}x ocorrências</strong></span><button data-nome="${n}" class="btn-resolver bg-emerald-600 text-white px-2 py-1 rounded">✓ Resolver</button></div>`;
         });
         q.innerHTML = `<div class="bg-red-50 border border-red-300 rounded p-3"><h3 class="font-bold text-red-900 text-xs mb-2">🚨 Casos Urgentes (2+ Ocorrências)</h3><div class="grid grid-cols-1 md:grid-cols-2 gap-2">${htmlU}</div></div>`;
+        
+        document.querySelectorAll('.btn-resolver').forEach(btn => {
+          btn.addEventListener('click', (ev) => {
+            const nome = ev.target.getAttribute('data-nome');
+            if(confirm(`Remover registros de ${nome}?`)) {
+              sala = sala.filter(s => s.aluno !== nome);
+              salvarDados();
+              renderSala();
+            }
+          });
+        });
       }
       sala.forEach(s => {
-        l.innerHTML += `<div class="border p-2 rounded bg-white text-xs"><strong>${s.data}</strong> (Resp: ${s.resp}) — <strong>${s.aluno}</strong> (${s.turma}): ${s.obs} <button onclick="delSala(${s.id})" class="text-red-600 float-right font-bold">Apagar</button></div>`;
+        l.innerHTML += `<div class="border p-2 rounded bg-white text-xs"><strong>${s.data}</strong> (Resp: ${s.resp}) — <strong>${s.aluno}</strong> (${s.turma}): ${s.obs} <button data-id="${s.id}" class="btn-del-sala text-red-600 float-right font-bold">Apagar</button></div>`;
+      });
+      document.querySelectorAll('.btn-del-sala').forEach(btn => {
+        btn.addEventListener('click', (ev) => {
+          const id = Number(ev.target.getAttribute('data-id'));
+          sala = sala.filter(s => s.id !== id);
+          salvarDados();
+          renderSala();
+        });
       });
     }
-    function removerUrgente(nome) {
-      if(confirm(`Remover registros de ${nome}?`)) {
-        sala = sala.filter(s => s.aluno !== nome);
-        salvarDados();
-        renderSala();
-      }
-    }
-    function delSala(id) { sala = sala.filter(s => s.id !== id); salvarDados(); renderSala(); }
 
     function salvarProf(e) {
       e.preventDefault();
@@ -265,10 +299,17 @@
       if(!l) return;
       l.innerHTML = '';
       prof.forEach(p => {
-        l.innerHTML += `<div class="border p-2 rounded bg-white text-xs"><strong>${p.data}</strong> — ${p.nome} <button onclick="delProf(${p.id})" class="text-red-600 float-right font-bold">Apagar</button></div>`;
+        l.innerHTML += `<div class="border p-2 rounded bg-white text-xs"><strong>${p.data}</strong> — ${p.nome} <button data-id="${p.id}" class="btn-del-prof text-red-600 float-right font-bold">Apagar</button></div>`;
+      });
+      document.querySelectorAll('.btn-del-prof').forEach(btn => {
+        btn.addEventListener('click', (ev) => {
+          const id = Number(ev.target.getAttribute('data-id'));
+          prof = prof.filter(p => p.id !== id);
+          salvarDados();
+          renderProf();
+        });
       });
     }
-    function delProf(id) { prof = prof.filter(p => p.id !== id); salvarDados(); renderProf(); }
 
     function salvarInsp(e) {
       e.preventDefault();
@@ -282,10 +323,17 @@
       if(!l) return;
       l.innerHTML = '';
       insp.forEach(i => {
-        l.innerHTML += `<div class="border p-2 rounded bg-white text-xs"><strong>${i.nome}</strong>: ${i.desc} <button onclick="delInsp(${i.id})" class="text-red-600 float-right font-bold">Apagar</button></div>`;
+        l.innerHTML += `<div class="border p-2 rounded bg-white text-xs"><strong>${i.nome}</strong>: ${i.desc} <button data-id="${i.id}" class="btn-del-insp text-red-600 float-right font-bold">Apagar</button></div>`;
+      });
+      document.querySelectorAll('.btn-del-insp').forEach(btn => {
+        btn.addEventListener('click', (ev) => {
+          const id = Number(ev.target.getAttribute('data-id'));
+          insp = insp.filter(i => i.id !== id);
+          salvarDados();
+          renderInsp();
+        });
       });
     }
-    function delInsp(id) { insp = insp.filter(i => i.id !== id); salvarDados(); renderInsp(); }
 
     function salvarAtd(e) {
       e.preventDefault();
@@ -299,10 +347,17 @@
       if(!l) return;
       l.innerHTML = '';
       atd.forEach(a => {
-        l.innerHTML += `<div class="border p-2 rounded bg-white text-xs"><strong>${a.aluno}</strong> (${a.turma}): ${a.relato} <button onclick="delAtd(${a.id})" class="text-red-600 float-right font-bold">Apagar</button></div>`;
+        l.innerHTML += `<div class="border p-2 rounded bg-white text-xs"><strong>${a.aluno}</strong> (${a.turma}): ${a.relato} <button data-id="${a.id}" class="btn-del-atd text-red-600 float-right font-bold">Apagar</button></div>`;
+      });
+      document.querySelectorAll('.btn-del-atd').forEach(btn => {
+        btn.addEventListener('click', (ev) => {
+          const id = Number(ev.target.getAttribute('data-id'));
+          atd = atd.filter(a => id !== a.id);
+          salvarDados();
+          renderAtd();
+        });
       });
     }
-    function delAtd(id) { atd = atd.filter(a => a.id !== id); salvarDados(); renderAtd(); }
 
     function baixarBackup() {
       const blob = new Blob([JSON.stringify({atrasos, sala, prof, insp, atd}, null, 2)], {type: 'application/json'});
