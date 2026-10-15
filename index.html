@@ -28,7 +28,7 @@
       <p id="currentDateDisplay" class="text-xs text-emerald-200 mt-1"></p>
     </div>
     <div class="mt-2 md:mt-0 text-xs bg-emerald-900/80 px-3 py-1.5 rounded text-emerald-100 font-medium">
-      🟢 <span id="badgeTotalAlunos">1.160</span> alunos carregados nativamente
+      🟢 <span>1.160</span> alunos carregados nativamente
     </div>
   </header>
 
@@ -392,103 +392,4 @@
       if(urg.length > 0) {
         let htmlU = '';
         urg.forEach(([n, t]) => {
-          htmlU += `<div class="bg-white border border-red-300 p-2.5 rounded text-xs flex justify-between items-center"><span><strong>${n}</strong> — <strong>${t}x ocorrências</strong></span><button onclick="removerUrgente('${n}')" class="bg-emerald-600 text-white px-2.5 py-1 rounded font-bold">✓ Notificado (Remover)</button></div>`;
-        });
-        q.innerHTML = `<div class="bg-red-50 border-2 border-red-300 rounded p-4"><h3 class="font-bold text-red-900 text-sm mb-2">🚨 Casos Urgentes (2+ Ocorrências)</h3><div class="grid grid-cols-1 md:grid-cols-2 gap-2">${htmlU}</div></div>`;
-      }
-
-      salaList.forEach(s => {
-        l.innerHTML += `<div class="border p-3 rounded bg-white text-xs"><strong>${s.data}</strong> (Resp: ${s.responsavel}) — 👤 <strong>${s.aluno}</strong> (${s.turma}): ${s.ocorrencia} <button onclick="delSala(${s.id})" class="text-red-600 float-right font-bold">Apagar</button></div>`;
-      });
-    }
-
-    function removerUrgente(nome) {
-      if(confirm(`Deseja remover todos os registros de ${nome} para retirá-lo dos alertas?`)) {
-        salaList = salaList.filter(s => s.aluno !== nome);
-        salvarLocal();
-        renderSala();
-      }
-    }
-    function delSala(id) { salaList = salaList.filter(s => s.id !== id); salvarLocal(); renderSala(); }
-
-    // Professores
-    function salvarProfessor(e) {
-      e.preventDefault();
-      profList.unshift({
-        id: Date.now(),
-        nome: document.getElementById('profNome').value,
-        data: document.getElementById('profData').value,
-        obs: document.getElementById('profObs').value
-      });
-      salvarLocal();
-      e.target.reset();
-      renderProf();
-      alert('Ocorrência com professor registrada!');
-    }
-    function renderProf() {
-      const l = document.getElementById('listaProfessores');
-      if(!l) return;
-      l.innerHTML = '';
-      profList.forEach(p => {
-        l.innerHTML += `<div class="border p-2 rounded bg-white text-xs"><strong>${p.data}</strong> — ${p.nome}: ${p.obs} <button onclick="delProf(${p.id})" class="text-red-600 float-right font-bold">Apagar</button></div>`;
-      });
-    }
-    function delProf(id) { profList = profList.filter(p => p.id !== id); salvarLocal(); renderProf(); }
-
-    // Inspetores
-    function salvarInspetor(e) {
-      e.preventDefault();
-      inspList.unshift({
-        id: Date.now(),
-        nome: document.getElementById('inspNome').value,
-        data: document.getElementById('inspData').value,
-        hora: document.getElementById('inspHora').value,
-        desc: document.getElementById('inspDesc').value
-      });
-      salvarLocal();
-      e.target.reset();
-      renderInsp();
-      alert('Orientação salva!');
-    }
-    function renderInsp() {
-      const l = document.getElementById('listaInspetores');
-      if(!l) return;
-      l.innerHTML = '';
-      inspList.forEach(i => {
-        l.innerHTML += `<div class="border p-2 rounded bg-white text-xs"><strong>${i.nome}</strong> (${i.data} às ${i.hora}): ${i.desc} <button onclick="delInsp(${i.id})" class="text-red-600 float-right font-bold">Apagar</button></div>`;
-      });
-    }
-    function delInsp(id) { inspList = inspList.filter(i => i.id !== id); salvarLocal(); renderInsp(); }
-
-    // Atendimentos
-    function salvarAtendimento(e) {
-      e.preventDefault();
-      atdList.unshift({
-        id: Date.now(),
-        aluno: document.getElementById('atdAluno').value.toUpperCase(),
-        turma: document.getElementById('atdTurma').value,
-        data: document.getElementById('atdData').value,
-        relato: document.getElementById('atdRelato').value
-      });
-      salvarLocal();
-      e.target.reset();
-      renderAtd();
-      alert('Atendimento salvo!');
-    }
-    function renderAtd() {
-      const l = document.getElementById('listaAtendimentos');
-      if(!l) return;
-      l.innerHTML = '';
-      atdList.forEach(a => {
-        l.innerHTML += `<div class="border p-2 rounded bg-white text-xs"><strong>${a.data}</strong> — <strong>${a.aluno}</strong> (${a.turma}): ${a.relato} <button onclick="delAtd(${a.id})" class="text-red-600 float-right font-bold">Apagar</button></div>`;
-      });
-    }
-    function delAtd(id) { atdList = atdList.filter(a => a.id !== id); salvarLocal(); renderAtd(); }
-
-    function baixarBackup() {
-      const b = new Blob([JSON.stringify({atrasosList, salaList, profList, inspList, atdList}, null, 2)], {type: 'application/json'});
-      const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = 'backup_arena.json'; a.click();
-    }
-  </script>
-</body>
-</html>
+          htmlU += `<div class="bg-white border border-red-300 p-2.5 rounded
