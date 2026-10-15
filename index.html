@@ -6,297 +6,155 @@
   <title>Controle de Gestão Escolar & Contraturno — Colégio Arena</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    .secao-aba { display: none; }
-    .secao-aba.ativa { display: block; }
-    .tab-btn.ativo { border-bottom: 3px solid #1b4332; color: #1b4332; font-weight: 700; background-color: #f0fdf4; }
-    @media print {
-      body * { visibility: hidden; }
-      #printableArea, #printableArea * { visibility: visible; }
-      #printableArea { position: absolute; left: 0; top: 0; width: 100%; }
-      .no-print { display: none !important; }
-    }
+    .painel-aba { display: none; }
+    .painel-aba.ativo { display: block; }
+    .nav-btn.active { background-color: #1b4332; color: white; font-weight: bold; }
   </style>
 </head>
 <body class="bg-gray-100 text-gray-800 font-sans min-h-screen flex flex-col">
 
-  <!-- Cabeçalho -->
-  <header class="bg-[#1b4332] text-white px-6 py-4 shadow flex flex-col md:flex-row justify-between items-start md:items-center no-print">
+  <header class="bg-[#1b4332] text-white px-6 py-4 shadow flex justify-between items-center">
     <div>
-      <h1 class="text-xl font-bold flex items-center gap-2">
-        <span>📋</span> Colégio Arena — Gestão Escolar & Contraturno
-      </h1>
-      <p id="currentDateDisplay" class="text-xs text-emerald-200 mt-1"></p>
+      <h1 class="text-lg font-bold flex items-center gap-2"><span>📋</span> Colégio Arena — Gestão Escolar</h1>
+      <p class="text-xs text-emerald-200">Painel Escolar — Acesso Direto</p>
     </div>
-    <div class="mt-2 md:mt-0 text-xs bg-emerald-900/80 px-3 py-1.5 rounded text-emerald-100 font-medium">
-      🟢 <span>1.160</span> alunos carregados nativamente
+    <div class="text-right text-xs">
+      <p class="font-bold">Coordenação Geral</p>
+      <p class="text-emerald-200">Perfil: COORDENADOR</p>
     </div>
   </header>
 
-  <!-- Navegação -->
-  <nav class="bg-white border-b border-gray-200 px-6 flex flex-wrap gap-2 text-sm font-medium text-gray-600 no-print">
-    <button onclick="mudarAba('atrasos')" id="tab-atrasos" class="tab-btn py-3 px-4 border-b-2 border-transparent hover:text-[#1b4332] flex items-center gap-2 ativo">⏰ Atrasos</button>
-    <button onclick="mudarAba('sala-estudos')" id="tab-sala-estudos" class="tab-btn py-3 px-4 border-b-2 border-transparent hover:text-[#1b4332] flex items-center gap-2">📚 Sala de Estudos & Biblioteca</button>
-    <button onclick="mudarAba('professores')" id="tab-professores" class="tab-btn py-3 px-4 border-b-2 border-transparent hover:text-[#1b4332] flex items-center gap-2">👨‍🏫 Professores</button>
-    <button onclick="mudarAba('inspetores')" id="tab-inspetores" class="tab-btn py-3 px-4 border-b-2 border-transparent hover:text-[#1b4332] flex items-center gap-2">📋 Inspetores / Orientadores</button>
-    <button onclick="mudarAba('atendimentos')" id="tab-atendimentos" class="tab-btn py-3 px-4 border-b-2 border-transparent hover:text-[#1b4332] flex items-center gap-2">📋 Atendimentos</button>
-    <button onclick="mudarAba('contatos')" id="tab-contatos" class="tab-btn py-3 px-4 border-b-2 border-transparent hover:text-[#1b4332] flex items-center gap-2">📞 Contatos Rápidos</button>
+  <!-- MENU DE ABAS -->
+  <nav class="bg-white border-b px-6 py-2 flex flex-wrap gap-2 text-sm font-medium">
+    <button onclick="mudarAba('atrasos')" id="btn-atrasos" class="nav-btn active py-2 px-4 rounded transition">⏰ Atrasos</button>
+    <button onclick="mudarAba('sala')" id="btn-sala" class="nav-btn py-2 px-4 rounded transition text-gray-600 hover:bg-gray-100">📚 Sala de Estudos</button>
+    <button onclick="mudarAba('prof')" id="btn-prof" class="nav-btn py-2 px-4 rounded transition text-gray-600 hover:bg-gray-100">👨‍🏫 Professores</button>
+    <button onclick="mudarAba('insp')" id="btn-insp" class="nav-btn py-2 px-4 rounded transition text-gray-600 hover:bg-gray-100">📋 Inspetores</button>
+    <button onclick="mudarAba('atd')" id="btn-atd" class="nav-btn py-2 px-4 rounded transition text-gray-600 hover:bg-gray-100">📋 Atendimentos</button>
+    <button onclick="mudarAba('adm')" id="btn-adm" class="nav-btn py-2 px-4 rounded transition text-gray-600 hover:bg-gray-100">⚙️ ADM & Backup</button>
   </nav>
 
-  <main class="p-6 max-w-6xl w-full mx-auto flex-1">
+  <main class="p-6 max-w-5xl w-full mx-auto flex-1">
 
-    <!-- ==================== ABA 1: ATRASOS ==================== -->
-    <section id="content-atrasos" class="secao-aba ativa space-y-6">
-      <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <div class="flex gap-4 border-b border-gray-200 pb-3 mb-4">
-          <button onclick="setAtrasoTurno('Matutino')" id="btn-turno-mat" class="px-4 py-1.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800">Período Matutino</button>
-          <button onclick="setAtrasoTurno('Vespertino')" id="btn-turno-vesp" class="px-4 py-1.5 rounded-full text-xs font-semibold bg-gray-100 text-gray-600">Período Vespertino</button>
+    <!-- ABA 1: ATRASOS -->
+    <section id="aba-atrasos" class="painel-aba ativo bg-white rounded-lg shadow p-6 space-y-4">
+      <h2 class="text-base font-bold text-[#1b4332]">⏰ Registrar Atraso</h2>
+      <form onsubmit="salvarAtraso(event)" class="space-y-4">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <input type="text" id="atrasoAluno" placeholder="Nome completo do aluno..." class="border rounded px-3 py-2 text-sm font-bold" required />
+          <input type="text" id="atrasoTurma" placeholder="Turma (Ex: 8ºG)" class="border rounded px-3 py-2 text-sm" required />
+          <input type="time" id="atrasoHora" class="border rounded px-3 py-2 text-sm" required />
         </div>
-
-        <div class="bg-[#1b4332] text-white p-3 rounded-t-md font-semibold text-sm flex items-center gap-2">
-          ⏰ Registrar Atrasos — <span id="labelTurno">Matutino</span>
+        <div class="flex justify-end">
+          <button type="submit" class="bg-[#1b4332] text-white px-5 py-2 rounded text-sm font-semibold hover:bg-emerald-900">✓ Registrar Atraso</button>
         </div>
+      </form>
 
-        <form id="formAtraso" onsubmit="salvarAtraso(event)" class="border border-gray-200 border-t-0 p-4 rounded-b-md bg-gray-50/50 space-y-4">
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div>
-              <label class="block text-xs font-medium text-gray-700 mb-1">Espaço / Aula</label>
-              <select id="atrasoEspaco" class="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm" required>
-                <option value="Sala de aula">Sala de aula</option>
-                <option value="Nivelamentos">Nivelamentos</option>
-                <option value="Sala de estudos">Sala de estudos</option>
-                <option value="Biblioteca">Biblioteca</option>
-                <option value="Modalidades diversas">Modalidades diversas</option>
-                <option value="AEE">AEE</option>
-              </select>
-            </div>
-            <div>
-              <label class="block text-xs font-medium text-gray-700 mb-1">Horário de Chegada</label>
-              <input type="time" id="atrasoHora" class="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm" required />
-            </div>
-            <div>
-              <label class="block text-xs font-medium text-gray-700 mb-1">Data</label>
-              <input type="date" id="atrasoData" class="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm" required />
-            </div>
-          </div>
-
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div>
-              <label class="block text-xs font-medium text-gray-700 mb-1">Nome do Aluno</label>
-              <input type="text" id="atrasoAluno" placeholder="Nome completo do aluno..." class="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm font-bold text-[#1b4332]" required />
-            </div>
-            <div>
-              <label class="block text-xs font-medium text-gray-700 mb-1">Turma</label>
-              <input type="text" id="atrasoTurma" placeholder="Ex: 8ºG" class="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm" required />
-            </div>
-            <div>
-              <label class="block text-xs font-medium text-gray-700 mb-1">Justificativa</label>
-              <input type="text" id="atrasoJustificativa" placeholder="Motivo do atraso..." class="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm" />
-            </div>
-          </div>
-
-          <div class="flex justify-end">
-            <button type="submit" class="bg-[#1b4332] text-white px-5 py-2 rounded text-sm font-medium hover:bg-emerald-900">
-              ✓ Registrar Atraso
-            </button>
-          </div>
-        </form>
+      <div class="border-t pt-4">
+        <h3 class="font-bold text-gray-700 text-sm mb-2">Histórico de Atrasos</h3>
+        <table class="w-full text-left text-xs border">
+          <thead class="bg-gray-100">
+            <tr><th class="p-2 border">Hora</th><th class="p-2 border">Aluno</th><th class="p-2 border">Turma</th><th class="p-2 border text-center">Ações</th></tr>
+          </thead>
+          <tbody id="tabelaAtrasos"></tbody>
+        </table>
       </div>
+    </section>
 
-      <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <h3 class="font-bold text-gray-700 text-sm mb-3">Histórico de Atrasos</h3>
-        <div class="overflow-x-auto">
-          <table class="w-full text-left text-xs border border-gray-200">
-            <thead class="bg-gray-100 font-semibold text-gray-700">
-              <tr>
-                <th class="p-2 border">Data/Hora</th>
-                <th class="p-2 border">Turno</th>
-                <th class="p-2 border">Aluno</th>
-                <th class="p-2 border">Turma</th>
-                <th class="p-2 border">Espaço</th>
-                <th class="p-2 border">Justificativa</th>
-                <th class="p-2 border text-center">Ações</th>
-              </tr>
-            </thead>
-            <tbody id="listaAtrasosTbody"></tbody>
-          </table>
+    <!-- ABA 2: SALA DE ESTUDOS -->
+    <section id="aba-sala" class="painel-aba bg-white rounded-lg shadow p-6 space-y-4">
+      <h2 class="text-base font-bold text-[#1b4332]">📚 Sala de Estudos & Biblioteca — 20 Espaços</h2>
+      <form onsubmit="salvarSala(event)" class="space-y-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <input type="date" id="seData" class="border rounded px-3 py-2 text-sm" required />
+          <input type="text" id="seResp" placeholder="Professor / Responsável..." class="border rounded px-3 py-2 text-sm" required />
         </div>
-      </div>
-    </section>
-
-    <!-- ==================== ABA 2: SALA DE ESTUDOS ==================== -->
-    <section id="content-sala-estudos" class="secao-aba space-y-6">
-      <div id="printableArea" class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <div class="flex justify-between items-center mb-4">
-          <h2 class="text-base font-bold text-[#1b4332]">📚 Controle Diário — Sala de Estudos e Biblioteca</h2>
-          <button onclick="window.print()" class="bg-gray-800 text-white px-3 py-1.5 rounded text-xs hover:bg-black no-print">🖨️ Imprimir Formulário</button>
+        <div id="container20Espacos" class="space-y-2 bg-gray-50 p-3 rounded border"></div>
+        <div class="flex justify-end">
+          <button type="submit" class="bg-[#1b4332] text-white px-5 py-2 rounded text-sm font-semibold">💾 Salvar Relatório</button>
         </div>
-
-        <form id="formSalaEstudos" onsubmit="salvarSalaEstudos(event)" class="space-y-6">
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label class="block text-xs font-medium text-gray-700 mb-1">Data</label>
-              <input type="date" id="seData" class="w-full border rounded px-3 py-2 text-sm" required />
-            </div>
-            <div>
-              <label class="block text-xs font-medium text-gray-700 mb-1">Professor / Inspetor Responsável</label>
-              <input type="text" id="seProfessor" placeholder="Seu nome..." class="w-full border rounded px-3 py-2 text-sm" required />
-            </div>
-          </div>
-
-          <div class="space-y-3">
-            <h3 class="text-xs font-bold text-gray-700 uppercase">1. Controle de Ambiente e Foco</h3>
-            <div class="flex justify-between items-center border-b pb-2 text-xs">
-              <span><strong>A) Silêncio / Ruído Produtivo</strong></span>
-              <div class="flex gap-2">
-                <label><input type="radio" name="ind_silencio" value="Excelente" checked /> Excelente</label>
-                <label><input type="radio" name="ind_silencio" value="Regular" /> Regular</label>
-                <label><input type="radio" name="ind_silencio" value="Crítico" /> Crítico</label>
-              </div>
-            </div>
-            <div class="flex justify-between items-center border-b pb-2 text-xs">
-              <span><strong>B) Ciclo de Foco</strong></span>
-              <div class="flex gap-2">
-                <label><input type="radio" name="ind_foco" value="Excelente" checked /> Excelente</label>
-                <label><input type="radio" name="ind_foco" value="Regular" /> Regular</label>
-                <label><input type="radio" name="ind_foco" value="Crítico" /> Crítico</label>
-              </div>
-            </div>
-          </div>
-
-          <div>
-            <h3 class="text-xs font-bold text-gray-700 uppercase mb-2">2. Ocorrências de Alunos (20 Espaços Disponíveis)</h3>
-            <div id="container20Espacos" class="space-y-2 bg-gray-50 p-3 rounded border"></div>
-          </div>
-
-          <div class="flex justify-end">
-            <button type="submit" class="bg-[#1b4332] text-white px-6 py-2.5 rounded text-sm font-semibold hover:bg-emerald-900">
-              💾 Salvar Relatório Diário
-            </button>
-          </div>
-        </form>
-      </div>
-
-      <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <div id="quadroUrgentes" class="mb-6"></div>
-        <h3 class="font-bold text-gray-700 text-sm mb-3">Histórico de Ocorrências da Sala de Estudos</h3>
-        <div id="listaSalaEstudos" class="space-y-3"></div>
+      </form>
+      <div id="quadroUrgentes" class="mt-4"></div>
+      <div class="border-t pt-4">
+        <h3 class="font-bold text-gray-700 text-sm mb-2">Histórico da Sala de Estudos</h3>
+        <div id="listaSala" class="space-y-2"></div>
       </div>
     </section>
 
-    <!-- ==================== ABA 3: PROFESSORES ==================== -->
-    <section id="content-professores" class="secao-aba space-y-6">
-      <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <h2 class="text-base font-bold text-[#1b4332] mb-4">👨‍🏫 Acompanhamento de Professores</h2>
-        <form onsubmit="salvarProfessor(event)" class="space-y-4">
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <input type="text" id="profNome" placeholder="Nome do Professor e Matéria..." class="border rounded px-3 py-2 text-sm font-bold" required />
-            <input type="date" id="profData" class="border rounded px-3 py-2 text-sm" required />
-            <input type="text" id="profObs" placeholder="Observação (Ex: Atraso, Chamada pendente)..." class="border rounded px-3 py-2 text-sm" required />
-          </div>
-          <div class="flex justify-end">
-            <button type="submit" class="bg-[#1b4332] text-white px-5 py-2 rounded text-sm font-semibold">Registrar Ocorrência</button>
-          </div>
-        </form>
-      </div>
-      <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <h3 class="font-bold text-gray-700 text-sm mb-3">Histórico de Acompanhamento Docente</h3>
-        <div id="listaProfessores" class="space-y-2"></div>
-      </div>
+    <!-- ABA 3: PROFESSORES -->
+    <section id="aba-prof" class="painel-aba bg-white rounded-lg shadow p-6 space-y-4">
+      <h2 class="text-base font-bold text-[#1b4332]">👨‍🏫 Acompanhamento de Professores</h2>
+      <form onsubmit="salvarProf(event)" class="space-y-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <input type="text" id="profNome" placeholder="Nome do Professor e Matéria..." class="border rounded px-3 py-2 text-sm font-bold" required />
+          <input type="date" id="profData" class="border rounded px-3 py-2 text-sm" required />
+        </div>
+        <div class="flex justify-end">
+          <button type="submit" class="bg-[#1b4332] text-white px-5 py-2 rounded text-sm font-semibold">Registrar Ocorrência</button>
+        </div>
+      </form>
+      <div id="listaProf" class="mt-4 space-y-2"></div>
     </section>
 
-    <!-- ==================== ABA 4: INSPETORES ==================== -->
-    <section id="content-inspetores" class="secao-aba space-y-6">
-      <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <h2 class="text-base font-bold text-[#1b4332] mb-4">📋 Orientações de Inspetores</h2>
-        <form onsubmit="salvarInspetor(event)" class="space-y-4">
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <input type="text" id="inspNome" placeholder="Nome do Inspetor..." class="border rounded px-3 py-2 text-sm font-bold" required />
-            <input type="date" id="inspData" class="border rounded px-3 py-2 text-sm" required />
-            <input type="time" id="inspHora" class="border rounded px-3 py-2 text-sm" required />
-          </div>
-          <textarea id="inspDesc" placeholder="Situação identificada e feedback..." rows="2" class="w-full border rounded p-3 text-xs" required></textarea>
-          <div class="flex justify-end">
-            <button type="submit" class="bg-[#1b4332] text-white px-5 py-2 rounded text-sm font-semibold">Salvar Orientação</button>
-          </div>
-        </form>
-      </div>
-      <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <h3 class="font-bold text-gray-700 text-sm mb-3">Histórico de Orientações</h3>
-        <div id="listaInspetores" class="space-y-2"></div>
-      </div>
+    <!-- ABA 4: INSPETORES -->
+    <section id="aba-insp" class="painel-aba bg-white rounded-lg shadow p-6 space-y-4">
+      <h2 class="text-base font-bold text-[#1b4332]">📋 Orientações de Inspetores</h2>
+      <form onsubmit="salvarInsp(event)" class="space-y-4">
+        <input type="text" id="inspNome" placeholder="Nome do Inspetor..." class="w-full border rounded px-3 py-2 text-sm" required />
+        <textarea id="inspDesc" placeholder="Situação e feedback..." rows="2" class="w-full border rounded p-3 text-xs" required></textarea>
+        <div class="flex justify-end">
+          <button type="submit" class="bg-[#1b4332] text-white px-5 py-2 rounded text-sm font-semibold">Salvar Orientação</button>
+        </div>
+      </form>
+      <div id="listaInsp" class="mt-4 space-y-2"></div>
     </section>
 
-    <!-- ==================== ABA 5: ATENDIMENTOS ==================== -->
-    <section id="content-atendimentos" class="secao-aba space-y-6">
-      <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <h2 class="text-base font-bold text-[#1b4332] mb-4">📋 Registro de Atendimentos</h2>
-        <form onsubmit="salvarAtendimento(event)" class="space-y-4">
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <input type="text" id="atdAluno" placeholder="Nome do Aluno..." class="border rounded px-3 py-2 text-sm font-bold" required />
-            <input type="text" id="atdTurma" placeholder="Turma..." class="border rounded px-3 py-2 text-sm" required />
-            <input type="date" id="atdData" class="border rounded px-3 py-2 text-sm" required />
-          </div>
-          <textarea id="atdRelato" placeholder="Relato do atendimento..." rows="2" class="w-full border rounded p-3 text-xs" required></textarea>
-          <div class="flex justify-end">
-            <button type="submit" class="bg-[#1b4332] text-white px-5 py-2 rounded text-sm font-semibold">Salvar Atendimento</button>
-          </div>
-        </form>
-      </div>
-      <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <h3 class="font-bold text-gray-700 text-sm mb-3">Histórico de Atendimentos</h3>
-        <div id="listaAtendimentos" class="space-y-2"></div>
-      </div>
+    <!-- ABA 5: ATENDIMENTOS -->
+    <section id="aba-atd" class="painel-aba bg-white rounded-lg shadow p-6 space-y-4">
+      <h2 class="text-base font-bold text-[#1b4332]">📋 Registro de Atendimentos</h2>
+      <form onsubmit="salvarAtd(event)" class="space-y-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <input type="text" id="atdAluno" placeholder="Nome do Aluno..." class="border rounded px-3 py-2 text-sm font-bold" required />
+          <input type="text" id="atdTurma" placeholder="Turma..." class="border rounded px-3 py-2 text-sm" required />
+        </div>
+        <textarea id="atdRelato" placeholder="Relato do atendimento..." rows="2" class="w-full border rounded p-3 text-xs" required></textarea>
+        <div class="flex justify-end">
+          <button type="submit" class="bg-[#1b4332] text-white px-5 py-2 rounded text-sm font-semibold">Salvar Atendimento</button>
+        </div>
+      </form>
+      <div id="listaAtd" class="mt-4 space-y-2"></div>
     </section>
 
-    <!-- ==================== ABA 6: CONTATOS ==================== -->
-    <section id="content-contatos" class="secao-aba space-y-6">
-      <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <h2 class="text-base font-bold text-[#1b4332] mb-4">📞 Contatos Rápidos & Backup</h2>
-        <button onclick="baixarBackup()" class="bg-[#1b4332] text-white px-4 py-2 rounded text-xs font-semibold">⬇️ Baixar Backup em JSON</button>
-      </div>
+    <!-- ABA 6: ADM -->
+    <section id="aba-adm" class="painel-aba bg-white rounded-lg shadow p-6 space-y-4">
+      <h2 class="text-base font-bold text-[#1b4332]">⚙️ Painel ADM & Backup</h2>
+      <button onclick="baixarBackup()" class="bg-[#1b4332] text-white px-4 py-2 rounded text-xs font-semibold">⬇️ Baixar Backup em JSON</button>
     </section>
 
   </main>
 
   <script>
-    function mudarAba(tabId) {
-      document.querySelectorAll('.secao-aba').forEach(el => el.classList.remove('ativa'));
-      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('ativo'));
-      
-      const content = document.getElementById('content-' + tabId);
-      const btn = document.getElementById('tab-' + tabId);
-      if(content) content.classList.add('ativa');
-      if(btn) btn.classList.add('ativo');
-    }
-
-    let atrasosList = JSON.parse(localStorage.getItem('arena_atrasos') || '[]');
-    let salaList = JSON.parse(localStorage.getItem('arena_sala') || '[]');
-    let profList = JSON.parse(localStorage.getItem('arena_prof') || '[]');
-    let inspList = JSON.parse(localStorage.getItem('arena_insp') || '[]');
-    let atdList = JSON.parse(localStorage.getItem('arena_atd') || '[]');
-    let turnoAtual = 'Matutino';
+    let atrasos = JSON.parse(localStorage.getItem('arena_atrasos') || '[]');
+    let sala = JSON.parse(localStorage.getItem('arena_sala') || '[]');
+    let prof = JSON.parse(localStorage.getItem('arena_prof') || '[]');
+    let insp = JSON.parse(localStorage.getItem('arena_insp') || '[]');
+    let atd = JSON.parse(localStorage.getItem('arena_atd') || '[]');
 
     window.addEventListener('DOMContentLoaded', () => {
       montar20Espacos();
       const hoje = new Date().toISOString().split('T')[0];
       const hora = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-      
-      ['atrasoData', 'seData', 'profData', 'inspData', 'atdData'].forEach(id => {
-        if(document.getElementById(id)) document.getElementById(id).value = hoje;
-      });
       if(document.getElementById('atrasoHora')) document.getElementById('atrasoHora').value = hora;
-      if(document.getElementById('inspHora')) document.getElementById('inspHora').value = hora;
-
-      setAtrasoTurno('Matutino');
+      ['seData', 'profData', 'inspData'].forEach(id => { if(document.getElementById(id)) document.getElementById(id).value = hoje; });
       renderizarTudo();
     });
 
-    function salvarLocal() {
-      localStorage.setItem('arena_atrasos', JSON.stringify(atrasosList));
-      localStorage.setItem('arena_sala', JSON.stringify(salaList));
-      localStorage.setItem('arena_prof', JSON.stringify(profList));
-      localStorage.setItem('arena_insp', JSON.stringify(inspList));
-      localStorage.setItem('arena_atd', JSON.stringify(atdList));
+    function salvarDados() {
+      localStorage.setItem('arena_atrasos', JSON.stringify(atrasos));
+      localStorage.setItem('arena_sala', JSON.stringify(sala));
+      localStorage.setItem('arena_prof', JSON.stringify(prof));
+      localStorage.setItem('arena_insp', JSON.stringify(insp));
+      localStorage.setItem('arena_atd', JSON.stringify(atd));
     }
 
     function renderizarTudo() {
@@ -307,40 +165,38 @@
       renderAtd();
     }
 
-    // Atrasos
-    function setAtrasoTurno(t) {
-      turnoAtual = t;
-      if(document.getElementById('labelTurno')) document.getElementById('labelTurno').textContent = t;
+    function mudarAba(nome) {
+      document.querySelectorAll('.painel-aba').forEach(el => el.classList.remove('ativo'));
+      document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active', 'bg-[#1b4332]', 'text-white'));
+      
+      const aba = document.getElementById('aba-'+nome);
+      const btn = document.getElementById('btn-'+nome);
+      if(aba) aba.classList.add('ativo');
+      if(btn) btn.classList.add('active', 'bg-[#1b4332]', 'text-white');
     }
 
+    // Atrasos
     function salvarAtraso(e) {
       e.preventDefault();
-      atrasosList.unshift({
+      atrasos.unshift({
         id: Date.now(),
-        turno: turnoAtual,
-        espaco: document.getElementById('atrasoEspaco').value,
-        hora: document.getElementById('atrasoHora').value,
-        data: document.getElementById('atrasoData').value,
         aluno: document.getElementById('atrasoAluno').value.toUpperCase(),
         turma: document.getElementById('atrasoTurma').value,
-        justificativa: document.getElementById('atrasoJustificativa').value
+        hora: document.getElementById('atrasoHora').value
       });
-      salvarLocal();
+      salvarDados();
       e.target.reset();
-      setAtrasoTurno(turnoAtual);
       renderAtrasos();
     }
-
     function renderAtrasos() {
-      const tb = document.getElementById('listaAtrasosTbody');
+      const tb = document.getElementById('tabelaAtrasos');
       if(!tb) return;
       tb.innerHTML = '';
-      atrasosList.forEach(a => {
-        tb.innerHTML += `<tr class="border-b"><td class="p-2 border">${a.data} às ${a.hora}</td><td class="p-2 border">${a.turno}</td><td class="p-2 border font-bold text-[#1b4332]">${a.aluno}</td><td class="p-2 border">${a.turma}</td><td class="p-2 border">${a.espaco}</td><td class="p-2 border">${a.justificativa || '—'}</td><td class="p-2 border text-center"><button onclick="delAtraso(${a.id})" class="text-red-600 font-bold">Apagar</button></td></tr>`;
+      atrasos.forEach(a => {
+        tb.innerHTML += `<tr class="border-b"><td class="p-2 border">${a.hora}</td><td class="p-2 border font-bold">${a.aluno}</td><td class="p-2 border">${a.turma}</td><td class="p-2 border text-center"><button onclick="delAtraso(${a.id})" class="text-red-600 font-bold">Apagar</button></td></tr>`;
       });
     }
-
-    function delAtraso(id) { atrasosList = atrasosList.filter(x => x.id !== id); salvarLocal(); renderAtrasos(); }
+    function delAtraso(id) { atrasos = atrasos.filter(x => x.id !== id); salvarDados(); renderAtrasos(); }
 
     // Sala de Estudos (20 espaços)
     function montar20Espacos() {
@@ -348,48 +204,125 @@
       if(!c) return;
       let h = '';
       for(let i=1; i<=20; i++) {
-        h += `<div class="grid grid-cols-1 md:grid-cols-12 gap-2 items-center bg-white p-2 rounded border"><span class="text-xs font-bold text-gray-500 text-center">#${i}</span><div class="md:col-span-4"><input type="text" id="se_aluno_${i}" placeholder="Nome do aluno..." class="w-full border rounded px-2 py-1 text-xs font-bold text-[#1b4332]" /></div><div class="md:col-span-2"><input type="text" id="se_turma_${i}" placeholder="Turma" class="w-full border rounded px-2 py-1 text-xs" /></div><div class="md:col-span-5"><input type="text" id="se_desc_${i}" placeholder="Ocorrência..." class="w-full border rounded px-2 py-1 text-xs" /></div></div>`;
+        h += `<div class="grid grid-cols-1 md:grid-cols-12 gap-2 items-center"><span class="text-xs font-bold text-gray-500">#${i}</span><div class="md:col-span-4"><input type="text" id="se_aluno_${i}" placeholder="Aluno..." class="w-full border rounded px-2 py-1 text-xs font-bold" /></div><div class="md:col-span-2"><input type="text" id="se_turma_${i}" placeholder="Turma" class="w-full border rounded px-2 py-1 text-xs" /></div><div class="md:col-span-5"><input type="text" id="se_obs_${i}" placeholder="Ocorrência..." class="w-full border rounded px-2 py-1 text-xs" /></div></div>`;
       }
       c.innerHTML = h;
     }
-
-    function salvarSalaEstudos(e) {
+    function salvarSala(e) {
       e.preventDefault();
       let count = 0;
+      const data = document.getElementById('seData').value;
+      const resp = document.getElementById('seResp').value;
       for(let i=1; i<=20; i++) {
-        const nome = document.getElementById(`se_aluno_${i}`).value.trim();
-        if(nome) {
+        const aluno = document.getElementById(`se_aluno_${i}`).value.trim();
+        if(aluno) {
           count++;
-          salaList.unshift({
+          sala.unshift({
             id: Date.now() + i,
-            data: document.getElementById('seData').value,
-            responsavel: document.getElementById('seProfessor').value,
-            aluno: nome.toUpperCase(),
+            aluno: aluno.toUpperCase(),
             turma: document.getElementById(`se_turma_${i}`).value.trim() || '—',
-            ocorrencia: document.getElementById(`se_desc_${i}`).value.trim() || '—'
+            obs: document.getElementById(`se_obs_${i}`).value.trim() || '—',
+            data, resp
           });
         }
       }
       if(count === 0) { alert('Preencha pelo menos um aluno.'); return; }
-      salvarLocal();
+      salvarDados();
       e.target.reset();
       montar20Espacos();
       renderSala();
-      alert(`${count} ocorrência(s) salva(s) com sucesso!`);
+      alert(`${count} registro(s) salvo(s)!`);
     }
-
     function renderSala() {
-      const l = document.getElementById('listaSalaEstudos');
+      const l = document.getElementById('listaSala');
       const q = document.getElementById('quadroUrgentes');
       if(!l || !q) return;
       l.innerHTML = '';
       q.innerHTML = '';
 
       const contagem = {};
-      salaList.forEach(s => { contagem[s.aluno] = (contagem[s.aluno] || 0) + 1; });
+      sala.forEach(s => { contagem[s.aluno] = (contagem[s.aluno] || 0) + 1; });
       const urg = Object.entries(contagem).filter(([n, t]) => t >= 2);
 
       if(urg.length > 0) {
         let htmlU = '';
         urg.forEach(([n, t]) => {
-          htmlU += `<div class="bg-white border border-red-300 p-2.5 rounded
+          htmlU += `<div class="bg-white border border-red-300 p-2 rounded text-xs flex justify-between items-center"><span><strong>${n}</strong> — <strong>${t}x ocorrências</strong></span><button onclick="removerUrgente('${n}')" class="bg-emerald-600 text-white px-2 py-1 rounded">✓ Resolver</button></div>`;
+        });
+        q.innerHTML = `<div class="bg-red-50 border border-red-300 rounded p-3"><h3 class="font-bold text-red-900 text-xs mb-2">🚨 Casos Urgentes (2+ Ocorrências)</h3><div class="grid grid-cols-1 md:grid-cols-2 gap-2">${htmlU}</div></div>`;
+      }
+
+      sala.forEach(s => {
+        l.innerHTML += `<div class="border p-2 rounded bg-white text-xs"><strong>${s.data}</strong> (Resp: ${s.resp}) — <strong>${s.aluno}</strong> (${s.turma}): ${s.obs} <button onclick="delSala(${s.id})" class="text-red-600 float-right font-bold">Apagar</button></div>`;
+      });
+    }
+    function removerUrgente(nome) {
+      if(confirm(`Remover registros de ${nome}?`)) {
+        sala = sala.filter(s => s.aluno !== nome);
+        salvarDados();
+        renderSala();
+      }
+    }
+    function delSala(id) { sala = sala.filter(s => s.id !== id); salvarDados(); renderSala(); }
+
+    // Professores
+    function salvarProf(e) {
+      e.preventDefault();
+      prof.unshift({ id: Date.now(), nome: document.getElementById('profNome').value, data: document.getElementById('profData').value });
+      salvarDados();
+      e.target.reset();
+      renderProf();
+    }
+    function renderProf() {
+      const l = document.getElementById('listaProf');
+      if(!l) return;
+      l.innerHTML = '';
+      prof.forEach(p => {
+        l.innerHTML += `<div class="border p-2 rounded bg-white text-xs"><strong>${p.data}</strong> — ${p.nome} <button onclick="delProf(${p.id})" class="text-red-600 float-right font-bold">Apagar</button></div>`;
+      });
+    }
+    function delProf(id) { prof = prof.filter(p => p.id !== id); salvarDados(); renderProf(); }
+
+    // Inspetores
+    function salvarInsp(e) {
+      e.preventDefault();
+      insp.unshift({ id: Date.now(), nome: document.getElementById('inspNome').value, desc: document.getElementById('inspDesc').value });
+      salvarDados();
+      e.target.reset();
+      renderInsp();
+    }
+    function renderInsp() {
+      const l = document.getElementById('listaInsp');
+      if(!l) return;
+      l.innerHTML = '';
+      insp.forEach(i => {
+        l.innerHTML += `<div class="border p-2 rounded bg-white text-xs"><strong>${i.nome}</strong>: ${i.desc} <button onclick="delInsp(${i.id})" class="text-red-600 float-right font-bold">Apagar</button></div>`;
+      });
+    }
+    function delInsp(id) { insp = insp.filter(i => i.id !== id); salvarDados(); renderInsp(); }
+
+    // Atendimentos
+    function salvarAtd(e) {
+      e.preventDefault();
+      atd.unshift({ id: Date.now(), aluno: document.getElementById('atdAluno').value.toUpperCase(), turma: document.getElementById('atdTurma').value, relato: document.getElementById('atdRelato').value });
+      salvarDados();
+      e.target.reset();
+      renderAtd();
+    }
+    function renderAtd() {
+      const l = document.getElementById('listaAtd');
+      if(!l) return;
+      l.innerHTML = '';
+      atd.forEach(a => {
+        l.innerHTML += `<div class="border p-2 rounded bg-white text-xs"><strong>${a.aluno}</strong> (${a.turma}): ${a.relato} <button onclick="delAtd(${a.id})" class="text-red-600 float-right font-bold">Apagar</button></div>`;
+      });
+    }
+    function delAtd(id) { atd = atd.filter(a => a.id !== id); salvarDados(); renderAtd(); }
+
+    function baixarBackup() {
+      const blob = new Blob([JSON.stringify({atrasos, sala, prof, insp, atd}, null, 2)], {type: 'application/json'});
+      const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'backup_arena.json'; a.click();
+    }
+  </script>
+</body>
+</html>
