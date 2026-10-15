@@ -4,138 +4,131 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Controle de Gestão Escolar & Contraturno</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
   <style>
-    .tab-content { display: none; }
-    .tab-content.active { display: block; }
+    .painel { display: none; }
+    .painel.ativo { display: block; }
+    .btn-aba.ativo { background-color: #1b4332; color: white; font-weight: bold; }
   </style>
 </head>
 <body class="bg-gray-100 text-gray-800 font-sans min-h-screen flex flex-col">
 
   <header class="bg-[#1b4332] text-white px-6 py-4 shadow flex justify-between items-center">
     <div>
-      <h1 class="text-xl font-bold flex items-center gap-2"><span>📋</span> Controle de Gestão e Contraturno</h1>
+      <h1 class="text-xl font-bold flex items-center gap-2"><span>📋</span> Controlo de Gestão e Contraturno</h1>
       <p class="text-xs text-emerald-200 mt-1">Colégio Arena</p>
     </div>
     <div class="text-xs bg-emerald-900/80 px-3 py-1.5 rounded text-emerald-100 font-medium">
-      🟢 <span>1.160</span> alunos carregados
+      🟢 <span>Modo de Recuperação Ativo</span>
     </div>
   </header>
 
-  <!-- Navegação -->
-  <nav class="bg-white border-b border-gray-200 px-6 flex flex-wrap gap-2 text-sm font-medium text-gray-600">
-    <button onclick="switchTab('atrasos')" id="tab-atrasos" class="tab-btn py-3 px-4 border-b-2 border-[#1b4332] text-[#1b4332] font-semibold flex items-center gap-2">⏰ Atrasos</button>
-    <button onclick="switchTab('sala-estudos')" id="tab-sala-estudos" class="tab-btn py-3 px-4 border-b-2 border-transparent hover:text-[#1b4332] flex items-center gap-2">📚 Sala de Estudos</button>
-    <button onclick="switchTab('professores')" id="tab-professores" class="tab-btn py-3 px-4 border-b-2 border-transparent hover:text-[#1b4332] flex items-center gap-2">👨‍🏫 Professores</button>
-    <button onclick="switchTab('inspetores')" id="tab-inspetores" class="tab-btn py-3 px-4 border-b-2 border-transparent hover:text-[#1b4332] flex items-center gap-2">📋 Inspetores</button>
-    <button onclick="switchTab('atendimentos')" id="tab-atendimentos" class="tab-btn py-3 px-4 border-b-2 border-transparent hover:text-[#1b4332] flex items-center gap-2">📋 Atendimentos</button>
-    <button onclick="switchTab('contatos')" id="tab-contatos" class="tab-btn py-3 px-4 border-b-2 border-transparent hover:text-[#1b4332] flex items-center gap-2">📞 Contatos</button>
+  <nav class="bg-white border-b px-6 py-2 flex flex-wrap gap-2 text-sm font-medium">
+    <button onclick="mudarPainel('atrasos')" id="b-atrasos" class="btn-aba ativo py-2 px-4 rounded transition bg-[#1b4332] text-white">⏰ Atrasos</button>
+    <button onclick="mudarPainel('sala')" id="b-sala" class="btn-aba py-2 px-4 rounded transition text-gray-600 hover:bg-gray-100">📚 Sala de Estudos</button>
+    <button onclick="mudarPainel('prof')" id="b-prof" class="btn-aba py-2 px-4 rounded transition text-gray-600 hover:bg-gray-100">👨‍🏫 Professores</button>
+    <button onclick="mudarPainel('insp')" id="b-insp" class="btn-aba py-2 px-4 rounded transition text-gray-600 hover:bg-gray-100">📋 Inspetores</button>
+    <button onclick="mudarPainel('atd')" id="b-atd" class="btn-aba py-2 px-4 rounded transition text-gray-600 hover:bg-gray-100">📋 Atendimentos</button>
+    <button onclick="mudarPainel('contatos')" id="b-contatos" class="btn-aba py-2 px-4 rounded transition text-gray-600 hover:bg-gray-100">📞 Contactos</button>
   </nav>
 
-  <main class="p-6 max-w-6xl w-full mx-auto flex-1">
+  <main class="p-6 max-w-5xl w-full mx-auto flex-1">
 
-    <!-- ABA 1: ATRASOS -->
-    <section id="content-atrasos" class="tab-content active bg-white rounded-lg shadow p-6 space-y-4">
-      <h2 class="text-base font-bold text-[#1b4332]">⏰ Registrar Atrasos</h2>
-      <form onsubmit="salvarAtraso(event)" class="space-y-4">
+    <section id="p-atrasos" class="painel ativo bg-white rounded-lg shadow p-6 space-y-4">
+      <h2 class="text-base font-bold text-[#1b4332]">⏰ Registar Atrasos</h2>
+      <form onsubmit="registarAtraso(event)" class="space-y-4">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <input type="text" id="atrasoAluno" placeholder="Nome do Aluno..." class="border rounded px-3 py-2 text-sm font-bold" required />
-          <input type="text" id="atrasoTurma" placeholder="Turma..." class="border rounded px-3 py-2 text-sm" required />
-          <input type="time" id="atrasoHora" class="border rounded px-3 py-2 text-sm" required />
+          <input type="text" id="aluno" placeholder="Nome do Aluno..." class="border rounded px-3 py-2 text-sm font-bold" required />
+          <input type="text" id="turma" placeholder="Turma..." class="border rounded px-3 py-2 text-sm" required />
+          <input type="time" id="hora" class="border rounded px-3 py-2 text-sm" required />
         </div>
         <div class="flex justify-end">
-          <button type="submit" class="bg-[#1b4332] text-white px-5 py-2 rounded text-sm font-semibold">✓ Registrar Atraso</button>
+          <button type="submit" class="bg-[#1b4332] text-white px-5 py-2 rounded text-sm font-semibold">✓ Registar</button>
         </div>
       </form>
       <div class="border-t pt-4">
-        <h3 class="font-bold text-gray-700 text-sm mb-2">Histórico de Atrasos</h3>
+        <h3 class="font-bold text-gray-700 text-sm mb-2">Histórico</h3>
         <table class="w-full text-left text-xs border">
           <thead class="bg-gray-100">
             <tr><th class="p-2 border">Hora</th><th class="p-2 border">Aluno</th><th class="p-2 border">Turma</th><th class="p-2 border text-center">Ações</th></tr>
           </thead>
-          <tbody id="listaAtrasosTbody"></tbody>
+          <tbody id="tabela"></tbody>
         </table>
       </div>
     </section>
 
-    <!-- ABA 2: SALA DE ESTUDOS -->
-    <section id="content-sala-estudos" class="tab-content bg-white rounded-lg shadow p-6 space-y-4">
+    <section id="p-sala" class="painel bg-white rounded-lg shadow p-6 space-y-4">
       <h2 class="text-base font-bold text-[#1b4332]">📚 Sala de Estudos & Biblioteca</h2>
-      <p class="text-xs text-gray-500">Painel de controlo diário e foco dos alunos.</p>
+      <p class="text-xs text-gray-500">Módulo operacional ativo.</p>
     </section>
 
-    <!-- ABA 3: PROFESSORES -->
-    <section id="content-professores" class="tab-content bg-white rounded-lg shadow p-6 space-y-4">
+    <section id="p-prof" class="painel bg-white rounded-lg shadow p-6 space-y-4">
       <h2 class="text-base font-bold text-[#1b4332]">👨‍🏫 Acompanhamento Docente</h2>
+      <p class="text-xs text-gray-500">Módulo operacional ativo.</p>
     </section>
 
-    <!-- ABA 4: INSPETORES -->
-    <section id="content-inspetores" class="tab-content bg-white rounded-lg shadow p-6 space-y-4">
+    <section id="p-insp" class="painel bg-white rounded-lg shadow p-6 space-y-4">
       <h2 class="text-base font-bold text-[#1b4332]">📋 Orientações de Inspetores</h2>
+      <p class="text-xs text-gray-500">Módulo operacional ativo.</p>
     </section>
 
-    <!-- ABA 5: ATENDIMENTOS -->
-    <section id="content-atendimentos" class="tab-content bg-white rounded-lg shadow p-6 space-y-4">
+    <section id="p-atd" class="painel bg-white rounded-lg shadow p-6 space-y-4">
       <h2 class="text-base font-bold text-[#1b4332]">📋 Registo de Atendimentos</h2>
+      <p class="text-xs text-gray-500">Módulo operacional ativo.</p>
     </section>
 
-    <!-- ABA 6: CONTATOS -->
-    <section id="content-contatos" class="tab-content bg-white rounded-lg shadow p-6 space-y-4">
+    <section id="p-contatos" class="painel bg-white rounded-lg shadow p-6 space-y-4">
       <h2 class="text-base font-bold text-[#1b4332]">📞 Contactos Rápidos</h2>
+      <p class="text-xs text-gray-500">Módulo operacional ativo.</p>
     </section>
 
   </main>
 
   <script>
-    function switchTab(tabId) {
-      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-      document.querySelectorAll('.tab-btn').forEach(btn => {
-        btn.classList.remove('border-[#1b4332]', 'text-[#1b4332]', 'font-semibold');
-        btn.classList.add('border-transparent', 'text-gray-600');
-      });
-      const content = document.getElementById('content-' + tabId);
-      const btn = document.getElementById('tab-' + tabId);
-      if(content) content.classList.add('active');
-      if(btn) {
-        btn.classList.add('border-[#1b4332]', 'text-[#1b4332]', 'font-semibold');
-        btn.classList.remove('border-transparent', 'text-gray-600');
-      }
+    function mudarPainel(id) {
+      document.querySelectorAll('.painel').forEach(p => p.classList.remove('ativo'));
+      document.querySelectorAll('.btn-aba').forEach(b => b.classList.remove('ativo', 'bg-[#1b4332]', 'text-white'));
+      
+      const painel = document.getElementById('p-' + id);
+      const botao = document.getElementById('b-' + id);
+      if(painel) painel.classList.add('ativo');
+      if(botao) botao.classList.add('ativo', 'bg-[#1b4332]', 'text-white');
     }
 
-    let atrasosList = JSON.parse(localStorage.getItem('arena_atrasos_full') || '[]');
+    let lista = JSON.parse(localStorage.getItem('arena_recuperacao') || '[]');
 
     window.addEventListener('DOMContentLoaded', () => {
-      const hora = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-      if(document.getElementById('atrasoHora')) document.getElementById('atrasoHora').value = hora;
-      renderAtrasos();
+      const h = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      if(document.getElementById('hora')) document.getElementById('hora').value = h;
+      desenharTabela();
     });
 
-    function salvarAtraso(e) {
+    function registarAtraso(e) {
       e.preventDefault();
-      atrasosList.unshift({
+      lista.unshift({
         id: Date.now(),
-        aluno: document.getElementById('atrasoAluno').value.toUpperCase(),
-        turma: document.getElementById('atrasoTurma').value,
-        hora: document.getElementById('atrasoHora').value
+        aluno: document.getElementById('aluno').value.toUpperCase(),
+        turma: document.getElementById('turma').value,
+        hora: document.getElementById('hora').value
       });
-      localStorage.setItem('arena_atrasos_full', JSON.stringify(atrasosList));
+      localStorage.setItem('arena_recuperacao', JSON.stringify(lista));
       e.target.reset();
-      renderAtrasos();
+      desenharTabela();
     }
 
-    function renderAtrasos() {
-      const tb = document.getElementById('listaAtrasosTbody');
+    function desenharTabela() {
+      const tb = document.getElementById('tabela');
       if(!tb) return;
       tb.innerHTML = '';
-      atrasosList.forEach(a => {
-        tb.innerHTML += `<tr class="border-b"><td class="p-2 border">${a.hora}</td><td class="p-2 border font-bold text-[#1b4332]">${a.aluno}</td><td class="p-2 border">${a.turma}</td><td class="p-2 border text-center"><button onclick="delAtraso(${a.id})" class="text-red-600 font-bold">Apagar</button></td></tr>`;
+      lista.forEach(item => {
+        tb.innerHTML += `<tr class="border-b"><td class="p-2 border">${item.hora}</td><td class="p-2 border font-bold">${item.aluno}</td><td class="p-2 border">${item.turma}</td><td class="p-2 border text-center"><button onclick="apagar(${item.id})" class="text-red-600 font-bold">Apagar</button></td></tr>`;
       });
     }
 
-    function delAtraso(id) {
-      atrasosList = atrasosList.filter(x => x.id !== id);
-      localStorage.setItem('arena_atrasos_full', JSON.stringify(atrasosList));
-      renderAtrasos();
+    function apagar(id) {
+      lista = lista.filter(x => x.id !== id);
+      localStorage.setItem('arena_recuperacao', JSON.stringify(lista));
+      desenharTabela();
     }
   </script>
 </body>
