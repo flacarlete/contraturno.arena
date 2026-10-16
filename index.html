@@ -79,14 +79,18 @@
             </div>
           </div>
 
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
               <label class="block text-xs font-medium text-gray-700 mb-1">Nome do Aluno</label>
-              <input type="text" id="atrasoAluno" placeholder="Nome completo do aluno..." class="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm font-medium" required />
+              <input type="text" id="atrasoAluno" placeholder="Nome completo..." class="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm font-medium" required />
             </div>
             <div>
               <label class="block text-xs font-medium text-gray-700 mb-1">Turma</label>
-              <input type="text" id="atrasoTurma" placeholder="Turma (Ex: 8ºG)..." class="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm" required />
+              <input type="text" id="atrasoTurma" placeholder="Ex: 8ºG..." class="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm" required />
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-gray-700 mb-1">Motivo / Justificativa</label>
+              <input type="text" id="atrasoMotivo" placeholder="Motivo do atraso..." class="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm" required />
             </div>
           </div>
 
@@ -108,6 +112,7 @@
                 <th class="p-2 border">Aluno</th>
                 <th class="p-2 border">Turma</th>
                 <th class="p-2 border">Espaço</th>
+                <th class="p-2 border">Motivo</th>
                 <th class="p-2 border text-center">Ações</th>
               </tr>
             </thead>
@@ -200,12 +205,13 @@
               <label class="block text-xs font-medium text-gray-700 mb-1">Série / Segmento</label>
               <select id="profSegmento" onchange="carregarProfessoresPorSegmento()" class="w-full border border-gray-300 rounded px-3 py-2 text-sm" required>
                 <option value="">Selecione a série...</option>
-                <option value="6º Ano">6º Ano</option>
-                <option value="7º Ano">7º Ano</option>
-                <option value="8º Ano">8º Ano</option>
-                <option value="9º Ano">9º Ano</option>
-                <option value="Ensino Médio">Ensino Médio</option>
-                <option value="Oficinas e Contraturno">Oficinas e Contraturno</option>
+                <option value="6º Ano Matutino">6º Ano Matutino</option>
+                <option value="7º Ano Matutino">7º Ano Matutino</option>
+                <option value="8º Ano Matutino">8º Ano Matutino</option>
+                <option value="9º Ano Matutino">9º Ano Matutino</option>
+                <option value="Vespertino">Vespertino</option>
+                <option value="Esportes">Esportes</option>
+                <option value="Geral Matutino">Geral Matutino</option>
               </select>
             </div>
             <div>
@@ -339,14 +345,56 @@
       renderAtrasos();
     }
 
-    // Lista de Professores por Série/Segmento
+    // Lista Oficial de Professores por Série (Conforme Anexo)
     const professoresPorSerie = {
-      "6º Ano": ["Prof. Ana (Matemática)", "Prof. Carlos (Português)", "Prof. Beatriz (Ciências)", "Prof. João (História)"],
-      "7º Ano": ["Prof. Mariana (Matemática)", "Prof. Lucas (Português)", "Prof. Camila (Geografia)", "Prof. Roberto (Inglês)"],
-      "8º Ano": ["Prof. Patricia (Matemática)", "Prof. Eduardo (Português)", "Prof. Fernanda (Física/Química)", "Prof. Juliano (História)"],
-      "9º Ano": ["Prof. Renata (Matemática)", "Prof. Gustavo (Português)", "Prof. Beatriz (Biologia)", "Prof. Marcos (História)"],
-      "Ensino Médio": ["Prof. Alexandre (Matemática)", "Prof. Juliana (Português)", "Prof. Ricardo (Física)", "Prof. Vanessa (Química)"],
-      "Oficinas e Contraturno": ["Prof. Diego (Esportes)", "Prof. Sofia (Teatro/Artes)", "Prof. Leandro (Robótica)"]
+      "6º Ano Matutino": [
+        "João Leonardo (MAT1)", "Renato Neto (MAT2)", "Stênio (MAT3)", "Grazielly (GRA)", 
+        "Elaine (LIT)", "Pauliany (TEXTO)", "Kaila (RED)", "Alexandre (HISTÓRIA)", 
+        "Emilly (GEOGRAFIA)", "Danielle (CIÊNCIAS)", "Ângela (ARTE)", "Élbio (INGLÊS 1)", 
+        "Thalita (INGLÊS 2)", "Sebastião (ED. FÍSICA)", "Marlon (SOCIOEMOCIONAL)"
+      ],
+      "7º Ano Matutino": [
+        "Fernanda (MAT1)", "Fernando (MAT2)", "Bruno (MAT3)", "Tomás (GRA)", 
+        "Cecília (LIT)", "Luana (TEXTO)", "Lorena (RED)", "Letícia (HISTÓRIA)", 
+        "Wilker (GEOGRAFIA)", "Paula (CIÊNCIAS)", "Ângela (ARTE)", "Lucas (INGLÊS)", 
+        "Thalita (INGLÊS 2)", "Gustavo Coutinho (ED. FÍSICA)", "Marlon (SOCIOEMOCIONAL)"
+      ],
+      "8º Ano Matutino": [
+        "Kairo (MAT1)", "Pedrinho (MAT2)", "Bruno (MAT3)", "Maria José (GRA)", 
+        "Leandro (LIT)", "Sarah (TEXTO)", "Mariany (RED)", "Daiany (HISTÓRIA)", 
+        "Marco Túlio (GEOGRAFIA 1)", "Rodrigo (GEOGRAFIA 2)", "Alexandre (QUÍMICA)", 
+        "César Augusto (FÍSICA)", "Renato Feijão (BIOLOGIA 1)", "Diogo (BIOLOGIA 2)", 
+        "Karlla (ARTE)", "Wilker (INGLÊS 1)", "Gunther (INGLÊS 2)", "Gabriel (SOCIOEMOCIONAL)"
+      ],
+      "9º Ano Matutino": [
+        "Ceagá (MAT1)", "Hugo (MAT2)", "Rodolfo (MAT3)", "Cléssia (GRA)", 
+        "Sarah (LIT)", "Jade (TEXTO)", "Fred (RED)", "João Patrício (HISTÓRIA 1)", 
+        "Elby (HISTÓRIA 2)", "Marco Túlio (GEOGRAFIA)", "Gustavo Batista (QUÍMICA)", 
+        "César Augusto (FÍSICA)", "Diogo (BIOLOGIA)", "Karlla (ARTE)", 
+        "Cláudia (INGLÊS)", "Gunther (INGLÊS 2)", "Gabriel (SOCIOEMOCIONAL)"
+      ],
+      "Vespertino": [
+        "João Leonardo + Fernando (MAT)", "Cléssia (LP)", "Carolina Ferraz Bucar Paredes (INGLÊS)", 
+        "Caroline Baylão Silva Araújo Gedda (CAMBRIDGE)", "Amanda Bueno Godinho Pancieri (BEO)", 
+        "Lajla Katherine Rocha Simião (MONITORIA DE REDAÇÃO)"
+      ],
+      "Esportes": [
+        "Gustavo Coutinho (EDUCAÇÃO FÍSICA 8º+9)", "Marcelo (VÔLEI)", "Fellipe Gustavo (JUDÔ)", 
+        "Dênis (FUTSAL)", "Ananda (DANÇAS)", "Fhellipe Augusto (XADREZ)", "Renato (HANDEBOL)", 
+        "Nívea (MEDITAÇÃO)", "Nayara (FUNCIONAL)", "Rodolfo (EDUCAÇÃO FINANCEIRA)", 
+        "Frederico / Luciano / João Victor / Gessiene / Célio (ROBÓTICA)", 
+        "André Arantes (TEATRO / PINTURA EM PAREDE)", "André Mols (SONANTE)", "Marco Túlio (EAGLE + BEO)"
+      ],
+      "Geral Matutino": [
+        "Alexandre (Xandão)", "Alexandre", "Ângela", "Bruno", "Ceagá", "Cecília", 
+        "César Augusto", "Cláudia", "Cléssia", "Danielle", "Daiany", "Diogo", "Elaine", 
+        "Élbio", "Elby", "Emily", "Fernanda", "Fernando", "Fred", "Gabriel", "Grazielly", 
+        "Gunther", "Gustavo Batista (Química)", "Gustavo Coutinho (Educação Física)", "Hugo", 
+        "Jade", "João Leonardo", "João Patrício", "Kairo", "Karlla", "Leandro", "Letícia História", 
+        "Letícia Kaila", "Lorena", "Luana", "Lucas", "Marco Túlio", "Maria José", "Mariany", 
+        "Marlon", "Paula", "Pauliany", "Pedrinho", "Renato Feijão", "Renato Neto", "Rodolfo", 
+        "Rodrigo", "Sarah", "Sebastião", "Stênio", "Thalita", "Tomás", "Wilker Geografia", "Wilker Inglês"
+      ]
     };
 
     function carregarProfessoresPorSegmento() {
@@ -385,7 +433,7 @@
       renderAtd();
     }
 
-    // Atrasos (Filtrado por turno)
+    // Atrasos (Filtrado por turno com motivo)
     function salvarAtraso(e) {
       e.preventDefault();
       dbAtrasos.unshift({
@@ -395,7 +443,8 @@
         hora: document.getElementById('atrasoHora').value,
         aluno: document.getElementById('atrasoAluno').value.toUpperCase(),
         turma: document.getElementById('atrasoTurma').value,
-        espaco: document.getElementById('atrasoEspaco').value
+        espaco: document.getElementById('atrasoEspaco').value,
+        motivo: document.getElementById('atrasoMotivo').value
       });
       localStorage.setItem('arena_atrasos', JSON.stringify(dbAtrasos));
       e.target.reset();
@@ -409,7 +458,7 @@
       tb.innerHTML = '';
       const filtrados = dbAtrasos.filter(a => a.turno === turnoAtual);
       filtrados.forEach(a => {
-        tb.innerHTML += `<tr class="border-b"><td class="p-2 border">${a.data} ${a.hora}</td><td class="p-2 border font-bold">${a.aluno}</td><td class="p-2 border">${a.turma}</td><td class="p-2 border">${a.espaco}</td><td class="p-2 border text-center"><button onclick="delAtraso(${a.id})" class="text-red-600 font-bold">Apagar</button></td></tr>`;
+        tb.innerHTML += `<tr class="border-b"><td class="p-2 border">${a.data} ${a.hora}</td><td class="p-2 border font-bold">${a.aluno}</td><td class="p-2 border">${a.turma}</td><td class="p-2 border">${a.espaco}</td><td class="p-2 border">${a.motivo}</td><td class="p-2 border text-center"><button onclick="delAtraso(${a.id})" class="text-red-600 font-bold">Apagar</button></td></tr>`;
       });
     }
     function delAtraso(id) { dbAtrasos = dbAtrasos.filter(x => x.id !== id); localStorage.setItem('arena_atrasos', JSON.stringify(dbAtrasos)); renderAtrasos(); }
