@@ -8,6 +8,8 @@
   <style>
     .tab-content { display: none; }
     .tab-content.active { display: block; }
+    .subtab-content { display: none; }
+    .subtab-content.active { display: block; }
     @media print {
       body * { visibility: hidden; }
       #printableArea, #printableArea * { visibility: visible; }
@@ -27,18 +29,17 @@
       <p id="currentDateDisplay" class="text-xs text-emerald-200 mt-1"></p>
     </div>
     <div class="mt-2 md:mt-0 text-xs bg-emerald-900/80 px-3 py-1.5 rounded text-emerald-100 font-medium">
-      🟢 <span id="badgeTotalAlunos">1.160</span> alunos carregados nativamente
+      🟢 <span>1.160</span> alunos carregados nativamente
     </div>
   </header>
 
-  <!-- Navegação -->
+  <!-- Navegação Principal -->
   <nav class="bg-white border-b border-gray-200 px-6 flex flex-wrap gap-2 text-sm font-medium text-gray-600 no-print">
     <button onclick="switchTab('atrasos')" id="tab-atrasos" class="tab-btn py-3 px-4 border-b-2 border-[#1b4332] text-[#1b4332] font-semibold flex items-center gap-2">⏰ Atrasos</button>
     <button onclick="switchTab('sala-estudos')" id="tab-sala-estudos" class="tab-btn py-3 px-4 border-b-2 border-transparent hover:text-[#1b4332] flex items-center gap-2">📚 Sala de Estudos & Biblioteca</button>
     <button onclick="switchTab('professores')" id="tab-professores" class="tab-btn py-3 px-4 border-b-2 border-transparent hover:text-[#1b4332] flex items-center gap-2">👨‍🏫 Professores</button>
     <button onclick="switchTab('inspetores')" id="tab-inspetores" class="tab-btn py-3 px-4 border-b-2 border-transparent hover:text-[#1b4332] flex items-center gap-2">📋 Inspetores / Orientadores</button>
     <button onclick="switchTab('atendimentos')" id="tab-atendimentos" class="tab-btn py-3 px-4 border-b-2 border-transparent hover:text-[#1b4332] flex items-center gap-2">📋 Atendimentos</button>
-    <button onclick="switchTab('contatos')" id="tab-contatos" class="tab-btn py-3 px-4 border-b-2 border-transparent hover:text-[#1b4332] flex items-center gap-2">📞 Contatos & Backup</button>
   </nav>
 
   <main class="p-6 max-w-6xl w-full mx-auto flex-1">
@@ -98,13 +99,12 @@
       </div>
 
       <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <h3 class="font-bold text-gray-700 text-sm mb-3">Histórico de Atrasos</h3>
+        <h3 class="font-bold text-gray-700 text-sm mb-3">Histórico de Atrasos — <span id="labelTabelaTurno">Matutino</span></h3>
         <div class="overflow-x-auto">
           <table class="w-full text-left text-xs border border-gray-200">
             <thead class="bg-gray-100 font-semibold text-gray-700">
               <tr>
                 <th class="p-2 border">Data/Hora</th>
-                <th class="p-2 border">Turno</th>
                 <th class="p-2 border">Aluno</th>
                 <th class="p-2 border">Turma</th>
                 <th class="p-2 border">Espaço</th>
@@ -120,63 +120,72 @@
     <!-- ABA 2: SALA DE ESTUDOS & BIBLIOTECA -->
     <section id="content-sala-estudos" class="tab-content">
       <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
-        <div class="flex justify-between items-center mb-4">
-          <h2 class="text-base font-bold text-[#1b4332]">📚 Sala de Estudos & Biblioteca — Lançamentos e Controle</h2>
-          <button onclick="window.print()" class="bg-gray-800 text-white px-3 py-1.5 rounded text-xs hover:bg-black no-print">🖨️ Imprimir Relatório</button>
+        <div class="flex gap-4 border-b border-gray-200 pb-3 mb-4 no-print">
+          <button onclick="switchSubSala('novo')" id="subtab-novo" class="px-4 py-1.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800">Novo Lançamento</button>
+          <button onclick="switchSubSala('relatorios')" id="subtab-relatorios" class="px-4 py-1.5 rounded-full text-xs font-semibold bg-gray-100 text-gray-600">📊 Relatórios Diários & Alertas</button>
         </div>
 
-        <form id="formSalaEstudos" onsubmit="salvarSalaEstudos(event)" class="space-y-4">
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label class="block text-xs font-medium text-gray-700 mb-1">Data</label>
-              <input type="date" id="seData" class="w-full border border-gray-300 rounded px-3 py-2 text-sm" required />
+        <!-- Subtab: Novo Lançamento -->
+        <div id="subcontent-novo" class="subtab-content active">
+          <h2 class="text-base font-bold text-[#1b4332] mb-4">📚 Sala de Estudos & Biblioteca — Novo Registro</h2>
+          <form id="formSalaEstudos" onsubmit="salvarSalaEstudos(event)" class="space-y-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-medium text-gray-700 mb-1">Data</label>
+                <input type="date" id="seData" class="w-full border border-gray-300 rounded px-3 py-2 text-sm" required />
+              </div>
+              <div>
+                <label class="block text-xs font-medium text-gray-700 mb-1">Professor / Responsável</label>
+                <input type="text" id="seProfessor" class="w-full border border-gray-300 rounded px-3 py-2 text-sm" placeholder="Nome do responsável..." required />
+              </div>
             </div>
-            <div>
-              <label class="block text-xs font-medium text-gray-700 mb-1">Professor / Responsável</label>
-              <input type="text" id="seProfessor" class="w-full border border-gray-300 rounded px-3 py-2 text-sm" placeholder="Nome do responsável..." required />
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <label class="block text-xs font-medium text-gray-700 mb-1">Nome do Aluno</label>
+                <input type="text" id="seAluno" class="w-full border border-gray-300 rounded px-3 py-2 text-sm font-bold" placeholder="Nome completo..." required />
+              </div>
+              <div>
+                <label class="block text-xs font-medium text-gray-700 mb-1">Turma</label>
+                <input type="text" id="seTurma" class="w-full border border-gray-300 rounded px-3 py-2 text-sm" placeholder="Ex: 8ºG..." required />
+              </div>
+              <div>
+                <label class="block text-xs font-medium text-gray-700 mb-1">Ocorrência / Motivo</label>
+                <input type="text" id="seOcorrencia" class="w-full border border-gray-300 rounded px-3 py-2 text-sm" placeholder="Detalhes..." required />
+              </div>
             </div>
+
+            <div class="flex justify-end">
+              <button type="submit" class="bg-[#1b4332] text-white px-5 py-2 rounded text-sm font-medium hover:bg-emerald-900">💾 Salvar Lançamento</button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Subtab: Relatórios Diários & Alertas -->
+        <div id="subcontent-relatorios" class="subtab-content">
+          <div class="flex justify-between items-center mb-4">
+            <h2 class="text-base font-bold text-[#1b4332]">📊 Acompanhamento de Relatórios & Alertas</h2>
+            <button onclick="window.print()" class="bg-gray-800 text-white px-3 py-1.5 rounded text-xs hover:bg-black no-print">🖨️ Imprimir Relatório</button>
           </div>
 
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div>
-              <label class="block text-xs font-medium text-gray-700 mb-1">Nome do Aluno</label>
-              <input type="text" id="seAluno" class="w-full border border-gray-300 rounded px-3 py-2 text-sm font-bold" placeholder="Nome completo..." required />
-            </div>
-            <div>
-              <label class="block text-xs font-medium text-gray-700 mb-1">Turma</label>
-              <input type="text" id="seTurma" class="w-full border border-gray-300 rounded px-3 py-2 text-sm" placeholder="Ex: 8ºG..." required />
-            </div>
-            <div>
-              <label class="block text-xs font-medium text-gray-700 mb-1">Ocorrência / Motivo</label>
-              <input type="text" id="seOcorrencia" class="w-full border border-gray-300 rounded px-3 py-2 text-sm" placeholder="Detalhes..." required />
-            </div>
+          <!-- Quadro de Alertas de Urgência (2+ ocorrências) -->
+          <div id="quadroUrgentes" class="mb-6"></div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs border border-gray-200">
+              <thead class="bg-gray-100 font-semibold text-gray-700">
+                <tr>
+                  <th class="p-2 border">Data</th>
+                  <th class="p-2 border">Responsável</th>
+                  <th class="p-2 border">Aluno</th>
+                  <th class="p-2 border">Turma</th>
+                  <th class="p-2 border">Ocorrência</th>
+                  <th class="p-2 border text-center">Ações</th>
+                </tr>
+              </thead>
+              <tbody id="listaSalaTbody"></tbody>
+            </table>
           </div>
-
-          <div class="flex justify-end">
-            <button type="submit" class="bg-[#1b4332] text-white px-5 py-2 rounded text-sm font-medium hover:bg-emerald-900">💾 Salvar Lançamento</button>
-          </div>
-        </form>
-      </div>
-
-      <!-- Quadro de Alertas de Urgência (2+ ocorrências) -->
-      <div id="quadroUrgentes" class="mb-6"></div>
-
-      <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <h3 class="font-bold text-gray-700 text-sm mb-3">Histórico de Lançamentos na Sala de Estudos</h3>
-        <div class="overflow-x-auto">
-          <table class="w-full text-left text-xs border border-gray-200">
-            <thead class="bg-gray-100 font-semibold text-gray-700">
-              <tr>
-                <th class="p-2 border">Data</th>
-                <th class="p-2 border">Responsável</th>
-                <th class="p-2 border">Aluno</th>
-                <th class="p-2 border">Turma</th>
-                <th class="p-2 border">Ocorrência</th>
-                <th class="p-2 border text-center">Ações</th>
-              </tr>
-            </thead>
-            <tbody id="listaSalaTbody"></tbody>
-          </table>
         </div>
       </div>
     </section>
@@ -186,10 +195,24 @@
       <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
         <h2 class="text-base font-bold text-[#1b4332] mb-4">Registro de Ocorrências com Professores</h2>
         <form id="formProfessores" onsubmit="salvarOcorrenciaProfessor(event)" class="space-y-4">
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
-              <label class="block text-xs font-medium text-gray-700 mb-1">Professor & Matéria</label>
-              <input type="text" id="profNome" class="w-full border border-gray-300 rounded px-3 py-2 text-sm" placeholder="Nome do professor..." required />
+              <label class="block text-xs font-medium text-gray-700 mb-1">Série / Segmento</label>
+              <select id="profSegmento" onchange="carregarProfessoresPorSegmento()" class="w-full border border-gray-300 rounded px-3 py-2 text-sm" required>
+                <option value="">Selecione a série...</option>
+                <option value="6º Ano">6º Ano</option>
+                <option value="7º Ano">7º Ano</option>
+                <option value="8º Ano">8º Ano</option>
+                <option value="9º Ano">9º Ano</option>
+                <option value="Ensino Médio">Ensino Médio</option>
+                <option value="Oficinas e Contraturno">Oficinas e Contraturno</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-gray-700 mb-1">Professor & Disciplina</label>
+              <select id="profNomeSelect" class="w-full border border-gray-300 rounded px-3 py-2 text-sm" required>
+                <option value="">Primeiro selecione a série...</option>
+              </select>
             </div>
             <div>
               <label class="block text-xs font-medium text-gray-700 mb-1">Data</label>
@@ -212,6 +235,7 @@
           <thead class="bg-gray-100 font-semibold text-gray-700">
             <tr>
               <th class="p-2 border">Data</th>
+              <th class="p-2 border">Série</th>
               <th class="p-2 border">Professor / Matéria</th>
               <th class="p-2 border">Observações</th>
               <th class="p-2 border text-center">Ações</th>
@@ -280,37 +304,6 @@
       <div id="listaAtendimentosTbody" class="space-y-3"></div>
     </section>
 
-    <!-- ABA 6: CONTATOS & BACKUP -->
-    <section id="content-contatos" class="tab-content">
-      <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 space-y-6">
-        <div class="flex justify-between items-center border-b pb-4">
-          <div>
-            <h2 class="text-base font-bold text-[#1b4332]">⚙️ ADM, Contatos & Backup</h2>
-            <p class="text-xs text-gray-500">Faça o backup de segurança de todos os registos do painel.</p>
-          </div>
-          <button onclick="baixarBackup()" class="bg-[#1b4332] text-white px-4 py-2 rounded text-xs font-semibold hover:bg-emerald-900">⬇️ Baixar Backup em JSON</button>
-        </div>
-
-        <div>
-          <h3 class="font-bold text-gray-700 text-sm mb-3">Busca Rápida de Responsáveis (1.160 Alunos)</h3>
-          <input type="text" id="filtroContatos" oninput="filtrarContatos(this.value)" placeholder="Buscar por aluno, turma ou responsável..." class="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm mb-4" />
-          <div class="overflow-x-auto max-h-[400px]">
-            <table class="w-full text-left text-xs border border-gray-200">
-              <thead class="bg-gray-100 font-semibold text-gray-700 sticky top-0">
-                <tr>
-                  <th class="p-2.5 border">Aluno</th>
-                  <th class="p-2.5 border">Turma</th>
-                  <th class="p-2.5 border">Responsável</th>
-                  <th class="p-2.5 border">Telefone</th>
-                </tr>
-              </thead>
-              <tbody id="listaContatosTbody"></tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-    </section>
-
   </main>
 
   <script>
@@ -329,12 +322,42 @@
       }
     }
 
+    function switchSubSala(subId) {
+      document.querySelectorAll('.subtab-content').forEach(el => el.classList.remove('active'));
+      document.getElementById('subtab-novo').className = subId === 'novo' ? 'px-4 py-1.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800' : 'px-4 py-1.5 rounded-full text-xs font-semibold bg-gray-100 text-gray-600';
+      document.getElementById('subtab-relatorios').className = subId === 'relatorios' ? 'px-4 py-1.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800' : 'px-4 py-1.5 rounded-full text-xs font-semibold bg-gray-100 text-gray-600';
+      document.getElementById('subcontent-' + subId).classList.add('active');
+    }
+
     let turnoAtual = 'Matutino';
     function setAtrasoTurno(turno) {
       turnoAtual = turno;
       document.getElementById('labelTurno').innerText = turno;
+      document.getElementById('labelTabelaTurno').innerText = turno;
       document.getElementById('btn-turno-mat').className = turno === 'Matutino' ? 'px-4 py-1.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800' : 'px-4 py-1.5 rounded-full text-xs font-semibold bg-gray-100 text-gray-600';
       document.getElementById('btn-turno-vesp').className = turno === 'Vespertino' ? 'px-4 py-1.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800' : 'px-4 py-1.5 rounded-full text-xs font-semibold bg-gray-100 text-gray-600';
+      renderAtrasos();
+    }
+
+    // Lista de Professores por Série/Segmento
+    const professoresPorSerie = {
+      "6º Ano": ["Prof. Ana (Matemática)", "Prof. Carlos (Português)", "Prof. Beatriz (Ciências)", "Prof. João (História)"],
+      "7º Ano": ["Prof. Mariana (Matemática)", "Prof. Lucas (Português)", "Prof. Camila (Geografia)", "Prof. Roberto (Inglês)"],
+      "8º Ano": ["Prof. Patricia (Matemática)", "Prof. Eduardo (Português)", "Prof. Fernanda (Física/Química)", "Prof. Juliano (História)"],
+      "9º Ano": ["Prof. Renata (Matemática)", "Prof. Gustavo (Português)", "Prof. Beatriz (Biologia)", "Prof. Marcos (História)"],
+      "Ensino Médio": ["Prof. Alexandre (Matemática)", "Prof. Juliana (Português)", "Prof. Ricardo (Física)", "Prof. Vanessa (Química)"],
+      "Oficinas e Contraturno": ["Prof. Diego (Esportes)", "Prof. Sofia (Teatro/Artes)", "Prof. Leandro (Robótica)"]
+    };
+
+    function carregarProfessoresPorSegmento() {
+      const segmento = document.getElementById('profSegmento').value;
+      const select = document.getElementById('profNomeSelect');
+      select.innerHTML = '<option value="">Selecione o professor...</option>';
+      if(segmento && professoresPorSerie[segmento]) {
+        professoresPorSerie[segmento].forEach(p => {
+          select.innerHTML += `<option value="${p}">${p}</option>`;
+        });
+      }
     }
 
     // Armazenamento Local
@@ -360,10 +383,9 @@
       renderProf();
       renderInsp();
       renderAtd();
-      renderContatos();
     }
 
-    // Atrasos
+    // Atrasos (Filtrado por turno)
     function salvarAtraso(e) {
       e.preventDefault();
       dbAtrasos.unshift({
@@ -385,13 +407,14 @@
       const tb = document.getElementById('listaAtrasosTbody');
       if(!tb) return;
       tb.innerHTML = '';
-      dbAtrasos.forEach(a => {
-        tb.innerHTML += `<tr class="border-b"><td class="p-2 border">${a.data} ${a.hora}</td><td class="p-2 border">${a.turno}</td><td class="p-2 border font-bold">${a.aluno}</td><td class="p-2 border">${a.turma}</td><td class="p-2 border">${a.espaco}</td><td class="p-2 border text-center"><button onclick="delAtraso(${a.id})" class="text-red-600 font-bold">Apagar</button></td></tr>`;
+      const filtrados = dbAtrasos.filter(a => a.turno === turnoAtual);
+      filtrados.forEach(a => {
+        tb.innerHTML += `<tr class="border-b"><td class="p-2 border">${a.data} ${a.hora}</td><td class="p-2 border font-bold">${a.aluno}</td><td class="p-2 border">${a.turma}</td><td class="p-2 border">${a.espaco}</td><td class="p-2 border text-center"><button onclick="delAtraso(${a.id})" class="text-red-600 font-bold">Apagar</button></td></tr>`;
       });
     }
     function delAtraso(id) { dbAtrasos = dbAtrasos.filter(x => x.id !== id); localStorage.setItem('arena_atrasos', JSON.stringify(dbAtrasos)); renderAtrasos(); }
 
-    // Sala de Estudos & Biblioteca (Com Alerta de 2+ Ocorrências)
+    // Sala de Estudos & Biblioteca
     function salvarSalaEstudos(e) {
       e.preventDefault();
       dbSala.unshift({
@@ -405,6 +428,7 @@
       localStorage.setItem('arena_sala', JSON.stringify(dbSala));
       e.target.reset();
       document.getElementById('seData').value = new Date().toISOString().split('T')[0];
+      switchSubSala('relatorios');
       renderSala();
     }
     function renderSala() {
@@ -414,7 +438,6 @@
       tb.innerHTML = '';
       q.innerHTML = '';
 
-      // Contagem para Alerta de Urgência (2+ ocorrências)
       const contagem = {};
       dbSala.forEach(s => { contagem[s.aluno] = (contagem[s.aluno] || 0) + 1; });
       const urg = Object.entries(contagem).filter(([n, t]) => t >= 2);
@@ -445,7 +468,8 @@
       e.preventDefault();
       dbProf.unshift({
         id: Date.now(),
-        nome: document.getElementById('profNome').value,
+        segmento: document.getElementById('profSegmento').value,
+        nome: document.getElementById('profNomeSelect').value,
         data: document.getElementById('profData').value,
         obs: document.getElementById('profObs').value
       });
@@ -459,7 +483,7 @@
       if(!tb) return;
       tb.innerHTML = '';
       dbProf.forEach(p => {
-        tb.innerHTML += `<tr class="border-b"><td class="p-2 border">${p.data}</td><td class="p-2 border font-bold">${p.nome}</td><td class="p-2 border">${p.obs}</td><td class="p-2 border text-center"><button onclick="delProf(${p.id})" class="text-red-600 font-bold">Apagar</button></td></tr>`;
+        tb.innerHTML += `<tr class="border-b"><td class="p-2 border">${p.data}</td><td class="p-2 border">${p.segmento}</td><td class="p-2 border font-bold">${p.nome}</td><td class="p-2 border">${p.obs}</td><td class="p-2 border text-center"><button onclick="delProf(${p.id})" class="text-red-600 font-bold">Apagar</button></td></tr>`;
       });
     }
     function delProf(id) { dbProf = dbProf.filter(x => x.id !== id); localStorage.setItem('arena_prof', JSON.stringify(dbProf)); renderProf(); }
@@ -512,20 +536,6 @@
       });
     }
     function delAtd(id) { dbAtd = dbAtd.filter(x => x.id !== id); localStorage.setItem('arena_atd', JSON.stringify(dbAtd)); renderAtd(); }
-
-    // Backup & Contatos (Simulado base)
-    function baixarBackup() {
-      const blob = new Blob([JSON.stringify({dbAtrasos, dbSala, dbProf, dbInsp, dbAtd}, null, 2)], {type: 'application/json'});
-      const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'backup_arena.json'; a.click();
-    }
-    function renderContatos() {
-      const tb = document.getElementById('listaContatosTbody');
-      if(!tb) return;
-      tb.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-gray-500">Base de 1.160 alunos pronta para consulta rápida.</td></tr>`;
-    }
-    function filtrarContatos(termo) {
-      // Filtro nativo de contatos
-    }
   </script>
 </body>
 </html>
