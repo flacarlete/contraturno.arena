@@ -43,7 +43,7 @@
   </nav>
 
   <main>
-    <!-- ATRASOS -->
+    <!-- 1. ATRASOS -->
     <section id="sec-atrasos" class="secao ativa">
       <h2 style="color: #1b4332; font-size: 16px; margin-top: 0;">Registar Atraso</h2>
       <form onsubmit="salvarAtraso(event)">
@@ -78,103 +78,64 @@
       </form>
       <table>
         <thead>
-          <tr><th>Aluno</th><th>Turma</th><th>Atividade</th><th>Motivo</th><th>Lançado</th><th>Ações</th></tr>
+          <tr><th>Aluno</th><th>Turma</th><th>Atividade</th><th>Motivo</th><th style="text-align:center;">Lançado</th><th>Ações</th></tr>
         </thead>
         <tbody id="tabelaAtrasos"></tbody>
       </table>
     </section>
 
-    <!-- SALA DE ESTUDOS -->
+    <!-- 2. SALA DE ESTUDOS -->
     <section id="sec-sala" class="secao">
       <h2 style="color: #1b4332; font-size: 16px; margin-top: 0;">Sala de Estudos & Biblioteca</h2>
-      <p style="font-size: 13px; color: #6b7280;">Módulo de acompanhamento operacional ativo.</p>
+      <form onsubmit="salvarSala(event)">
+        <div class="form-group">
+          <label>Nome do Aluno</label>
+          <input type="text" id="salaAluno" required placeholder="Nome do aluno...">
+        </div>
+        <div class="form-group">
+          <label>Turma</label>
+          <input type="text" id="salaTurma" required placeholder="Turma...">
+        </div>
+        <div class="form-group">
+          <label>Ocorrência / Motivo</label>
+          <input type="text" id="salaObs" required placeholder="Detalhes...">
+        </div>
+        <button type="submit" class="btn-submit">Registar Ocorrência</button>
+      </form>
+      <table>
+        <thead>
+          <tr><th>Aluno</th><th>Turma</th><th>Ocorrência</th><th>Ações</th></tr>
+        </thead>
+        <tbody id="tabelaSala"></tbody>
+      </table>
     </section>
 
-    <!-- PROFESSORES -->
+    <!-- 3. PROFESSORES -->
     <section id="sec-prof" class="secao">
       <h2 style="color: #1b4332; font-size: 16px; margin-top: 0;">Acompanhamento Docente</h2>
-      <p style="font-size: 13px; color: #6b7280;">Módulo de ocorrências de professores ativo.</p>
+      <form onsubmit="salvarProf(event)">
+        <div class="form-group">
+          <label>Professor e Matéria</label>
+          <input type="text" id="profNome" required placeholder="Nome do professor...">
+        </div>
+        <div class="form-group">
+          <label>Ocorrência / Observação</label>
+          <input type="text" id="profObs" required placeholder="Detalhes...">
+        </div>
+        <button type="submit" class="btn-submit">Registar Ocorrência</button>
+      </form>
+      <table>
+        <thead>
+          <tr><th>Professor</th><th>Observação</th><th>Ações</th></tr>
+        </thead>
+        <tbody id="tabelaProf"></tbody>
+      </table>
     </section>
 
-    <!-- INSPETORES -->
+    <!-- 4. INSPETORES -->
     <section id="sec-insp" class="secao">
       <h2 style="color: #1b4332; font-size: 16px; margin-top: 0;">Orientações de Inspetores</h2>
-      <p style="font-size: 13px; color: #6b7280;">Módulo de feedback ativo.</p>
-    </section>
-
-    <!-- ATENDIMENTOS -->
-    <section id="sec-atd" class="secao">
-      <h2 style="color: #1b4332; font-size: 16px; margin-top: 0;">Registo de Atendimentos</h2>
-      <p style="font-size: 13px; color: #6b7280;">Módulo de famílias e alunos ativo.</p>
-    </section>
-  </main>
-
-  <script>
-    function mudarAba(id) {
-      var secoes = document.getElementsByClassName('secao');
-      for (var i = 0; i < secoes.length; i++) {
-        secoes[i].classList.remove('ativa');
-      }
-
-      var botoes = document.getElementsByTagName('nav')[0].getElementsByTagName('button');
-      for (var i = 0; i < botoes.length; i++) {
-        botoes[i].classList.remove('ativo');
-      }
-
-      document.getElementById('sec-' + id).classList.add('ativa');
-      document.getElementById('btn-' + id).classList.add('ativo');
-    }
-
-    var db = JSON.parse(localStorage.getItem('arena_core') || '[]');
-
-    function salvarAtraso(e) {
-      e.preventDefault();
-      var item = {
-        id: Date.now(),
-        atv: document.getElementById('atv').value,
-        aluno: document.getElementById('aluno').value.toUpperCase(),
-        turma: document.getElementById('turma').value,
-        motivo: document.getElementById('motivo').value,
-        lancado: document.getElementById('lancado').checked
-      };
-      db.unshift(item);
-      localStorage.setItem('arena_core', JSON.stringify(db));
-      e.target.reset();
-      renderizar();
-    }
-
-    function renderizar() {
-      var tb = document.getElementById('tabelaAtrasos');
-      if (!tb) return;
-      tb.innerHTML = '';
-      
-      // Contagem para alerta de 2+ ocorrências
-      var contagem = {};
-      for (var i = 0; i < db.length; i++) {
-        var nome = db[i].aluno.trim();
-        contagem[nome] = (contagem[nome] || 0) + 1;
-      }
-
-      for (var i = 0; i < db.length; i++) {
-        var x = db[i];
-        var qtd = contagem[x.aluno.trim()] || 0;
-        var estilo = qtd >= 2 ? 'background-color: #fef2f2; color: #991b1b; font-weight: bold;' : '';
-        var alerta = qtd >= 2 ? ' <span style="background:red; color:white; padding:1px 4px; border-radius:3px; font-size:10px;">ALERTA (' + qtd + 'x)</span>' : '';
-        var statusLancado = x.lancado ? 'Sim' : 'Não';
-
-        tb.innerHTML += '<tr style="' + estilo + '"><td>' + x.aluno + alerta + '</td><td>' + x.turma + '</td><td>' + x.atv + '</td><td>' + x.motivo + '</td><td>' + statusLancado + '</td><td><button onclick="apagar(' + x.id + ')" style="color:red; background:none; border:none; cursor:pointer; font-weight:bold;">Apagar</button></td></tr>';
-      }
-    }
-
-    function apagar(id) {
-      db = db.filter(function(x) { return x.id !== id; });
-      localStorage.setItem('arena_core', JSON.stringify(db));
-      renderizar();
-    }
-
-    window.onload = function() {
-      renderizar();
-    };
-  </script>
-</body>
-</html>
+      <form onsubmit="salvarInsp(event)">
+        <div class="form-group">
+          <label>Nome do Inspetor</label>
+          <input type="text
