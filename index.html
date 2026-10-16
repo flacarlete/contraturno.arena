@@ -126,13 +126,13 @@
     <section id="content-sala-estudos" class="tab-content">
       <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
         <div class="flex gap-4 border-b border-gray-200 pb-3 mb-4 no-print">
-          <button onclick="switchSubSala('novo')" id="subtab-novo" class="px-4 py-1.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800">Novo Lançamento</button>
+          <button onclick="switchSubSala('novo')" id="subtab-novo" class="px-4 py-1.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800">Novo Lançamento (20 Espaços)</button>
           <button onclick="switchSubSala('relatorios')" id="subtab-relatorios" class="px-4 py-1.5 rounded-full text-xs font-semibold bg-gray-100 text-gray-600">📊 Relatórios Diários & Alertas</button>
         </div>
 
-        <!-- Subtab: Novo Lançamento -->
+        <!-- Subtab: Novo Lançamento (20 Espaços) -->
         <div id="subcontent-novo" class="subtab-content active">
-          <h2 class="text-base font-bold text-[#1b4332] mb-4">📚 Sala de Estudos & Biblioteca — Novo Registro</h2>
+          <h2 class="text-base font-bold text-[#1b4332] mb-4">📚 Sala de Estudos & Biblioteca — 20 Espaços</h2>
           <form id="formSalaEstudos" onsubmit="salvarSalaEstudos(event)" class="space-y-4">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
@@ -145,23 +145,10 @@
               </div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div>
-                <label class="block text-xs font-medium text-gray-700 mb-1">Nome do Aluno</label>
-                <input type="text" id="seAluno" class="w-full border border-gray-300 rounded px-3 py-2 text-sm font-bold" placeholder="Nome completo..." required />
-              </div>
-              <div>
-                <label class="block text-xs font-medium text-gray-700 mb-1">Turma</label>
-                <input type="text" id="seTurma" class="w-full border border-gray-300 rounded px-3 py-2 text-sm" placeholder="Ex: 8ºG..." required />
-              </div>
-              <div>
-                <label class="block text-xs font-medium text-gray-700 mb-1">Ocorrência / Motivo</label>
-                <input type="text" id="seOcorrencia" class="w-full border border-gray-300 rounded px-3 py-2 text-sm" placeholder="Detalhes..." required />
-              </div>
-            </div>
+            <div id="container20Espacos" class="space-y-2 bg-gray-50 p-4 rounded border"></div>
 
             <div class="flex justify-end">
-              <button type="submit" class="bg-[#1b4332] text-white px-5 py-2 rounded text-sm font-medium hover:bg-emerald-900">💾 Salvar Lançamento</button>
+              <button type="submit" class="bg-[#1b4332] text-white px-5 py-2 rounded text-sm font-medium hover:bg-emerald-900">💾 Salvar Relatório da Sala</button>
             </div>
           </form>
         </div>
@@ -225,10 +212,30 @@
               <input type="date" id="profData" class="w-full border border-gray-300 rounded px-3 py-2 text-sm" required />
             </div>
           </div>
-          <div>
-            <label class="block text-xs font-medium text-gray-700 mb-1">Observações / Ocorrência</label>
-            <input type="text" id="profObs" class="w-full border border-gray-300 rounded px-3 py-2 text-sm" placeholder="Detalhes..." required />
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2 border-t text-xs">
+            <label class="flex items-center gap-2 font-medium">
+              <input type="checkbox" id="profChamada" /> Não fez chamada
+            </label>
+            <div>
+              <label class="flex items-center gap-2 font-medium mb-1">
+                <input type="checkbox" id="profAtrasoInicio" onchange="document.getElementById('profMinutosInicio').disabled = !this.checked" /> Não entrou no horário
+              </label>
+              <input type="number" id="profMinutosInicio" placeholder="Minutos de atraso" disabled class="w-full border border-gray-300 rounded px-2 py-1" />
+            </div>
+            <div>
+              <label class="flex items-center gap-2 font-medium mb-1">
+                <input type="checkbox" id="profAtrasoInterv" onchange="document.getElementById('profMinutosInterv').disabled = !this.checked" /> Atraso após intervalo
+              </label>
+              <input type="number" id="profMinutosInterv" placeholder="Minutos de atraso" disabled class="w-full border border-gray-300 rounded px-2 py-1" />
+            </div>
           </div>
+
+          <div>
+            <label class="block text-xs font-medium text-gray-700 mb-1">Observações / Detalhes</label>
+            <input type="text" id="profObs" class="w-full border border-gray-300 rounded px-3 py-2 text-sm" placeholder="Anotações gerais..." />
+          </div>
+
           <div class="flex justify-end">
             <button type="submit" class="bg-[#1b4332] text-white px-5 py-2 rounded text-sm font-medium hover:bg-emerald-900">Registrar Ocorrência</button>
           </div>
@@ -243,6 +250,8 @@
               <th class="p-2 border">Data</th>
               <th class="p-2 border">Série</th>
               <th class="p-2 border">Professor / Matéria</th>
+              <th class="p-2 border">Chamada Pendente</th>
+              <th class="p-2 border">Atrasos</th>
               <th class="p-2 border">Observações</th>
               <th class="p-2 border text-center">Ações</th>
             </tr>
@@ -408,6 +417,21 @@
       }
     }
 
+    function montar20Espacos() {
+      const c = document.getElementById('container20Espacos');
+      if(!c) return;
+      let h = '';
+      for(let i=1; i<=20; i++) {
+        h += `<div class="grid grid-cols-1 md:grid-cols-12 gap-2 items-center">
+          <span class="text-xs font-bold text-gray-500">#${i}</span>
+          <div class="md:col-span-4"><input type="text" id="se_aluno_${i}" placeholder="Nome do Aluno..." class="w-full bg-white border border-gray-300 rounded px-2 py-1 text-xs font-bold" /></div>
+          <div class="md:col-span-2"><input type="text" id="se_turma_${i}" placeholder="Turma" class="w-full bg-white border border-gray-300 rounded px-2 py-1 text-xs" /></div>
+          <div class="md:col-span-5"><input type="text" id="se_obs_${i}" placeholder="Ocorrência / Motivo..." class="w-full bg-white border border-gray-300 rounded px-2 py-1 text-xs" /></div>
+        </div>`;
+      }
+      c.innerHTML = h;
+    }
+
     // Armazenamento Local
     let dbAtrasos = JSON.parse(localStorage.getItem('arena_atrasos') || '[]');
     let dbSala = JSON.parse(localStorage.getItem('arena_sala') || '[]');
@@ -416,6 +440,7 @@
     let dbAtd = JSON.parse(localStorage.getItem('arena_atd') || '[]');
 
     window.addEventListener('DOMContentLoaded', () => {
+      montar20Espacos();
       const hoje = new Date().toISOString().split('T')[0];
       const hora = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
       if(document.getElementById('atrasoHora')) document.getElementById('atrasoHora').value = hora;
@@ -433,7 +458,7 @@
       renderAtd();
     }
 
-    // Atrasos (Filtrado por turno com motivo)
+    // Atrasos
     function salvarAtraso(e) {
       e.preventDefault();
       dbAtrasos.unshift({
@@ -463,20 +488,31 @@
     }
     function delAtraso(id) { dbAtrasos = dbAtrasos.filter(x => x.id !== id); localStorage.setItem('arena_atrasos', JSON.stringify(dbAtrasos)); renderAtrasos(); }
 
-    // Sala de Estudos & Biblioteca
+    // Sala de Estudos (20 Espaços)
     function salvarSalaEstudos(e) {
       e.preventDefault();
-      dbSala.unshift({
-        id: Date.now(),
-        data: document.getElementById('seData').value,
-        resp: document.getElementById('seProfessor').value,
-        aluno: document.getElementById('seAluno').value.toUpperCase(),
-        turma: document.getElementById('seTurma').value,
-        ocorrencia: document.getElementById('seOcorrencia').value
-      });
+      let count = 0;
+      const data = document.getElementById('seData').value;
+      const resp = document.getElementById('seProfessor').value;
+      for(let i=1; i<=20; i++) {
+        const aluno = document.getElementById(`se_aluno_${i}`).value.trim();
+        if(aluno) {
+          count++;
+          dbSala.unshift({
+            id: Date.now() + i,
+            data,
+            resp,
+            aluno: aluno.toUpperCase(),
+            turma: document.getElementById(`se_turma_${i}`).value.trim() || '—',
+            ocorrencia: document.getElementById(`se_obs_${i}`).value.trim() || '—'
+          });
+        }
+      }
+      if(count === 0) { alert('Preencha pelo menos um aluno nos 20 espaços.'); return; }
       localStorage.setItem('arena_sala', JSON.stringify(dbSala));
       e.target.reset();
       document.getElementById('seData').value = new Date().toISOString().split('T')[0];
+      montar20Espacos();
       switchSubSala('relatorios');
       renderSala();
     }
@@ -515,12 +551,21 @@
     // Professores
     function salvarOcorrenciaProfessor(e) {
       e.preventDefault();
+      const chamada = document.getElementById('profChamada').checked ? 'Não fez chamada' : 'OK';
+      const mInicio = document.getElementById('profAtrasoInicio').checked ? (document.getElementById('profMinutosInicio').value + ' min atraso início') : '';
+      const mInterv = document.getElementById('profAtrasoInterv').checked ? (document.getElementById('profMinutosInterv').value + ' min atraso intervalo') : '';
+      const obsGeral = document.getElementById('profObs').value;
+      
+      let detalhes = [chamada !== 'OK' ? chamada : '', mInicio, mInterv, obsGeral].filter(Boolean).join(' | ');
+
       dbProf.unshift({
         id: Date.now(),
         segmento: document.getElementById('profSegmento').value,
         nome: document.getElementById('profNomeSelect').value,
         data: document.getElementById('profData').value,
-        obs: document.getElementById('profObs').value
+        chamada: document.getElementById('profChamada').checked ? '⚠️ Sim' : 'Não',
+        atrasos: [mInicio, mInterv].filter(Boolean).join(', ') || 'Nenhum',
+        obs: obsGeral || 'Nenhuma'
       });
       localStorage.setItem('arena_prof', JSON.stringify(dbProf));
       e.target.reset();
@@ -532,7 +577,7 @@
       if(!tb) return;
       tb.innerHTML = '';
       dbProf.forEach(p => {
-        tb.innerHTML += `<tr class="border-b"><td class="p-2 border">${p.data}</td><td class="p-2 border">${p.segmento}</td><td class="p-2 border font-bold">${p.nome}</td><td class="p-2 border">${p.obs}</td><td class="p-2 border text-center"><button onclick="delProf(${p.id})" class="text-red-600 font-bold">Apagar</button></td></tr>`;
+        tb.innerHTML += `<tr class="border-b"><td class="p-2 border">${p.data}</td><td class="p-2 border">${p.segmento}</td><td class="p-2 border font-bold">${p.nome}</td><td class="p-2 border">${p.chamada}</td><td class="p-2 border">${p.atrasos}</td><td class="p-2 border">${p.obs}</td><td class="p-2 border text-center"><button onclick="delProf(${p.id})" class="text-red-600 font-bold">Apagar</button></td></tr>`;
       });
     }
     function delProf(id) { dbProf = dbProf.filter(x => x.id !== id); localStorage.setItem('arena_prof', JSON.stringify(dbProf)); renderProf(); }
